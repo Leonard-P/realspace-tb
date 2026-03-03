@@ -4,6 +4,10 @@ on:
   push:
     branches: [main]
     paths: ["realspace_tb/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   docs:
