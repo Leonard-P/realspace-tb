@@ -1,0 +1,29 @@
+name: Publish to PyPI
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write  # for trusted publishing
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install build
+      - run: python -m build
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        # Uses trusted publishing — no token needed
+        # Set up at https://pypi.org/manage/project/realspace-tb/settings/publishing/
+
+
+# Workflow:
+# bump version in pyproject.toml, then:
+# $git add pyproject.toml
+# $git commit -m "Release v0.2.0"
+# $git tag v0.2.0
+# $git push && git push --tags
+# GitHub Actions builds and uploads automatically
