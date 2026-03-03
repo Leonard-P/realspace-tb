@@ -46,20 +46,6 @@ def _build_geometry_segments(geometry: Lattice2DGeometry) -> np.ndarray:
     return segs
 
 
-def _site_coordinates(geometry: Lattice2DGeometry) -> tuple[np.ndarray, np.ndarray]:
-    raise NotImplementedError(
-        "This function has been deprecated. Use geometry.site_positions instead."
-    )
-    N = geometry.Lx * geometry.Ly
-    xs = np.empty(N, dtype=float)
-    ys = np.empty(N, dtype=float)
-    for i in range(N):
-        x, y = geometry.index_to_position(i)
-        xs[i] = x
-        ys[i] = y
-    return xs, ys
-
-
 def _create_scene(
     lattice_frame_obs: LatticeFrameObservable,
     density_cmap: str = "Greys",
