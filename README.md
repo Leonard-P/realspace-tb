@@ -15,7 +15,7 @@ pip install realspace-tb
 For GPU acceleration (optional):
 
 ```bash
-pip install realspace-tb[gpu]
+pip install "realspace-tb[gpu]"
 ```
 
 ## Quick start
