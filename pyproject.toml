@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools >= 77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "realspace-tb"
+version = "0.2.0"
+description = "Real-space tight-binding simulations with time-dependent density matrix evolution"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=1.24",
+    "scipy>=1.10",
+    "matplotlib>=3.7",
+    "tqdm>=4.60",
+]
+
+[project.optional-dependencies]
+gpu = ["cupy>=13.0"]
+
+[project.urls]
+Repository = "https://github.com/Leonard-P/realspace-tb"
