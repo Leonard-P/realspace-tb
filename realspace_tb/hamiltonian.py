@@ -36,8 +36,8 @@ class Hamiltonian(ABC):
     def ground_state_density_matrix(self, fermi_level: float = 0.0) -> B.Array:
         r"""Return the ground state density matrix.
 
-        Returns :math:`\sum_n |\psi_n\rangle\langle\psi_n|` for all eigenstates
-        with :math:`E_n \leq` ``fermi_level``.
+        Returns $\sum_n |\psi_n\rangle\langle\psi_n|$ for all eigenstates
+        with $E_n \leq$ `fermi_level`.
         """
         occupied: np.ndarray = (self.eigenvalues <= fermi_level).astype(B.FDTYPE)
         return (self.eigenstates * occupied @ self.eigenstates.T.conj()).astype(

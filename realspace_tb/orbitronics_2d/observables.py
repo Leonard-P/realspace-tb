@@ -8,7 +8,8 @@ import numpy as np
 
 class PlaquetteOAMObservable(Observable):
     r"""Measures the plaquette orbital angular momentum using loop currents around cells as
-    :math:`\expval{\int_{A_\circlearrowleft} d^2s \ L_z} = -\frac{\sqrt{3} m_e}{2} \sum_{(k,l)\in\circlearrowleft_{\vec R}} J_{kl}`
+
+    $$\expval{\int_{A_\circlearrowleft} d^2s \ L_z} = -\frac{\sqrt{3} m_e}{2} \sum_{(k,l)\in\circlearrowleft_{\vec R}} J_{kl}$$
     """
 
     def __init__(
@@ -85,9 +86,9 @@ class PlaquetteOAMObservable(Observable):
         r"""Compute bond currents along plaquette edges.
 
         Uses the gauge-invariant formula
-        :math:`I_{ij}(t) = 2\,\mathrm{Im}(H_{ij}(t)\,\rho_{ji}(t))`.
-        When no Hamiltonian is stored (``t_{hop} = -1``), this reduces to
-        :math:`2\,\mathrm{Im}(\rho_{ij})`.
+        $I_{ij}(t) = 2\,\mathrm{Im}(H_{ij}(t)\,\rho_{ji}(t))$.
+        When no Hamiltonian is stored (`t_{hop} = -1`), this reduces to
+        $2\,\mathrm{Im}(\rho_{ij})$.
         """
         if self._hamiltonian is not None:
             H_t = self._hamiltonian.at_time(t)
@@ -105,7 +106,8 @@ class PlaquetteOAMObservable(Observable):
 
 class OrbitalPolarizationObservable(PlaquetteOAMObservable):
     r"""Measures the orbital polarization using loop currents around cells as
-    :math:`\expval{P_{orb}} = -i\frac{m_e}{A_\mathrm{tot}} \sum_\alpha\sum_{(k,l)\in\circlearrowleft_{\vec R_\alpha}} (\sqrt 3\,\vec R_\alpha +\frac{5}{12}\begin{pmatrix}0&-1\\1&0\end{pmatrix} (\vec r_l - \vec r_k)) \Im \rho_{kl}`
+
+    $$\expval{P_{orb}} = -i\frac{m_e}{A_\mathrm{tot}} \sum_\alpha\sum_{(k,l)\in\circlearrowleft_{\vec R_\alpha}} (\sqrt 3\,\vec R_\alpha +\frac{5}{12}\begin{pmatrix}0&-1\\1&0\end{pmatrix} (\vec r_l - \vec r_k)) \Im \rho_{kl}$$
     """
 
     def __init__(
@@ -161,18 +163,18 @@ class OrbitalPolarizationObservable(PlaquetteOAMObservable):
 
 
 class SiteDensityObservable(Observable):
-    """Measures the site-resolved electron density :math:`n_i = \\rho_{ii}`."""
+    """Measures the site-resolved electron density $n_i = \\rho_{ii}$."""
 
     def _compute(self, rho: B.Array, t: float) -> B.Array:
         return B.xp().real(B.xp().diag(rho))
 
 
 class BondCurrentObservable(Observable):
-    r"""Measures the bond currents :math:`I_{ij}(t) = 2\,\mathrm{Im}(H_{ij}(t)\,\rho_{ji}(t))`.
+    r"""Measures the bond currents $I_{ij}(t) = 2\,\mathrm{Im}(H_{ij}(t)\,\rho_{ji}(t))$.
 
     When no *hamiltonian* is provided the hopping is assumed real with
-    :math:`t_{\text{hop}} = -1`, reducing the expression to
-    :math:`2\,\mathrm{Im}(\rho_{ij})`.
+    $t_{\text{hop}} = -1$, reducing the expression to
+    $2\,\mathrm{Im}(\rho_{ij})$.
     """
 
     def __init__(

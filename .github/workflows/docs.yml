@@ -18,7 +18,7 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install pdoc numpy scipy matplotlib tqdm
-      - run: pdoc realspace_tb -o docs/api
+      - run: pdoc realspace_tb -o docs/api --math
       - uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
