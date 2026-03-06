@@ -2,6 +2,8 @@
 Animation utilities for plotting and rendering animations of 2D Lattice geometries.
 """
 
+import warnings
+from dataclasses import dataclass, fields as _dc_fields
 from typing import cast, Any
 from pathlib import Path
 import numpy as np
@@ -18,6 +20,130 @@ from realspace_tb.orbitronics_2d.honeycomb_geometry import HoneycombLatticeGeome
 from .lattice_2d_geometry import Lattice2DGeometry
 from .. import backend as B
 from .observables import LatticeFrameObservable
+
+
+@dataclass
+class PlotConfig:
+    """Visual style configuration for `save_simulation_animation` and `show_simulation_frame`.
+
+    Collect all visual/style parameters into one object and pass it as the
+    *config* argument rather than listing each keyword individually.  Old-style
+    flat keyword arguments are still accepted by the public functions but will
+    raise a `DeprecationWarning`; constructing a `PlotConfig` directly is the
+    preferred way going forward.
+
+    Parameters:
+        density_cmap: Colormap name for site-occupation scatter.
+        density_vmin: Lower bound of the density colormap.
+        density_vmax: Upper bound of the density colormap.
+        current_max: Absolute maximum used to normalise bond-current arrows.
+            Derived from data when `None`.
+        site_marker_size: Scatter marker area (pts²) for site-occupation circles.
+        show_flow_arrows: Draw flow-direction arrows along bonds.
+        arrows_per_edge: Number of arrows distributed along each bond.
+        arrow_scale: Arrow-length scaling factor relative to current magnitude.
+        arrow_width: Arrow stem width in data units.
+        arrow_color: Colour of flow-direction arrows.
+        show_oam_indicators: Draw OAM-value scatter at plaquette centres.
+        oam_cmap: Colormap name for orbital angular momentum values.
+        oam_vmax: Absolute maximum for the OAM colormap. Derived from data when `None`.
+        oam_marker_size: Scatter marker area (pts²) for OAM indicator circles.
+        show_oam_direction_arrows: Draw circular arrows indicating OAM handedness.
+        oam_arrow_radius: Radius of the circular OAM arrows in data units.
+        oam_arrow_lw: Line width of the circular OAM arrows.
+        oam_arrow_positive_color: Colour for counter-clockwise (positive OAM) arrows.
+        oam_arrow_negative_color: Colour for clockwise (negative OAM) arrows.
+        oam_arrow_threshold: Relative threshold below which OAM direction arrows are hidden.
+        field_arrow_type: Placement of the electric-field arrow.  ``"vertical"``
+            draws it to the left of the lattice; ``"horizontal"`` draws it above.
+        field_arrow_label: Optional label placed beside the electric-field arrow.
+        field_arrow_color: Colour for the electric-field arrow and its label.
+        frame_texts: Per-frame title strings shown at the top-left corner.  When
+            `None` the default ``"frame i/F"`` counter is used.
+        electric_field_vectors: Per-frame 2-D vectors for an external electric-field
+            arrow overlay.  Pass `None` entries for frames where no arrow should
+            appear.
+        legend_bond_current_label: Legend entry for the bond-current arrow proxy artist.
+        legend_site_occupation_label: Legend entry for site-occupation markers.
+        legend_oam_label: Legend entry for plaquette-OAM markers.
+        colorbar_site_occupation_label: Colorbar axis label for site occupation.
+        colorbar_oam_label: Colorbar axis label for plaquette OAM.
+    """
+
+    # --- Density -----------------------------------------------------------------
+    density_cmap: str = "Greys"
+    density_vmin: float = 0.0
+    density_vmax: float = 1.0
+    current_max: float | None = None
+    site_marker_size: float = 320.0
+
+    # --- Flow-direction arrows ---------------------------------------------------
+    show_flow_arrows: bool = True
+    arrows_per_edge: int = 3
+    arrow_scale: float = 0.55
+    arrow_width: float = 0.04
+    arrow_color: str = "black"
+
+    # --- OAM indicators ----------------------------------------------------------
+    show_oam_indicators: bool = True
+    oam_cmap: str = "RdBu"
+    oam_vmax: float | None = None
+    oam_marker_size: float = 180.0
+
+    # --- Circular OAM arrows -----------------------------------------------------
+    show_oam_direction_arrows: bool = True
+    oam_arrow_radius: float = 0.6
+    oam_arrow_lw: float = 1.5
+    oam_arrow_positive_color: str = "blue"
+    oam_arrow_negative_color: str = "red"
+    oam_arrow_threshold: float = 0.01
+
+    # --- Electric-field arrow ----------------------------------------------------
+    field_arrow_type: str = "vertical"
+    field_arrow_label: str | None = None
+    field_arrow_color: str = "green"
+
+    # --- Per-frame data ----------------------------------------------------------
+    frame_texts: list[str] | None = None
+    electric_field_vectors: list[np.ndarray | None] | None = None
+
+    # --- Legend / colorbar labels ------------------------------------------------
+    legend_bond_current_label: str = "Bond Current"
+    legend_site_occupation_label: str = "Site Occupation $\\langle \\hat n_i\\rangle $"
+    legend_oam_label: str = "Plaquette OAM"
+    colorbar_site_occupation_label: str = "Site Occupation"
+    colorbar_oam_label: str = "Plaquette OAM ($\\hbar$)"
+
+
+# Frozen set of all PlotConfig field names — used by the **kwargs deprecation shim.
+_PLOTCONFIG_FIELDS: frozenset[str] = frozenset(f.name for f in _dc_fields(PlotConfig))
+
+
+def _resolve_config(
+    config: PlotConfig | None,
+    kwargs: dict[str, Any],
+    stacklevel: int = 2,
+) -> PlotConfig:
+    """Return *config*, building one from *kwargs* with a deprecation warning if needed."""
+    if config is not None and kwargs:
+        raise TypeError(
+            "Cannot mix 'config=' with individual style kwargs: "
+            + ", ".join(repr(k) for k in sorted(kwargs))
+        )
+    if config is not None:
+        return config
+    if kwargs:
+        unknown = sorted(set(kwargs) - _PLOTCONFIG_FIELDS)
+        if unknown:
+            raise TypeError(f"Unexpected keyword argument(s): {unknown}")
+        warnings.warn(
+            "Passing style parameters as flat keyword arguments is deprecated. "
+            "Use config=PlotConfig(...) instead.",
+            DeprecationWarning,
+            stacklevel=stacklevel + 1,
+        )
+        return PlotConfig(**kwargs)
+    return PlotConfig()
 
 
 def _build_geometry_segments(geometry: Lattice2DGeometry) -> np.ndarray:
@@ -48,40 +174,37 @@ def _build_geometry_segments(geometry: Lattice2DGeometry) -> np.ndarray:
 
 def _create_scene(
     lattice_frame_obs: LatticeFrameObservable,
-    density_cmap: str = "Greys",
-    density_vmin: float = 0.0,
-    density_vmax: float = 1.0,
-    current_max: float | None = None,
-    # Site circles size
-    site_marker_size: float = 320.0,
-    # Flow-direction arrows
-    show_flow_arrows: bool = True,
-    arrows_per_edge: int = 3,
-    arrow_scale: float = 0.55,
-    arrow_width: float = 0.04,
-    arrow_color: str = "black",
-    # OAM indicators
-    show_oam_indicators: bool = True,
-    oam_cmap: str = "RdBu",
-    oam_vmax: float | None = None,
-    oam_marker_size: float = 180.0,
-    # curl direction circular arrows
-    show_oam_direction_arrows: bool = True,
-    oam_arrow_radius: float = 0.6,
-    oam_arrow_lw: float = 1.5,
-    oam_arrow_positive_color: str = "red",
-    oam_arrow_negative_color: str = "blue",
-    # Hide arrows for small curl values
-    oam_arrow_threshold: float = 0.01,
-    # Optional per-frame text at top-left
-    frame_texts: list[str] | None = None,
-    electric_field_vectors: list[np.ndarray | None] | None = None,
-    field_arrow_type: str = "vertical",
-    field_arrow_label: str | None = None,
-    field_arrow_color: str = "green",
+    config: PlotConfig,
     include_colorbars: bool = True,
 ) -> tuple[plt.Figure, plt.Axes, dict[str, Any]]:
     """Builds the static scene (figure, artists, legend, colorbars) and returns a context dict for updating per-frame."""
+    # Unpack config fields into local names so the existing body code is unchanged.
+    density_cmap = config.density_cmap
+    density_vmin = config.density_vmin
+    density_vmax = config.density_vmax
+    current_max = config.current_max  # may be updated below when None
+    site_marker_size = config.site_marker_size
+    show_flow_arrows = config.show_flow_arrows
+    arrows_per_edge = config.arrows_per_edge
+    arrow_scale = config.arrow_scale
+    arrow_width = config.arrow_width
+    arrow_color = config.arrow_color
+    show_oam_indicators = config.show_oam_indicators
+    oam_cmap = config.oam_cmap
+    oam_vmax = config.oam_vmax
+    oam_marker_size = config.oam_marker_size
+    show_oam_direction_arrows = config.show_oam_direction_arrows
+    oam_arrow_radius = config.oam_arrow_radius
+    oam_arrow_lw = config.oam_arrow_lw
+    oam_arrow_positive_color = config.oam_arrow_positive_color
+    oam_arrow_negative_color = config.oam_arrow_negative_color
+    oam_arrow_threshold = config.oam_arrow_threshold
+    field_arrow_type = config.field_arrow_type
+    field_arrow_label = config.field_arrow_label
+    field_arrow_color = config.field_arrow_color
+    frame_texts = config.frame_texts
+    electric_field_vectors = config.electric_field_vectors
+
     animation_values = cast(dict[str, B.FCPUArray], lattice_frame_obs.values)
     densities = animation_values["densities"]  # (F, N)
     bond_currents = animation_values["currents"]  # (F, E)
@@ -428,7 +551,7 @@ def _create_scene(
             lw=1.8,
         )
     )
-    labels.append("Bond Current")
+    labels.append(config.legend_bond_current_label)
     occ_color = cm.get_cmap(density_cmap)(0.6)
     handles.append(
         mlines.Line2D(
@@ -442,7 +565,7 @@ def _create_scene(
             mew=1.0,
         )
     )
-    labels.append("Site Occupation $\\langle \\hat n_i\\rangle $")
+    labels.append(config.legend_site_occupation_label)
     oam_color = cm.get_cmap(oam_cmap)(0.75)
     handles.append(
         mlines.Line2D(
@@ -455,7 +578,7 @@ def _create_scene(
             markeredgecolor=oam_color,
         )
     )
-    labels.append("Plaquette OAM")
+    labels.append(config.legend_oam_label)
 
     handles_labels = (handles, labels)
 
@@ -468,7 +591,7 @@ def _create_scene(
     colorbar_specs: list[dict[str, Any]] = [
         {
             "mappable": occ_sm,
-            "label": "Site Occupation",
+            "label": config.colorbar_site_occupation_label,
             "formatter": None,
         }
     ]
@@ -491,7 +614,7 @@ def _create_scene(
         }
         cax_occ = fig.add_axes((cbar_x, occ_y, cbar_w, cbar_h))
         cb_occ = fig.colorbar(occ_sm, cax=cax_occ, orientation="vertical")
-        cb_occ.set_label("Site Occupation", size="small")
+        cb_occ.set_label(config.colorbar_site_occupation_label, size="small")
         cb_occ.ax.tick_params(labelsize="small")
     if show_oam_indicators and curl_sc is not None:
         oam_norm = Normalize(vmin=-oam_vmax_f, vmax=oam_vmax_f)
@@ -500,7 +623,7 @@ def _create_scene(
         colorbar_specs.append(
             {
                 "mappable": oam_sm,
-                "label": "Plaquette OAM ($\\hbar$)",
+                "label": config.colorbar_oam_label,
                 "formatter": {
                     "kind": "scalar",
                     "use_math_text": True,
@@ -519,7 +642,7 @@ def _create_scene(
             formatter.set_powerlimits((-2, 2))
             cb_oam.ax.yaxis.set_major_formatter(formatter)
             cb_oam.update_ticks()
-            cb_oam.set_label("Plaquette OAM ($\\hbar$)", size="small")
+            cb_oam.set_label(config.colorbar_oam_label, size="small")
             cb_oam.ax.tick_params(labelsize="small")
 
     ctx: dict[str, Any] = {
@@ -658,100 +781,32 @@ def save_simulation_animation(
     out_path: str,
     fps: int = 10,
     dpi: int = 150,
-    density_cmap: str = "Greys",
-    density_vmin: float = 0.0,
-    density_vmax: float = 1.0,
-    current_max: float | None = None,
-    # Site circles size
-    site_marker_size: float = 320.0,
-    # Flow-direction arrows
-    show_flow_arrows: bool = True,
-    arrows_per_edge: int = 3,
-    arrow_scale: float = 0.55,
-    arrow_width: float = 0.04,
-    arrow_color: str = "black",
-    # OAM indicators
-    show_oam_indicators: bool = True,
-    oam_cmap: str = "RdBu",
-    oam_vmax: float | None = None,
-    oam_marker_size: float = 180.0,
-    # curl direction circular arrows
-    show_oam_direction_arrows: bool = True,
-    oam_arrow_radius: float = 0.6,
-    oam_arrow_lw: float = 1.5,
-    oam_arrow_positive_color: str = "blue",
-    oam_arrow_negative_color: str = "red",
-    # Hide arrows for small curl values
-    oam_arrow_threshold: float = 0.01,
-    # Optional per-frame text at top-left
-    frame_texts: list[str] | None = None,
-    electric_field_vectors: list[np.ndarray | None] | None = None,
-    field_arrow_type: str = "vertical",
-    field_arrow_label: str | None = None,
-    field_arrow_color: str = "green",
+    config: PlotConfig | None = None,
     export_legend: bool = False,
+    **kwargs: Any,
 ) -> None:
-    """Save an animation visualizing onsite densities and bond currents over frames.
+    """Save an animation visualising onsite densities and bond currents over frames.
 
     Parameters:
-        lattice_frame_obs: LatticeFrameObservable that recorded 'densities', 'currents', 'plaquette_oam' during the simulation and has geometry defined
-        out_path: output file (e.g., mp4 or gif)
-        fps: frames per second in output animation
-        dpi: resolution of output animation
-        density_cmap: colormap for site densities
-        density_vmin: min value for density colormap
-        density_vmax: max value for density colormap
-        current_max: max value for current colormap; if None, derived from data
-        site_marker_size: size of site occupation circles
-        show_flow_arrows: whether to show flow-direction arrows along bonds that indicate the current direction
-        arrows_per_edge: number of arrows to draw along each bond
-        arrow_scale: scaling factor for arrow lengths (w.r.t. current magnitude)
-        arrow_width: width of arrows
-        arrow_color: color of arrows
-        show_oam_indicators: whether to show orbital angular momentum indicators at plaquette centers (OAM from single-plaquette loop current sum)
-        oam_cmap: colormap for orbital angular momentum values
-        oam_vmax: max absolute value for OAM colormap; if None, derived from data
-        oam_marker_size: size of OAM indicator circles
-        show_oam_direction_arrows: whether to show circular arrows indicating OAM direction
-        oam_arrow_radius: radius of OAM circular arrows
-        oam_arrow_lw: line width of OAM circular arrows
-        oam_arrow_positive_color: color for positive OAM circular arrows
-        oam_arrow_negative_color: color for negative OAM circular arrows
-        oam_arrow_threshold: threshold for showing OAM circular arrows, relative to oam_vmax
-        frame_texts: optional list of strings to use as title text per frame; if None, uses frame index "frame i/F"
-        electric_field_vectors: optional list of 2D vectors per frame for an external electric field arrow
-        field_arrow_type: placement of the electric field arrow ("vertical" draws left, "horizontal" draws above)
-        field_arrow_label: optional label to display beside the electric field arrow
-        field_arrow_color: color for the electric field arrow and label
-        export_legend: whether to save a standalone legend PDF (legend + colorbars) alongside the animation
+        lattice_frame_obs: Observable that recorded ``densities``, ``currents``,
+            and ``plaquette_oam`` during the simulation, with ``geometry`` set.
+        out_path: Destination file path (e.g. ``"anim.mp4"`` or ``"anim.gif"``).
+        fps: Frames per second in the output animation.
+        dpi: Output resolution.
+        config: Visual-style configuration object.  All style, label, and
+            per-frame data options live here.  See `PlotConfig` for the full
+            list of fields.  When omitted a default `PlotConfig` is used.
+        export_legend: When `True`, a standalone ``<stem>_legend.pdf`` file
+            containing the legend and colorbars is saved alongside the animation
+            (colorbars are then omitted from the animation itself).
+        **kwargs: *Deprecated.*  Flat `PlotConfig` field values passed as plain
+            keyword arguments (old calling style).  A `DeprecationWarning` is
+            raised; wrap them in ``config=PlotConfig(...)`` instead.
     """
+    config = _resolve_config(config, kwargs, stacklevel=2)
     fig, ax, ctx = _create_scene(
         lattice_frame_obs=lattice_frame_obs,
-        density_cmap=density_cmap,
-        density_vmin=density_vmin,
-        density_vmax=density_vmax,
-        current_max=current_max,
-        site_marker_size=site_marker_size,
-        show_flow_arrows=show_flow_arrows,
-        arrows_per_edge=arrows_per_edge,
-        arrow_scale=arrow_scale,
-        arrow_width=arrow_width,
-        arrow_color=arrow_color,
-        show_oam_indicators=show_oam_indicators,
-        oam_cmap=oam_cmap,
-        oam_vmax=oam_vmax,
-        oam_marker_size=oam_marker_size,
-        show_oam_direction_arrows=show_oam_direction_arrows,
-        oam_arrow_radius=oam_arrow_radius,
-        oam_arrow_lw=oam_arrow_lw,
-        oam_arrow_positive_color=oam_arrow_positive_color,
-        oam_arrow_negative_color=oam_arrow_negative_color,
-        oam_arrow_threshold=oam_arrow_threshold,
-        frame_texts=frame_texts,
-        electric_field_vectors=electric_field_vectors,
-        field_arrow_type=field_arrow_type,
-        field_arrow_label=field_arrow_label,
-        field_arrow_color=field_arrow_color,
+        config=config,
         include_colorbars=not export_legend,
     )
 
@@ -817,101 +872,32 @@ def save_simulation_animation(
 def show_simulation_frame(
     lattice_frame_obs: LatticeFrameObservable,
     frame: int = 0,
-    density_cmap: str = "Greys",
-    density_vmin: float = 0.0,
-    density_vmax: float = 1.0,
-    current_max: float | None = None,
-    # Site circles size
-    site_marker_size: float = 320.0,
-    # Flow-direction arrows
-    show_flow_arrows: bool = True,
-    arrows_per_edge: int = 3,
-    arrow_scale: float = 0.55,
-    arrow_width: float = 0.04,
-    arrow_color: str = "black",
-    # OAM indicators
-    show_oam_indicators: bool = True,
-    oam_cmap: str = "RdBu",
-    oam_vmax: float | None = None,
-    oam_marker_size: float = 180.0,
-    # curl direction circular arrows
-    show_oam_direction_arrows: bool = True,
-    oam_arrow_radius: float = 0.6,
-    oam_arrow_lw: float = 1.5,
-    oam_arrow_positive_color: str = "blue",
-    oam_arrow_negative_color: str = "red",
-    # Hide arrows for small curl values
-    oam_arrow_threshold: float = 0.01,
-    # Optional per-frame text at top-left
-    frame_texts: list[str] | None = None,
-    electric_field_vectors: list[np.ndarray | None] | None = None,
-    field_arrow_type: str = "vertical",
-    field_arrow_label: str | None = None,
-    field_arrow_color: str = "green",
+    config: PlotConfig | None = None,
     show: bool = True,
+    **kwargs: Any,
 ) -> tuple[plt.Figure, plt.Axes]:
     """Render a single frame to the current figure (useful for notebooks).
 
     Parameters:
-        lattice_frame_obs: LatticeFrameObservable that recorded 'densities', 'currents', 'plaquette_oam' during the simulation and has geometry defined
-        frame: index of frame to render
-        density_cmap: colormap for site densities
-        density_vmin: min value for density colormap
-        density_vmax: max value for density colormap
-        current_max: max value for current colormap; if None, derived from data
-        site_marker_size: size of site occupation circles
-        show_flow_arrows: whether to show flow-direction arrows along bonds that indicate the current direction
-        arrows_per_edge: number of arrows to draw along each bond
-        arrow_scale: scaling factor for arrow lengths (w.r.t. current magnitude)
-        arrow_width: width of arrows
-        arrow_color: color of arrows
-        show_oam_indicators: whether to show orbital angular momentum indicators at plaquette centers (OAM from single-plaquette loop current sum)
-        oam_cmap: colormap for orbital angular momentum values
-        oam_vmax: max absolute value for OAM colormap; if None, derived from data
-        oam_marker_size: size of OAM indicator circles
-        show_oam_direction_arrows: whether to show circular arrows indicating OAM direction
-        oam_arrow_radius: radius of OAM circular arrows
-        oam_arrow_lw: line width of OAM circular arrows
-        oam_arrow_positive_color: color for positive OAM circular arrows
-        oam_arrow_negative_color: color for negative OAM circular arrows
-        oam_arrow_threshold: threshold for showing OAM circular arrows relative to oam_vmax
-        frame_texts: optional list of strings to use as title text per frame; if None, uses frame index "frame i/F"
-        electric_field_vectors: optional list of 2D vectors per frame for an external electric field arrow
-        field_arrow_type: placement of the electric field arrow ("vertical" draws left, "horizontal" draws above)
-        field_arrow_label: optional label to display beside the electric field arrow
-        field_arrow_color: color for the electric field arrow and label
-        show: whether to call plt.show(). Useful if figure needs to be saved instead.
+        lattice_frame_obs: Observable that recorded ``densities``, ``currents``,
+            and ``plaquette_oam`` during the simulation, with ``geometry`` set.
+        frame: Index of the frame to render.
+        config: Visual-style configuration object.  All style, label, and
+            per-frame data options live here.  See `PlotConfig` for the full
+            list of fields.  When omitted a default `PlotConfig` is used.
+        show: Whether to call ``plt.show()``.  Set to `False` when you intend
+            to save the figure yourself.
+        **kwargs: *Deprecated.*  Flat `PlotConfig` field values passed as plain
+            keyword arguments (old calling style).  A `DeprecationWarning` is
+            raised; wrap them in ``config=PlotConfig(...)`` instead.
 
     Returns:
-        fig, ax: the matplotlib Figure and Axes objects
+        The matplotlib `Figure` and `Axes` objects.
     """
+    config = _resolve_config(config, kwargs, stacklevel=2)
     fig, ax, ctx = _create_scene(
         lattice_frame_obs=lattice_frame_obs,
-        density_cmap=density_cmap,
-        density_vmin=density_vmin,
-        density_vmax=density_vmax,
-        current_max=current_max,
-        site_marker_size=site_marker_size,
-        show_flow_arrows=show_flow_arrows,
-        arrows_per_edge=arrows_per_edge,
-        arrow_scale=arrow_scale,
-        arrow_width=arrow_width,
-        arrow_color=arrow_color,
-        show_oam_indicators=show_oam_indicators,
-        oam_cmap=oam_cmap,
-        oam_vmax=oam_vmax,
-        oam_marker_size=oam_marker_size,
-        show_oam_direction_arrows=show_oam_direction_arrows,
-        oam_arrow_radius=oam_arrow_radius,
-        oam_arrow_lw=oam_arrow_lw,
-        oam_arrow_positive_color=oam_arrow_positive_color,
-        oam_arrow_negative_color=oam_arrow_negative_color,
-        oam_arrow_threshold=oam_arrow_threshold,
-        frame_texts=frame_texts,
-        electric_field_vectors=electric_field_vectors,
-        field_arrow_type=field_arrow_type,
-        field_arrow_label=field_arrow_label,
-        field_arrow_color=field_arrow_color,
+        config=config,
     )
 
     frame_clamped = int(np.clip(frame, 0, ctx["F"] - 1))

@@ -18,7 +18,7 @@ from .homogeneous_field_hamiltonian import (
 )
 
 from . import observables as observables
-from .plot_utils import show_simulation_frame, save_simulation_animation
+from .plot_utils import show_simulation_frame, save_simulation_animation, PlotConfig
 
 from .ohc import ohc, fourier_at_omega
 
@@ -37,5 +37,6 @@ __all__ = [
     "ohc",
     "show_simulation_frame",
     "save_simulation_animation",
+    "PlotConfig",
     "fourier_at_omega",
 ]
