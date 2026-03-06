@@ -235,6 +235,105 @@
                     <a class="function" href="#save_simulation_animation">save_simulation_animation</a>
             </li>
             <li>
+                    <a class="class" href="#PlotConfig">PlotConfig</a>
+                            <ul class="memberlist">
+                        <li>
+                                <a class="function" href="#PlotConfig.__init__">PlotConfig</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#PlotConfig.density_cmap">density_cmap</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#PlotConfig.density_vmin">density_vmin</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#PlotConfig.density_vmax">density_vmax</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#PlotConfig.current_max">current_max</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#PlotConfig.site_marker_size">site_marker_size</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#PlotConfig.show_flow_arrows">show_flow_arrows</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#PlotConfig.arrows_per_edge">arrows_per_edge</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#PlotConfig.arrow_scale">arrow_scale</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#PlotConfig.arrow_width">arrow_width</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#PlotConfig.arrow_color">arrow_color</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#PlotConfig.show_oam_indicators">show_oam_indicators</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#PlotConfig.oam_cmap">oam_cmap</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#PlotConfig.oam_vmax">oam_vmax</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#PlotConfig.oam_marker_size">oam_marker_size</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#PlotConfig.show_oam_direction_arrows">show_oam_direction_arrows</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#PlotConfig.oam_arrow_radius">oam_arrow_radius</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#PlotConfig.oam_arrow_lw">oam_arrow_lw</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#PlotConfig.oam_arrow_positive_color">oam_arrow_positive_color</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#PlotConfig.oam_arrow_negative_color">oam_arrow_negative_color</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#PlotConfig.oam_arrow_threshold">oam_arrow_threshold</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#PlotConfig.field_arrow_type">field_arrow_type</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#PlotConfig.field_arrow_label">field_arrow_label</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#PlotConfig.field_arrow_color">field_arrow_color</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#PlotConfig.frame_texts">frame_texts</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#PlotConfig.electric_field_vectors">electric_field_vectors</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#PlotConfig.legend_bond_current_label">legend_bond_current_label</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#PlotConfig.legend_site_occupation_label">legend_site_occupation_label</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#PlotConfig.legend_oam_label">legend_oam_label</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#PlotConfig.colorbar_site_occupation_label">colorbar_site_occupation_label</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#PlotConfig.colorbar_oam_label">colorbar_oam_label</a>
+                        </li>
+                </ul>
+
+            </li>
+            <li>
                     <a class="function" href="#fourier_at_omega">fourier_at_omega</a>
             </li>
     </ul>
@@ -287,7 +386,7 @@
 </span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a><span class="p">)</span>
 </span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a>
 </span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">observables</span> <span class="k">as</span> <span class="n">observables</span>
-</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">.plot_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">show_simulation_frame</span><span class="p">,</span> <span class="n">save_simulation_animation</span>
+</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">.plot_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">show_simulation_frame</span><span class="p">,</span> <span class="n">save_simulation_animation</span><span class="p">,</span> <span class="n">PlotConfig</span>
 </span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a>
 </span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">.ohc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ohc</span><span class="p">,</span> <span class="n">fourier_at_omega</span>
 </span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a>
@@ -306,8 +405,9 @@
 </span><span id="L-37"><a href="#L-37"><span class="linenos">37</span></a>    <span class="s2">&quot;ohc&quot;</span><span class="p">,</span>
 </span><span id="L-38"><a href="#L-38"><span class="linenos">38</span></a>    <span class="s2">&quot;show_simulation_frame&quot;</span><span class="p">,</span>
 </span><span id="L-39"><a href="#L-39"><span class="linenos">39</span></a>    <span class="s2">&quot;save_simulation_animation&quot;</span><span class="p">,</span>
-</span><span id="L-40"><a href="#L-40"><span class="linenos">40</span></a>    <span class="s2">&quot;fourier_at_omega&quot;</span><span class="p">,</span>
-</span><span id="L-41"><a href="#L-41"><span class="linenos">41</span></a><span class="p">]</span>
+</span><span id="L-40"><a href="#L-40"><span class="linenos">40</span></a>    <span class="s2">&quot;PlotConfig&quot;</span><span class="p">,</span>
+</span><span id="L-41"><a href="#L-41"><span class="linenos">41</span></a>    <span class="s2">&quot;fourier_at_omega&quot;</span><span class="p">,</span>
+</span><span id="L-42"><a href="#L-42"><span class="linenos">42</span></a><span class="p">]</span>
 </span></pre></div>
 
 
@@ -1636,156 +1736,70 @@ Returns:
 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">show_simulation_frame</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="n">lattice_frame_obs</span><span class="p">:</span> <span class="n"><a href="orbitronics_2d/observables.html#LatticeFrameObservable">realspace_tb.orbitronics_2d.observables.LatticeFrameObservable</a></span>,</span><span class="param">	<span class="n">frame</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>,</span><span class="param">	<span class="n">density_cmap</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;Greys&#39;</span>,</span><span class="param">	<span class="n">density_vmin</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>,</span><span class="param">	<span class="n">density_vmax</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>,</span><span class="param">	<span class="n">current_max</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">site_marker_size</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">320.0</span>,</span><span class="param">	<span class="n">show_flow_arrows</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>,</span><span class="param">	<span class="n">arrows_per_edge</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span>,</span><span class="param">	<span class="n">arrow_scale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.55</span>,</span><span class="param">	<span class="n">arrow_width</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.04</span>,</span><span class="param">	<span class="n">arrow_color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;black&#39;</span>,</span><span class="param">	<span class="n">show_oam_indicators</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>,</span><span class="param">	<span class="n">oam_cmap</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;RdBu&#39;</span>,</span><span class="param">	<span class="n">oam_vmax</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">oam_marker_size</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">180.0</span>,</span><span class="param">	<span class="n">show_oam_direction_arrows</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>,</span><span class="param">	<span class="n">oam_arrow_radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.6</span>,</span><span class="param">	<span class="n">oam_arrow_lw</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.5</span>,</span><span class="param">	<span class="n">oam_arrow_positive_color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;blue&#39;</span>,</span><span class="param">	<span class="n">oam_arrow_negative_color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;red&#39;</span>,</span><span class="param">	<span class="n">oam_arrow_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.01</span>,</span><span class="param">	<span class="n">frame_texts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">electric_field_vectors</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">field_arrow_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;vertical&#39;</span>,</span><span class="param">	<span class="n">field_arrow_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">field_arrow_color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;green&#39;</span>,</span><span class="param">	<span class="n">show</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span></span><span class="return-annotation">) -> <span class="nb">tuple</span><span class="p">[</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">Figure</span><span class="p">,</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">_axes</span><span class="o">.</span><span class="n">Axes</span><span class="p">]</span>:</span></span>
+        <span class="name">show_simulation_frame</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="n">lattice_frame_obs</span><span class="p">:</span> <span class="n"><a href="orbitronics_2d/observables.html#LatticeFrameObservable">realspace_tb.orbitronics_2d.observables.LatticeFrameObservable</a></span>,</span><span class="param">	<span class="n">frame</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>,</span><span class="param">	<span class="n">config</span><span class="p">:</span> <span class="n"><a href="#PlotConfig">PlotConfig</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">show</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>,</span><span class="param">	<span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span></span><span class="return-annotation">) -> <span class="nb">tuple</span><span class="p">[</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">Figure</span><span class="p">,</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">_axes</span><span class="o">.</span><span class="n">Axes</span><span class="p">]</span>:</span></span>
 
                 <label class="view-source-button" for="show_simulation_frame-view-source"><span>View Source</span></label>
 
     </div>
     <a class="headerlink" href="#show_simulation_frame"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="show_simulation_frame-818"><a href="#show_simulation_frame-818"><span class="linenos">818</span></a><span class="k">def</span><span class="w"> </span><span class="nf">show_simulation_frame</span><span class="p">(</span>
-</span><span id="show_simulation_frame-819"><a href="#show_simulation_frame-819"><span class="linenos">819</span></a>    <span class="n">lattice_frame_obs</span><span class="p">:</span> <span class="n">LatticeFrameObservable</span><span class="p">,</span>
-</span><span id="show_simulation_frame-820"><a href="#show_simulation_frame-820"><span class="linenos">820</span></a>    <span class="n">frame</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-</span><span id="show_simulation_frame-821"><a href="#show_simulation_frame-821"><span class="linenos">821</span></a>    <span class="n">density_cmap</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Greys&quot;</span><span class="p">,</span>
-</span><span id="show_simulation_frame-822"><a href="#show_simulation_frame-822"><span class="linenos">822</span></a>    <span class="n">density_vmin</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
-</span><span id="show_simulation_frame-823"><a href="#show_simulation_frame-823"><span class="linenos">823</span></a>    <span class="n">density_vmax</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
-</span><span id="show_simulation_frame-824"><a href="#show_simulation_frame-824"><span class="linenos">824</span></a>    <span class="n">current_max</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="show_simulation_frame-825"><a href="#show_simulation_frame-825"><span class="linenos">825</span></a>    <span class="c1"># Site circles size</span>
-</span><span id="show_simulation_frame-826"><a href="#show_simulation_frame-826"><span class="linenos">826</span></a>    <span class="n">site_marker_size</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">320.0</span><span class="p">,</span>
-</span><span id="show_simulation_frame-827"><a href="#show_simulation_frame-827"><span class="linenos">827</span></a>    <span class="c1"># Flow-direction arrows</span>
-</span><span id="show_simulation_frame-828"><a href="#show_simulation_frame-828"><span class="linenos">828</span></a>    <span class="n">show_flow_arrows</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-</span><span id="show_simulation_frame-829"><a href="#show_simulation_frame-829"><span class="linenos">829</span></a>    <span class="n">arrows_per_edge</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
-</span><span id="show_simulation_frame-830"><a href="#show_simulation_frame-830"><span class="linenos">830</span></a>    <span class="n">arrow_scale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.55</span><span class="p">,</span>
-</span><span id="show_simulation_frame-831"><a href="#show_simulation_frame-831"><span class="linenos">831</span></a>    <span class="n">arrow_width</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.04</span><span class="p">,</span>
-</span><span id="show_simulation_frame-832"><a href="#show_simulation_frame-832"><span class="linenos">832</span></a>    <span class="n">arrow_color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;black&quot;</span><span class="p">,</span>
-</span><span id="show_simulation_frame-833"><a href="#show_simulation_frame-833"><span class="linenos">833</span></a>    <span class="c1"># OAM indicators</span>
-</span><span id="show_simulation_frame-834"><a href="#show_simulation_frame-834"><span class="linenos">834</span></a>    <span class="n">show_oam_indicators</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-</span><span id="show_simulation_frame-835"><a href="#show_simulation_frame-835"><span class="linenos">835</span></a>    <span class="n">oam_cmap</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;RdBu&quot;</span><span class="p">,</span>
-</span><span id="show_simulation_frame-836"><a href="#show_simulation_frame-836"><span class="linenos">836</span></a>    <span class="n">oam_vmax</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="show_simulation_frame-837"><a href="#show_simulation_frame-837"><span class="linenos">837</span></a>    <span class="n">oam_marker_size</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">180.0</span><span class="p">,</span>
-</span><span id="show_simulation_frame-838"><a href="#show_simulation_frame-838"><span class="linenos">838</span></a>    <span class="c1"># curl direction circular arrows</span>
-</span><span id="show_simulation_frame-839"><a href="#show_simulation_frame-839"><span class="linenos">839</span></a>    <span class="n">show_oam_direction_arrows</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-</span><span id="show_simulation_frame-840"><a href="#show_simulation_frame-840"><span class="linenos">840</span></a>    <span class="n">oam_arrow_radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.6</span><span class="p">,</span>
-</span><span id="show_simulation_frame-841"><a href="#show_simulation_frame-841"><span class="linenos">841</span></a>    <span class="n">oam_arrow_lw</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.5</span><span class="p">,</span>
-</span><span id="show_simulation_frame-842"><a href="#show_simulation_frame-842"><span class="linenos">842</span></a>    <span class="n">oam_arrow_positive_color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;blue&quot;</span><span class="p">,</span>
-</span><span id="show_simulation_frame-843"><a href="#show_simulation_frame-843"><span class="linenos">843</span></a>    <span class="n">oam_arrow_negative_color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;red&quot;</span><span class="p">,</span>
-</span><span id="show_simulation_frame-844"><a href="#show_simulation_frame-844"><span class="linenos">844</span></a>    <span class="c1"># Hide arrows for small curl values</span>
-</span><span id="show_simulation_frame-845"><a href="#show_simulation_frame-845"><span class="linenos">845</span></a>    <span class="n">oam_arrow_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">,</span>
-</span><span id="show_simulation_frame-846"><a href="#show_simulation_frame-846"><span class="linenos">846</span></a>    <span class="c1"># Optional per-frame text at top-left</span>
-</span><span id="show_simulation_frame-847"><a href="#show_simulation_frame-847"><span class="linenos">847</span></a>    <span class="n">frame_texts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="show_simulation_frame-848"><a href="#show_simulation_frame-848"><span class="linenos">848</span></a>    <span class="n">electric_field_vectors</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="show_simulation_frame-849"><a href="#show_simulation_frame-849"><span class="linenos">849</span></a>    <span class="n">field_arrow_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;vertical&quot;</span><span class="p">,</span>
-</span><span id="show_simulation_frame-850"><a href="#show_simulation_frame-850"><span class="linenos">850</span></a>    <span class="n">field_arrow_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="show_simulation_frame-851"><a href="#show_simulation_frame-851"><span class="linenos">851</span></a>    <span class="n">field_arrow_color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;green&quot;</span><span class="p">,</span>
-</span><span id="show_simulation_frame-852"><a href="#show_simulation_frame-852"><span class="linenos">852</span></a>    <span class="n">show</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-</span><span id="show_simulation_frame-853"><a href="#show_simulation_frame-853"><span class="linenos">853</span></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">plt</span><span class="o">.</span><span class="n">Figure</span><span class="p">,</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">]:</span>
-</span><span id="show_simulation_frame-854"><a href="#show_simulation_frame-854"><span class="linenos">854</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Render a single frame to the current figure (useful for notebooks).</span>
-</span><span id="show_simulation_frame-855"><a href="#show_simulation_frame-855"><span class="linenos">855</span></a>
-</span><span id="show_simulation_frame-856"><a href="#show_simulation_frame-856"><span class="linenos">856</span></a><span class="sd">    Parameters:</span>
-</span><span id="show_simulation_frame-857"><a href="#show_simulation_frame-857"><span class="linenos">857</span></a><span class="sd">        lattice_frame_obs: LatticeFrameObservable that recorded &#39;densities&#39;, &#39;currents&#39;, &#39;plaquette_oam&#39; during the simulation and has geometry defined</span>
-</span><span id="show_simulation_frame-858"><a href="#show_simulation_frame-858"><span class="linenos">858</span></a><span class="sd">        frame: index of frame to render</span>
-</span><span id="show_simulation_frame-859"><a href="#show_simulation_frame-859"><span class="linenos">859</span></a><span class="sd">        density_cmap: colormap for site densities</span>
-</span><span id="show_simulation_frame-860"><a href="#show_simulation_frame-860"><span class="linenos">860</span></a><span class="sd">        density_vmin: min value for density colormap</span>
-</span><span id="show_simulation_frame-861"><a href="#show_simulation_frame-861"><span class="linenos">861</span></a><span class="sd">        density_vmax: max value for density colormap</span>
-</span><span id="show_simulation_frame-862"><a href="#show_simulation_frame-862"><span class="linenos">862</span></a><span class="sd">        current_max: max value for current colormap; if None, derived from data</span>
-</span><span id="show_simulation_frame-863"><a href="#show_simulation_frame-863"><span class="linenos">863</span></a><span class="sd">        site_marker_size: size of site occupation circles</span>
-</span><span id="show_simulation_frame-864"><a href="#show_simulation_frame-864"><span class="linenos">864</span></a><span class="sd">        show_flow_arrows: whether to show flow-direction arrows along bonds that indicate the current direction</span>
-</span><span id="show_simulation_frame-865"><a href="#show_simulation_frame-865"><span class="linenos">865</span></a><span class="sd">        arrows_per_edge: number of arrows to draw along each bond</span>
-</span><span id="show_simulation_frame-866"><a href="#show_simulation_frame-866"><span class="linenos">866</span></a><span class="sd">        arrow_scale: scaling factor for arrow lengths (w.r.t. current magnitude)</span>
-</span><span id="show_simulation_frame-867"><a href="#show_simulation_frame-867"><span class="linenos">867</span></a><span class="sd">        arrow_width: width of arrows</span>
-</span><span id="show_simulation_frame-868"><a href="#show_simulation_frame-868"><span class="linenos">868</span></a><span class="sd">        arrow_color: color of arrows</span>
-</span><span id="show_simulation_frame-869"><a href="#show_simulation_frame-869"><span class="linenos">869</span></a><span class="sd">        show_oam_indicators: whether to show orbital angular momentum indicators at plaquette centers (OAM from single-plaquette loop current sum)</span>
-</span><span id="show_simulation_frame-870"><a href="#show_simulation_frame-870"><span class="linenos">870</span></a><span class="sd">        oam_cmap: colormap for orbital angular momentum values</span>
-</span><span id="show_simulation_frame-871"><a href="#show_simulation_frame-871"><span class="linenos">871</span></a><span class="sd">        oam_vmax: max absolute value for OAM colormap; if None, derived from data</span>
-</span><span id="show_simulation_frame-872"><a href="#show_simulation_frame-872"><span class="linenos">872</span></a><span class="sd">        oam_marker_size: size of OAM indicator circles</span>
-</span><span id="show_simulation_frame-873"><a href="#show_simulation_frame-873"><span class="linenos">873</span></a><span class="sd">        show_oam_direction_arrows: whether to show circular arrows indicating OAM direction</span>
-</span><span id="show_simulation_frame-874"><a href="#show_simulation_frame-874"><span class="linenos">874</span></a><span class="sd">        oam_arrow_radius: radius of OAM circular arrows</span>
-</span><span id="show_simulation_frame-875"><a href="#show_simulation_frame-875"><span class="linenos">875</span></a><span class="sd">        oam_arrow_lw: line width of OAM circular arrows</span>
-</span><span id="show_simulation_frame-876"><a href="#show_simulation_frame-876"><span class="linenos">876</span></a><span class="sd">        oam_arrow_positive_color: color for positive OAM circular arrows</span>
-</span><span id="show_simulation_frame-877"><a href="#show_simulation_frame-877"><span class="linenos">877</span></a><span class="sd">        oam_arrow_negative_color: color for negative OAM circular arrows</span>
-</span><span id="show_simulation_frame-878"><a href="#show_simulation_frame-878"><span class="linenos">878</span></a><span class="sd">        oam_arrow_threshold: threshold for showing OAM circular arrows relative to oam_vmax</span>
-</span><span id="show_simulation_frame-879"><a href="#show_simulation_frame-879"><span class="linenos">879</span></a><span class="sd">        frame_texts: optional list of strings to use as title text per frame; if None, uses frame index &quot;frame i/F&quot;</span>
-</span><span id="show_simulation_frame-880"><a href="#show_simulation_frame-880"><span class="linenos">880</span></a><span class="sd">        electric_field_vectors: optional list of 2D vectors per frame for an external electric field arrow</span>
-</span><span id="show_simulation_frame-881"><a href="#show_simulation_frame-881"><span class="linenos">881</span></a><span class="sd">        field_arrow_type: placement of the electric field arrow (&quot;vertical&quot; draws left, &quot;horizontal&quot; draws above)</span>
-</span><span id="show_simulation_frame-882"><a href="#show_simulation_frame-882"><span class="linenos">882</span></a><span class="sd">        field_arrow_label: optional label to display beside the electric field arrow</span>
-</span><span id="show_simulation_frame-883"><a href="#show_simulation_frame-883"><span class="linenos">883</span></a><span class="sd">        field_arrow_color: color for the electric field arrow and label</span>
-</span><span id="show_simulation_frame-884"><a href="#show_simulation_frame-884"><span class="linenos">884</span></a><span class="sd">        show: whether to call plt.show(). Useful if figure needs to be saved instead.</span>
-</span><span id="show_simulation_frame-885"><a href="#show_simulation_frame-885"><span class="linenos">885</span></a>
-</span><span id="show_simulation_frame-886"><a href="#show_simulation_frame-886"><span class="linenos">886</span></a><span class="sd">    Returns:</span>
-</span><span id="show_simulation_frame-887"><a href="#show_simulation_frame-887"><span class="linenos">887</span></a><span class="sd">        fig, ax: the matplotlib Figure and Axes objects</span>
-</span><span id="show_simulation_frame-888"><a href="#show_simulation_frame-888"><span class="linenos">888</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="show_simulation_frame-889"><a href="#show_simulation_frame-889"><span class="linenos">889</span></a>    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">ctx</span> <span class="o">=</span> <span class="n">_create_scene</span><span class="p">(</span>
-</span><span id="show_simulation_frame-890"><a href="#show_simulation_frame-890"><span class="linenos">890</span></a>        <span class="n">lattice_frame_obs</span><span class="o">=</span><span class="n">lattice_frame_obs</span><span class="p">,</span>
-</span><span id="show_simulation_frame-891"><a href="#show_simulation_frame-891"><span class="linenos">891</span></a>        <span class="n">density_cmap</span><span class="o">=</span><span class="n">density_cmap</span><span class="p">,</span>
-</span><span id="show_simulation_frame-892"><a href="#show_simulation_frame-892"><span class="linenos">892</span></a>        <span class="n">density_vmin</span><span class="o">=</span><span class="n">density_vmin</span><span class="p">,</span>
-</span><span id="show_simulation_frame-893"><a href="#show_simulation_frame-893"><span class="linenos">893</span></a>        <span class="n">density_vmax</span><span class="o">=</span><span class="n">density_vmax</span><span class="p">,</span>
-</span><span id="show_simulation_frame-894"><a href="#show_simulation_frame-894"><span class="linenos">894</span></a>        <span class="n">current_max</span><span class="o">=</span><span class="n">current_max</span><span class="p">,</span>
-</span><span id="show_simulation_frame-895"><a href="#show_simulation_frame-895"><span class="linenos">895</span></a>        <span class="n">site_marker_size</span><span class="o">=</span><span class="n">site_marker_size</span><span class="p">,</span>
-</span><span id="show_simulation_frame-896"><a href="#show_simulation_frame-896"><span class="linenos">896</span></a>        <span class="n">show_flow_arrows</span><span class="o">=</span><span class="n">show_flow_arrows</span><span class="p">,</span>
-</span><span id="show_simulation_frame-897"><a href="#show_simulation_frame-897"><span class="linenos">897</span></a>        <span class="n">arrows_per_edge</span><span class="o">=</span><span class="n">arrows_per_edge</span><span class="p">,</span>
-</span><span id="show_simulation_frame-898"><a href="#show_simulation_frame-898"><span class="linenos">898</span></a>        <span class="n">arrow_scale</span><span class="o">=</span><span class="n">arrow_scale</span><span class="p">,</span>
-</span><span id="show_simulation_frame-899"><a href="#show_simulation_frame-899"><span class="linenos">899</span></a>        <span class="n">arrow_width</span><span class="o">=</span><span class="n">arrow_width</span><span class="p">,</span>
-</span><span id="show_simulation_frame-900"><a href="#show_simulation_frame-900"><span class="linenos">900</span></a>        <span class="n">arrow_color</span><span class="o">=</span><span class="n">arrow_color</span><span class="p">,</span>
-</span><span id="show_simulation_frame-901"><a href="#show_simulation_frame-901"><span class="linenos">901</span></a>        <span class="n">show_oam_indicators</span><span class="o">=</span><span class="n">show_oam_indicators</span><span class="p">,</span>
-</span><span id="show_simulation_frame-902"><a href="#show_simulation_frame-902"><span class="linenos">902</span></a>        <span class="n">oam_cmap</span><span class="o">=</span><span class="n">oam_cmap</span><span class="p">,</span>
-</span><span id="show_simulation_frame-903"><a href="#show_simulation_frame-903"><span class="linenos">903</span></a>        <span class="n">oam_vmax</span><span class="o">=</span><span class="n">oam_vmax</span><span class="p">,</span>
-</span><span id="show_simulation_frame-904"><a href="#show_simulation_frame-904"><span class="linenos">904</span></a>        <span class="n">oam_marker_size</span><span class="o">=</span><span class="n">oam_marker_size</span><span class="p">,</span>
-</span><span id="show_simulation_frame-905"><a href="#show_simulation_frame-905"><span class="linenos">905</span></a>        <span class="n">show_oam_direction_arrows</span><span class="o">=</span><span class="n">show_oam_direction_arrows</span><span class="p">,</span>
-</span><span id="show_simulation_frame-906"><a href="#show_simulation_frame-906"><span class="linenos">906</span></a>        <span class="n">oam_arrow_radius</span><span class="o">=</span><span class="n">oam_arrow_radius</span><span class="p">,</span>
-</span><span id="show_simulation_frame-907"><a href="#show_simulation_frame-907"><span class="linenos">907</span></a>        <span class="n">oam_arrow_lw</span><span class="o">=</span><span class="n">oam_arrow_lw</span><span class="p">,</span>
-</span><span id="show_simulation_frame-908"><a href="#show_simulation_frame-908"><span class="linenos">908</span></a>        <span class="n">oam_arrow_positive_color</span><span class="o">=</span><span class="n">oam_arrow_positive_color</span><span class="p">,</span>
-</span><span id="show_simulation_frame-909"><a href="#show_simulation_frame-909"><span class="linenos">909</span></a>        <span class="n">oam_arrow_negative_color</span><span class="o">=</span><span class="n">oam_arrow_negative_color</span><span class="p">,</span>
-</span><span id="show_simulation_frame-910"><a href="#show_simulation_frame-910"><span class="linenos">910</span></a>        <span class="n">oam_arrow_threshold</span><span class="o">=</span><span class="n">oam_arrow_threshold</span><span class="p">,</span>
-</span><span id="show_simulation_frame-911"><a href="#show_simulation_frame-911"><span class="linenos">911</span></a>        <span class="n">frame_texts</span><span class="o">=</span><span class="n">frame_texts</span><span class="p">,</span>
-</span><span id="show_simulation_frame-912"><a href="#show_simulation_frame-912"><span class="linenos">912</span></a>        <span class="n">electric_field_vectors</span><span class="o">=</span><span class="n">electric_field_vectors</span><span class="p">,</span>
-</span><span id="show_simulation_frame-913"><a href="#show_simulation_frame-913"><span class="linenos">913</span></a>        <span class="n">field_arrow_type</span><span class="o">=</span><span class="n">field_arrow_type</span><span class="p">,</span>
-</span><span id="show_simulation_frame-914"><a href="#show_simulation_frame-914"><span class="linenos">914</span></a>        <span class="n">field_arrow_label</span><span class="o">=</span><span class="n">field_arrow_label</span><span class="p">,</span>
-</span><span id="show_simulation_frame-915"><a href="#show_simulation_frame-915"><span class="linenos">915</span></a>        <span class="n">field_arrow_color</span><span class="o">=</span><span class="n">field_arrow_color</span><span class="p">,</span>
-</span><span id="show_simulation_frame-916"><a href="#show_simulation_frame-916"><span class="linenos">916</span></a>    <span class="p">)</span>
-</span><span id="show_simulation_frame-917"><a href="#show_simulation_frame-917"><span class="linenos">917</span></a>
-</span><span id="show_simulation_frame-918"><a href="#show_simulation_frame-918"><span class="linenos">918</span></a>    <span class="n">frame_clamped</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">ctx</span><span class="p">[</span><span class="s2">&quot;F&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
-</span><span id="show_simulation_frame-919"><a href="#show_simulation_frame-919"><span class="linenos">919</span></a>    <span class="n">_update_scene</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">frame_clamped</span><span class="p">)</span>
-</span><span id="show_simulation_frame-920"><a href="#show_simulation_frame-920"><span class="linenos">920</span></a>
-</span><span id="show_simulation_frame-921"><a href="#show_simulation_frame-921"><span class="linenos">921</span></a>    <span class="k">if</span> <span class="n">show</span><span class="p">:</span>
-</span><span id="show_simulation_frame-922"><a href="#show_simulation_frame-922"><span class="linenos">922</span></a>        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</span><span id="show_simulation_frame-923"><a href="#show_simulation_frame-923"><span class="linenos">923</span></a>
-</span><span id="show_simulation_frame-924"><a href="#show_simulation_frame-924"><span class="linenos">924</span></a>    <span class="k">return</span> <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="show_simulation_frame-873"><a href="#show_simulation_frame-873"><span class="linenos">873</span></a><span class="k">def</span><span class="w"> </span><span class="nf">show_simulation_frame</span><span class="p">(</span>
+</span><span id="show_simulation_frame-874"><a href="#show_simulation_frame-874"><span class="linenos">874</span></a>    <span class="n">lattice_frame_obs</span><span class="p">:</span> <span class="n">LatticeFrameObservable</span><span class="p">,</span>
+</span><span id="show_simulation_frame-875"><a href="#show_simulation_frame-875"><span class="linenos">875</span></a>    <span class="n">frame</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+</span><span id="show_simulation_frame-876"><a href="#show_simulation_frame-876"><span class="linenos">876</span></a>    <span class="n">config</span><span class="p">:</span> <span class="n">PlotConfig</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="show_simulation_frame-877"><a href="#show_simulation_frame-877"><span class="linenos">877</span></a>    <span class="n">show</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+</span><span id="show_simulation_frame-878"><a href="#show_simulation_frame-878"><span class="linenos">878</span></a>    <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+</span><span id="show_simulation_frame-879"><a href="#show_simulation_frame-879"><span class="linenos">879</span></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">plt</span><span class="o">.</span><span class="n">Figure</span><span class="p">,</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">]:</span>
+</span><span id="show_simulation_frame-880"><a href="#show_simulation_frame-880"><span class="linenos">880</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Render a single frame to the current figure (useful for notebooks).</span>
+</span><span id="show_simulation_frame-881"><a href="#show_simulation_frame-881"><span class="linenos">881</span></a>
+</span><span id="show_simulation_frame-882"><a href="#show_simulation_frame-882"><span class="linenos">882</span></a><span class="sd">    Parameters:</span>
+</span><span id="show_simulation_frame-883"><a href="#show_simulation_frame-883"><span class="linenos">883</span></a><span class="sd">        lattice_frame_obs: Observable that recorded ``densities``, ``currents``,</span>
+</span><span id="show_simulation_frame-884"><a href="#show_simulation_frame-884"><span class="linenos">884</span></a><span class="sd">            and ``plaquette_oam`` during the simulation, with ``geometry`` set.</span>
+</span><span id="show_simulation_frame-885"><a href="#show_simulation_frame-885"><span class="linenos">885</span></a><span class="sd">        frame: Index of the frame to render.</span>
+</span><span id="show_simulation_frame-886"><a href="#show_simulation_frame-886"><span class="linenos">886</span></a><span class="sd">        config: Visual-style configuration object.  All style, label, and</span>
+</span><span id="show_simulation_frame-887"><a href="#show_simulation_frame-887"><span class="linenos">887</span></a><span class="sd">            per-frame data options live here.  See `PlotConfig` for the full</span>
+</span><span id="show_simulation_frame-888"><a href="#show_simulation_frame-888"><span class="linenos">888</span></a><span class="sd">            list of fields.  When omitted a default `PlotConfig` is used.</span>
+</span><span id="show_simulation_frame-889"><a href="#show_simulation_frame-889"><span class="linenos">889</span></a><span class="sd">        show: Whether to call ``plt.show()``.  Set to `False` when you intend</span>
+</span><span id="show_simulation_frame-890"><a href="#show_simulation_frame-890"><span class="linenos">890</span></a><span class="sd">            to save the figure yourself.</span>
+</span><span id="show_simulation_frame-891"><a href="#show_simulation_frame-891"><span class="linenos">891</span></a><span class="sd">        **kwargs: *Deprecated.*  Flat `PlotConfig` field values passed as plain</span>
+</span><span id="show_simulation_frame-892"><a href="#show_simulation_frame-892"><span class="linenos">892</span></a><span class="sd">            keyword arguments (old calling style).  A `DeprecationWarning` is</span>
+</span><span id="show_simulation_frame-893"><a href="#show_simulation_frame-893"><span class="linenos">893</span></a><span class="sd">            raised; wrap them in ``config=PlotConfig(...)`` instead.</span>
+</span><span id="show_simulation_frame-894"><a href="#show_simulation_frame-894"><span class="linenos">894</span></a>
+</span><span id="show_simulation_frame-895"><a href="#show_simulation_frame-895"><span class="linenos">895</span></a><span class="sd">    Returns:</span>
+</span><span id="show_simulation_frame-896"><a href="#show_simulation_frame-896"><span class="linenos">896</span></a><span class="sd">        The matplotlib `Figure` and `Axes` objects.</span>
+</span><span id="show_simulation_frame-897"><a href="#show_simulation_frame-897"><span class="linenos">897</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="show_simulation_frame-898"><a href="#show_simulation_frame-898"><span class="linenos">898</span></a>    <span class="n">config</span> <span class="o">=</span> <span class="n">_resolve_config</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</span><span id="show_simulation_frame-899"><a href="#show_simulation_frame-899"><span class="linenos">899</span></a>    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">ctx</span> <span class="o">=</span> <span class="n">_create_scene</span><span class="p">(</span>
+</span><span id="show_simulation_frame-900"><a href="#show_simulation_frame-900"><span class="linenos">900</span></a>        <span class="n">lattice_frame_obs</span><span class="o">=</span><span class="n">lattice_frame_obs</span><span class="p">,</span>
+</span><span id="show_simulation_frame-901"><a href="#show_simulation_frame-901"><span class="linenos">901</span></a>        <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
+</span><span id="show_simulation_frame-902"><a href="#show_simulation_frame-902"><span class="linenos">902</span></a>    <span class="p">)</span>
+</span><span id="show_simulation_frame-903"><a href="#show_simulation_frame-903"><span class="linenos">903</span></a>
+</span><span id="show_simulation_frame-904"><a href="#show_simulation_frame-904"><span class="linenos">904</span></a>    <span class="n">frame_clamped</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">ctx</span><span class="p">[</span><span class="s2">&quot;F&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+</span><span id="show_simulation_frame-905"><a href="#show_simulation_frame-905"><span class="linenos">905</span></a>    <span class="n">_update_scene</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">frame_clamped</span><span class="p">)</span>
+</span><span id="show_simulation_frame-906"><a href="#show_simulation_frame-906"><span class="linenos">906</span></a>
+</span><span id="show_simulation_frame-907"><a href="#show_simulation_frame-907"><span class="linenos">907</span></a>    <span class="k">if</span> <span class="n">show</span><span class="p">:</span>
+</span><span id="show_simulation_frame-908"><a href="#show_simulation_frame-908"><span class="linenos">908</span></a>        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span><span id="show_simulation_frame-909"><a href="#show_simulation_frame-909"><span class="linenos">909</span></a>
+</span><span id="show_simulation_frame-910"><a href="#show_simulation_frame-910"><span class="linenos">910</span></a>    <span class="k">return</span> <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span>
 </span></pre></div>
 
 
             <div class="docstring"><p>Render a single frame to the current figure (useful for notebooks).</p>
 
 <p>Parameters:
-    lattice_frame_obs: LatticeFrameObservable that recorded 'densities', 'currents', 'plaquette_oam' during the simulation and has geometry defined
-    frame: index of frame to render
-    density_cmap: colormap for site densities
-    density_vmin: min value for density colormap
-    density_vmax: max value for density colormap
-    current_max: max value for current colormap; if None, derived from data
-    site_marker_size: size of site occupation circles
-    show_flow_arrows: whether to show flow-direction arrows along bonds that indicate the current direction
-    arrows_per_edge: number of arrows to draw along each bond
-    arrow_scale: scaling factor for arrow lengths (w.r.t. current magnitude)
-    arrow_width: width of arrows
-    arrow_color: color of arrows
-    show_oam_indicators: whether to show orbital angular momentum indicators at plaquette centers (OAM from single-plaquette loop current sum)
-    oam_cmap: colormap for orbital angular momentum values
-    oam_vmax: max absolute value for OAM colormap; if None, derived from data
-    oam_marker_size: size of OAM indicator circles
-    show_oam_direction_arrows: whether to show circular arrows indicating OAM direction
-    oam_arrow_radius: radius of OAM circular arrows
-    oam_arrow_lw: line width of OAM circular arrows
-    oam_arrow_positive_color: color for positive OAM circular arrows
-    oam_arrow_negative_color: color for negative OAM circular arrows
-    oam_arrow_threshold: threshold for showing OAM circular arrows relative to oam_vmax
-    frame_texts: optional list of strings to use as title text per frame; if None, uses frame index "frame i/F"
-    electric_field_vectors: optional list of 2D vectors per frame for an external electric field arrow
-    field_arrow_type: placement of the electric field arrow ("vertical" draws left, "horizontal" draws above)
-    field_arrow_label: optional label to display beside the electric field arrow
-    field_arrow_color: color for the electric field arrow and label
-    show: whether to call plt.show(). Useful if figure needs to be saved instead.</p>
+    lattice_frame_obs: Observable that recorded <code>densities</code>, <code>currents</code>,
+        and <code>plaquette_oam</code> during the simulation, with <code>geometry</code> set.
+    frame: Index of the frame to render.
+    config: Visual-style configuration object.  All style, label, and
+        per-frame data options live here.  See <code><a href="#PlotConfig">PlotConfig</a></code> for the full
+        list of fields.  When omitted a default <code><a href="#PlotConfig">PlotConfig</a></code> is used.
+    show: Whether to call <code>plt.show()</code>.  Set to <code>False</code> when you intend
+        to save the figure yourself.
+    **kwargs: <em>Deprecated.</em>  Flat <code><a href="#PlotConfig">PlotConfig</a></code> field values passed as plain
+        keyword arguments (old calling style).  A <code>DeprecationWarning</code> is
+        raised; wrap them in <code>config=PlotConfig(...)</code> instead.</p>
 
 <p>Returns:
-    fig, ax: the matplotlib Figure and Axes objects</p>
+    The matplotlib <code>Figure</code> and <code>Axes</code> objects.</p>
 </div>
 
 
@@ -1795,210 +1809,652 @@ Returns:
 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">save_simulation_animation</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="n">lattice_frame_obs</span><span class="p">:</span> <span class="n"><a href="orbitronics_2d/observables.html#LatticeFrameObservable">realspace_tb.orbitronics_2d.observables.LatticeFrameObservable</a></span>,</span><span class="param">	<span class="n">out_path</span><span class="p">:</span> <span class="nb">str</span>,</span><span class="param">	<span class="n">fps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span>,</span><span class="param">	<span class="n">dpi</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">150</span>,</span><span class="param">	<span class="n">density_cmap</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;Greys&#39;</span>,</span><span class="param">	<span class="n">density_vmin</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>,</span><span class="param">	<span class="n">density_vmax</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>,</span><span class="param">	<span class="n">current_max</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">site_marker_size</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">320.0</span>,</span><span class="param">	<span class="n">show_flow_arrows</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>,</span><span class="param">	<span class="n">arrows_per_edge</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span>,</span><span class="param">	<span class="n">arrow_scale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.55</span>,</span><span class="param">	<span class="n">arrow_width</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.04</span>,</span><span class="param">	<span class="n">arrow_color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;black&#39;</span>,</span><span class="param">	<span class="n">show_oam_indicators</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>,</span><span class="param">	<span class="n">oam_cmap</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;RdBu&#39;</span>,</span><span class="param">	<span class="n">oam_vmax</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">oam_marker_size</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">180.0</span>,</span><span class="param">	<span class="n">show_oam_direction_arrows</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>,</span><span class="param">	<span class="n">oam_arrow_radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.6</span>,</span><span class="param">	<span class="n">oam_arrow_lw</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.5</span>,</span><span class="param">	<span class="n">oam_arrow_positive_color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;blue&#39;</span>,</span><span class="param">	<span class="n">oam_arrow_negative_color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;red&#39;</span>,</span><span class="param">	<span class="n">oam_arrow_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.01</span>,</span><span class="param">	<span class="n">frame_texts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">electric_field_vectors</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">field_arrow_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;vertical&#39;</span>,</span><span class="param">	<span class="n">field_arrow_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">field_arrow_color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;green&#39;</span>,</span><span class="param">	<span class="n">export_legend</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span></span><span class="return-annotation">) -> <span class="kc">None</span>:</span></span>
+        <span class="name">save_simulation_animation</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="n">lattice_frame_obs</span><span class="p">:</span> <span class="n"><a href="orbitronics_2d/observables.html#LatticeFrameObservable">realspace_tb.orbitronics_2d.observables.LatticeFrameObservable</a></span>,</span><span class="param">	<span class="n">out_path</span><span class="p">:</span> <span class="nb">str</span>,</span><span class="param">	<span class="n">fps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span>,</span><span class="param">	<span class="n">dpi</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">150</span>,</span><span class="param">	<span class="n">config</span><span class="p">:</span> <span class="n"><a href="#PlotConfig">PlotConfig</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">export_legend</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>,</span><span class="param">	<span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span></span><span class="return-annotation">) -> <span class="kc">None</span>:</span></span>
 
                 <label class="view-source-button" for="save_simulation_animation-view-source"><span>View Source</span></label>
 
     </div>
     <a class="headerlink" href="#save_simulation_animation"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="save_simulation_animation-657"><a href="#save_simulation_animation-657"><span class="linenos">657</span></a><span class="k">def</span><span class="w"> </span><span class="nf">save_simulation_animation</span><span class="p">(</span>
-</span><span id="save_simulation_animation-658"><a href="#save_simulation_animation-658"><span class="linenos">658</span></a>    <span class="n">lattice_frame_obs</span><span class="p">:</span> <span class="n">LatticeFrameObservable</span><span class="p">,</span>
-</span><span id="save_simulation_animation-659"><a href="#save_simulation_animation-659"><span class="linenos">659</span></a>    <span class="n">out_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-</span><span id="save_simulation_animation-660"><a href="#save_simulation_animation-660"><span class="linenos">660</span></a>    <span class="n">fps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
-</span><span id="save_simulation_animation-661"><a href="#save_simulation_animation-661"><span class="linenos">661</span></a>    <span class="n">dpi</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">150</span><span class="p">,</span>
-</span><span id="save_simulation_animation-662"><a href="#save_simulation_animation-662"><span class="linenos">662</span></a>    <span class="n">density_cmap</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Greys&quot;</span><span class="p">,</span>
-</span><span id="save_simulation_animation-663"><a href="#save_simulation_animation-663"><span class="linenos">663</span></a>    <span class="n">density_vmin</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
-</span><span id="save_simulation_animation-664"><a href="#save_simulation_animation-664"><span class="linenos">664</span></a>    <span class="n">density_vmax</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
-</span><span id="save_simulation_animation-665"><a href="#save_simulation_animation-665"><span class="linenos">665</span></a>    <span class="n">current_max</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="save_simulation_animation-666"><a href="#save_simulation_animation-666"><span class="linenos">666</span></a>    <span class="c1"># Site circles size</span>
-</span><span id="save_simulation_animation-667"><a href="#save_simulation_animation-667"><span class="linenos">667</span></a>    <span class="n">site_marker_size</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">320.0</span><span class="p">,</span>
-</span><span id="save_simulation_animation-668"><a href="#save_simulation_animation-668"><span class="linenos">668</span></a>    <span class="c1"># Flow-direction arrows</span>
-</span><span id="save_simulation_animation-669"><a href="#save_simulation_animation-669"><span class="linenos">669</span></a>    <span class="n">show_flow_arrows</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-</span><span id="save_simulation_animation-670"><a href="#save_simulation_animation-670"><span class="linenos">670</span></a>    <span class="n">arrows_per_edge</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
-</span><span id="save_simulation_animation-671"><a href="#save_simulation_animation-671"><span class="linenos">671</span></a>    <span class="n">arrow_scale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.55</span><span class="p">,</span>
-</span><span id="save_simulation_animation-672"><a href="#save_simulation_animation-672"><span class="linenos">672</span></a>    <span class="n">arrow_width</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.04</span><span class="p">,</span>
-</span><span id="save_simulation_animation-673"><a href="#save_simulation_animation-673"><span class="linenos">673</span></a>    <span class="n">arrow_color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;black&quot;</span><span class="p">,</span>
-</span><span id="save_simulation_animation-674"><a href="#save_simulation_animation-674"><span class="linenos">674</span></a>    <span class="c1"># OAM indicators</span>
-</span><span id="save_simulation_animation-675"><a href="#save_simulation_animation-675"><span class="linenos">675</span></a>    <span class="n">show_oam_indicators</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-</span><span id="save_simulation_animation-676"><a href="#save_simulation_animation-676"><span class="linenos">676</span></a>    <span class="n">oam_cmap</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;RdBu&quot;</span><span class="p">,</span>
-</span><span id="save_simulation_animation-677"><a href="#save_simulation_animation-677"><span class="linenos">677</span></a>    <span class="n">oam_vmax</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="save_simulation_animation-678"><a href="#save_simulation_animation-678"><span class="linenos">678</span></a>    <span class="n">oam_marker_size</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">180.0</span><span class="p">,</span>
-</span><span id="save_simulation_animation-679"><a href="#save_simulation_animation-679"><span class="linenos">679</span></a>    <span class="c1"># curl direction circular arrows</span>
-</span><span id="save_simulation_animation-680"><a href="#save_simulation_animation-680"><span class="linenos">680</span></a>    <span class="n">show_oam_direction_arrows</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-</span><span id="save_simulation_animation-681"><a href="#save_simulation_animation-681"><span class="linenos">681</span></a>    <span class="n">oam_arrow_radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.6</span><span class="p">,</span>
-</span><span id="save_simulation_animation-682"><a href="#save_simulation_animation-682"><span class="linenos">682</span></a>    <span class="n">oam_arrow_lw</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.5</span><span class="p">,</span>
-</span><span id="save_simulation_animation-683"><a href="#save_simulation_animation-683"><span class="linenos">683</span></a>    <span class="n">oam_arrow_positive_color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;blue&quot;</span><span class="p">,</span>
-</span><span id="save_simulation_animation-684"><a href="#save_simulation_animation-684"><span class="linenos">684</span></a>    <span class="n">oam_arrow_negative_color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;red&quot;</span><span class="p">,</span>
-</span><span id="save_simulation_animation-685"><a href="#save_simulation_animation-685"><span class="linenos">685</span></a>    <span class="c1"># Hide arrows for small curl values</span>
-</span><span id="save_simulation_animation-686"><a href="#save_simulation_animation-686"><span class="linenos">686</span></a>    <span class="n">oam_arrow_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">,</span>
-</span><span id="save_simulation_animation-687"><a href="#save_simulation_animation-687"><span class="linenos">687</span></a>    <span class="c1"># Optional per-frame text at top-left</span>
-</span><span id="save_simulation_animation-688"><a href="#save_simulation_animation-688"><span class="linenos">688</span></a>    <span class="n">frame_texts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="save_simulation_animation-689"><a href="#save_simulation_animation-689"><span class="linenos">689</span></a>    <span class="n">electric_field_vectors</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="save_simulation_animation-690"><a href="#save_simulation_animation-690"><span class="linenos">690</span></a>    <span class="n">field_arrow_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;vertical&quot;</span><span class="p">,</span>
-</span><span id="save_simulation_animation-691"><a href="#save_simulation_animation-691"><span class="linenos">691</span></a>    <span class="n">field_arrow_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="save_simulation_animation-692"><a href="#save_simulation_animation-692"><span class="linenos">692</span></a>    <span class="n">field_arrow_color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;green&quot;</span><span class="p">,</span>
-</span><span id="save_simulation_animation-693"><a href="#save_simulation_animation-693"><span class="linenos">693</span></a>    <span class="n">export_legend</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-</span><span id="save_simulation_animation-694"><a href="#save_simulation_animation-694"><span class="linenos">694</span></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="save_simulation_animation-695"><a href="#save_simulation_animation-695"><span class="linenos">695</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Save an animation visualizing onsite densities and bond currents over frames.</span>
-</span><span id="save_simulation_animation-696"><a href="#save_simulation_animation-696"><span class="linenos">696</span></a>
-</span><span id="save_simulation_animation-697"><a href="#save_simulation_animation-697"><span class="linenos">697</span></a><span class="sd">    Parameters:</span>
-</span><span id="save_simulation_animation-698"><a href="#save_simulation_animation-698"><span class="linenos">698</span></a><span class="sd">        lattice_frame_obs: LatticeFrameObservable that recorded &#39;densities&#39;, &#39;currents&#39;, &#39;plaquette_oam&#39; during the simulation and has geometry defined</span>
-</span><span id="save_simulation_animation-699"><a href="#save_simulation_animation-699"><span class="linenos">699</span></a><span class="sd">        out_path: output file (e.g., mp4 or gif)</span>
-</span><span id="save_simulation_animation-700"><a href="#save_simulation_animation-700"><span class="linenos">700</span></a><span class="sd">        fps: frames per second in output animation</span>
-</span><span id="save_simulation_animation-701"><a href="#save_simulation_animation-701"><span class="linenos">701</span></a><span class="sd">        dpi: resolution of output animation</span>
-</span><span id="save_simulation_animation-702"><a href="#save_simulation_animation-702"><span class="linenos">702</span></a><span class="sd">        density_cmap: colormap for site densities</span>
-</span><span id="save_simulation_animation-703"><a href="#save_simulation_animation-703"><span class="linenos">703</span></a><span class="sd">        density_vmin: min value for density colormap</span>
-</span><span id="save_simulation_animation-704"><a href="#save_simulation_animation-704"><span class="linenos">704</span></a><span class="sd">        density_vmax: max value for density colormap</span>
-</span><span id="save_simulation_animation-705"><a href="#save_simulation_animation-705"><span class="linenos">705</span></a><span class="sd">        current_max: max value for current colormap; if None, derived from data</span>
-</span><span id="save_simulation_animation-706"><a href="#save_simulation_animation-706"><span class="linenos">706</span></a><span class="sd">        site_marker_size: size of site occupation circles</span>
-</span><span id="save_simulation_animation-707"><a href="#save_simulation_animation-707"><span class="linenos">707</span></a><span class="sd">        show_flow_arrows: whether to show flow-direction arrows along bonds that indicate the current direction</span>
-</span><span id="save_simulation_animation-708"><a href="#save_simulation_animation-708"><span class="linenos">708</span></a><span class="sd">        arrows_per_edge: number of arrows to draw along each bond</span>
-</span><span id="save_simulation_animation-709"><a href="#save_simulation_animation-709"><span class="linenos">709</span></a><span class="sd">        arrow_scale: scaling factor for arrow lengths (w.r.t. current magnitude)</span>
-</span><span id="save_simulation_animation-710"><a href="#save_simulation_animation-710"><span class="linenos">710</span></a><span class="sd">        arrow_width: width of arrows</span>
-</span><span id="save_simulation_animation-711"><a href="#save_simulation_animation-711"><span class="linenos">711</span></a><span class="sd">        arrow_color: color of arrows</span>
-</span><span id="save_simulation_animation-712"><a href="#save_simulation_animation-712"><span class="linenos">712</span></a><span class="sd">        show_oam_indicators: whether to show orbital angular momentum indicators at plaquette centers (OAM from single-plaquette loop current sum)</span>
-</span><span id="save_simulation_animation-713"><a href="#save_simulation_animation-713"><span class="linenos">713</span></a><span class="sd">        oam_cmap: colormap for orbital angular momentum values</span>
-</span><span id="save_simulation_animation-714"><a href="#save_simulation_animation-714"><span class="linenos">714</span></a><span class="sd">        oam_vmax: max absolute value for OAM colormap; if None, derived from data</span>
-</span><span id="save_simulation_animation-715"><a href="#save_simulation_animation-715"><span class="linenos">715</span></a><span class="sd">        oam_marker_size: size of OAM indicator circles</span>
-</span><span id="save_simulation_animation-716"><a href="#save_simulation_animation-716"><span class="linenos">716</span></a><span class="sd">        show_oam_direction_arrows: whether to show circular arrows indicating OAM direction</span>
-</span><span id="save_simulation_animation-717"><a href="#save_simulation_animation-717"><span class="linenos">717</span></a><span class="sd">        oam_arrow_radius: radius of OAM circular arrows</span>
-</span><span id="save_simulation_animation-718"><a href="#save_simulation_animation-718"><span class="linenos">718</span></a><span class="sd">        oam_arrow_lw: line width of OAM circular arrows</span>
-</span><span id="save_simulation_animation-719"><a href="#save_simulation_animation-719"><span class="linenos">719</span></a><span class="sd">        oam_arrow_positive_color: color for positive OAM circular arrows</span>
-</span><span id="save_simulation_animation-720"><a href="#save_simulation_animation-720"><span class="linenos">720</span></a><span class="sd">        oam_arrow_negative_color: color for negative OAM circular arrows</span>
-</span><span id="save_simulation_animation-721"><a href="#save_simulation_animation-721"><span class="linenos">721</span></a><span class="sd">        oam_arrow_threshold: threshold for showing OAM circular arrows, relative to oam_vmax</span>
-</span><span id="save_simulation_animation-722"><a href="#save_simulation_animation-722"><span class="linenos">722</span></a><span class="sd">        frame_texts: optional list of strings to use as title text per frame; if None, uses frame index &quot;frame i/F&quot;</span>
-</span><span id="save_simulation_animation-723"><a href="#save_simulation_animation-723"><span class="linenos">723</span></a><span class="sd">        electric_field_vectors: optional list of 2D vectors per frame for an external electric field arrow</span>
-</span><span id="save_simulation_animation-724"><a href="#save_simulation_animation-724"><span class="linenos">724</span></a><span class="sd">        field_arrow_type: placement of the electric field arrow (&quot;vertical&quot; draws left, &quot;horizontal&quot; draws above)</span>
-</span><span id="save_simulation_animation-725"><a href="#save_simulation_animation-725"><span class="linenos">725</span></a><span class="sd">        field_arrow_label: optional label to display beside the electric field arrow</span>
-</span><span id="save_simulation_animation-726"><a href="#save_simulation_animation-726"><span class="linenos">726</span></a><span class="sd">        field_arrow_color: color for the electric field arrow and label</span>
-</span><span id="save_simulation_animation-727"><a href="#save_simulation_animation-727"><span class="linenos">727</span></a><span class="sd">        export_legend: whether to save a standalone legend PDF (legend + colorbars) alongside the animation</span>
-</span><span id="save_simulation_animation-728"><a href="#save_simulation_animation-728"><span class="linenos">728</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="save_simulation_animation-729"><a href="#save_simulation_animation-729"><span class="linenos">729</span></a>    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">ctx</span> <span class="o">=</span> <span class="n">_create_scene</span><span class="p">(</span>
-</span><span id="save_simulation_animation-730"><a href="#save_simulation_animation-730"><span class="linenos">730</span></a>        <span class="n">lattice_frame_obs</span><span class="o">=</span><span class="n">lattice_frame_obs</span><span class="p">,</span>
-</span><span id="save_simulation_animation-731"><a href="#save_simulation_animation-731"><span class="linenos">731</span></a>        <span class="n">density_cmap</span><span class="o">=</span><span class="n">density_cmap</span><span class="p">,</span>
-</span><span id="save_simulation_animation-732"><a href="#save_simulation_animation-732"><span class="linenos">732</span></a>        <span class="n">density_vmin</span><span class="o">=</span><span class="n">density_vmin</span><span class="p">,</span>
-</span><span id="save_simulation_animation-733"><a href="#save_simulation_animation-733"><span class="linenos">733</span></a>        <span class="n">density_vmax</span><span class="o">=</span><span class="n">density_vmax</span><span class="p">,</span>
-</span><span id="save_simulation_animation-734"><a href="#save_simulation_animation-734"><span class="linenos">734</span></a>        <span class="n">current_max</span><span class="o">=</span><span class="n">current_max</span><span class="p">,</span>
-</span><span id="save_simulation_animation-735"><a href="#save_simulation_animation-735"><span class="linenos">735</span></a>        <span class="n">site_marker_size</span><span class="o">=</span><span class="n">site_marker_size</span><span class="p">,</span>
-</span><span id="save_simulation_animation-736"><a href="#save_simulation_animation-736"><span class="linenos">736</span></a>        <span class="n">show_flow_arrows</span><span class="o">=</span><span class="n">show_flow_arrows</span><span class="p">,</span>
-</span><span id="save_simulation_animation-737"><a href="#save_simulation_animation-737"><span class="linenos">737</span></a>        <span class="n">arrows_per_edge</span><span class="o">=</span><span class="n">arrows_per_edge</span><span class="p">,</span>
-</span><span id="save_simulation_animation-738"><a href="#save_simulation_animation-738"><span class="linenos">738</span></a>        <span class="n">arrow_scale</span><span class="o">=</span><span class="n">arrow_scale</span><span class="p">,</span>
-</span><span id="save_simulation_animation-739"><a href="#save_simulation_animation-739"><span class="linenos">739</span></a>        <span class="n">arrow_width</span><span class="o">=</span><span class="n">arrow_width</span><span class="p">,</span>
-</span><span id="save_simulation_animation-740"><a href="#save_simulation_animation-740"><span class="linenos">740</span></a>        <span class="n">arrow_color</span><span class="o">=</span><span class="n">arrow_color</span><span class="p">,</span>
-</span><span id="save_simulation_animation-741"><a href="#save_simulation_animation-741"><span class="linenos">741</span></a>        <span class="n">show_oam_indicators</span><span class="o">=</span><span class="n">show_oam_indicators</span><span class="p">,</span>
-</span><span id="save_simulation_animation-742"><a href="#save_simulation_animation-742"><span class="linenos">742</span></a>        <span class="n">oam_cmap</span><span class="o">=</span><span class="n">oam_cmap</span><span class="p">,</span>
-</span><span id="save_simulation_animation-743"><a href="#save_simulation_animation-743"><span class="linenos">743</span></a>        <span class="n">oam_vmax</span><span class="o">=</span><span class="n">oam_vmax</span><span class="p">,</span>
-</span><span id="save_simulation_animation-744"><a href="#save_simulation_animation-744"><span class="linenos">744</span></a>        <span class="n">oam_marker_size</span><span class="o">=</span><span class="n">oam_marker_size</span><span class="p">,</span>
-</span><span id="save_simulation_animation-745"><a href="#save_simulation_animation-745"><span class="linenos">745</span></a>        <span class="n">show_oam_direction_arrows</span><span class="o">=</span><span class="n">show_oam_direction_arrows</span><span class="p">,</span>
-</span><span id="save_simulation_animation-746"><a href="#save_simulation_animation-746"><span class="linenos">746</span></a>        <span class="n">oam_arrow_radius</span><span class="o">=</span><span class="n">oam_arrow_radius</span><span class="p">,</span>
-</span><span id="save_simulation_animation-747"><a href="#save_simulation_animation-747"><span class="linenos">747</span></a>        <span class="n">oam_arrow_lw</span><span class="o">=</span><span class="n">oam_arrow_lw</span><span class="p">,</span>
-</span><span id="save_simulation_animation-748"><a href="#save_simulation_animation-748"><span class="linenos">748</span></a>        <span class="n">oam_arrow_positive_color</span><span class="o">=</span><span class="n">oam_arrow_positive_color</span><span class="p">,</span>
-</span><span id="save_simulation_animation-749"><a href="#save_simulation_animation-749"><span class="linenos">749</span></a>        <span class="n">oam_arrow_negative_color</span><span class="o">=</span><span class="n">oam_arrow_negative_color</span><span class="p">,</span>
-</span><span id="save_simulation_animation-750"><a href="#save_simulation_animation-750"><span class="linenos">750</span></a>        <span class="n">oam_arrow_threshold</span><span class="o">=</span><span class="n">oam_arrow_threshold</span><span class="p">,</span>
-</span><span id="save_simulation_animation-751"><a href="#save_simulation_animation-751"><span class="linenos">751</span></a>        <span class="n">frame_texts</span><span class="o">=</span><span class="n">frame_texts</span><span class="p">,</span>
-</span><span id="save_simulation_animation-752"><a href="#save_simulation_animation-752"><span class="linenos">752</span></a>        <span class="n">electric_field_vectors</span><span class="o">=</span><span class="n">electric_field_vectors</span><span class="p">,</span>
-</span><span id="save_simulation_animation-753"><a href="#save_simulation_animation-753"><span class="linenos">753</span></a>        <span class="n">field_arrow_type</span><span class="o">=</span><span class="n">field_arrow_type</span><span class="p">,</span>
-</span><span id="save_simulation_animation-754"><a href="#save_simulation_animation-754"><span class="linenos">754</span></a>        <span class="n">field_arrow_label</span><span class="o">=</span><span class="n">field_arrow_label</span><span class="p">,</span>
-</span><span id="save_simulation_animation-755"><a href="#save_simulation_animation-755"><span class="linenos">755</span></a>        <span class="n">field_arrow_color</span><span class="o">=</span><span class="n">field_arrow_color</span><span class="p">,</span>
-</span><span id="save_simulation_animation-756"><a href="#save_simulation_animation-756"><span class="linenos">756</span></a>        <span class="n">include_colorbars</span><span class="o">=</span><span class="ow">not</span> <span class="n">export_legend</span><span class="p">,</span>
-</span><span id="save_simulation_animation-757"><a href="#save_simulation_animation-757"><span class="linenos">757</span></a>    <span class="p">)</span>
-</span><span id="save_simulation_animation-758"><a href="#save_simulation_animation-758"><span class="linenos">758</span></a>
-</span><span id="save_simulation_animation-759"><a href="#save_simulation_animation-759"><span class="linenos">759</span></a>    <span class="n">anim</span> <span class="o">=</span> <span class="n">animation</span><span class="o">.</span><span class="n">FuncAnimation</span><span class="p">(</span>
-</span><span id="save_simulation_animation-760"><a href="#save_simulation_animation-760"><span class="linenos">760</span></a>        <span class="n">fig</span><span class="p">,</span>
-</span><span id="save_simulation_animation-761"><a href="#save_simulation_animation-761"><span class="linenos">761</span></a>        <span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="n">_update_scene</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">i</span><span class="p">),</span>
-</span><span id="save_simulation_animation-762"><a href="#save_simulation_animation-762"><span class="linenos">762</span></a>        <span class="n">frames</span><span class="o">=</span><span class="n">ctx</span><span class="p">[</span><span class="s2">&quot;F&quot;</span><span class="p">],</span>
-</span><span id="save_simulation_animation-763"><a href="#save_simulation_animation-763"><span class="linenos">763</span></a>        <span class="n">interval</span><span class="o">=</span><span class="mi">1000</span> <span class="o">//</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">fps</span><span class="p">),</span>
-</span><span id="save_simulation_animation-764"><a href="#save_simulation_animation-764"><span class="linenos">764</span></a>        <span class="n">blit</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-</span><span id="save_simulation_animation-765"><a href="#save_simulation_animation-765"><span class="linenos">765</span></a>    <span class="p">)</span>
-</span><span id="save_simulation_animation-766"><a href="#save_simulation_animation-766"><span class="linenos">766</span></a>
-</span><span id="save_simulation_animation-767"><a href="#save_simulation_animation-767"><span class="linenos">767</span></a>    <span class="k">try</span><span class="p">:</span>
-</span><span id="save_simulation_animation-768"><a href="#save_simulation_animation-768"><span class="linenos">768</span></a>        <span class="n">anim</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">out_path</span><span class="p">,</span> <span class="n">writer</span><span class="o">=</span><span class="s2">&quot;ffmpeg&quot;</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="n">fps</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">)</span>
-</span><span id="save_simulation_animation-769"><a href="#save_simulation_animation-769"><span class="linenos">769</span></a>    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-</span><span id="save_simulation_animation-770"><a href="#save_simulation_animation-770"><span class="linenos">770</span></a>        <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.animation</span><span class="w"> </span><span class="kn">import</span> <span class="n">PillowWriter</span>
-</span><span id="save_simulation_animation-771"><a href="#save_simulation_animation-771"><span class="linenos">771</span></a>
-</span><span id="save_simulation_animation-772"><a href="#save_simulation_animation-772"><span class="linenos">772</span></a>        <span class="n">anim</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">out_path</span><span class="p">,</span> <span class="n">writer</span><span class="o">=</span><span class="n">PillowWriter</span><span class="p">(</span><span class="n">fps</span><span class="o">=</span><span class="n">fps</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">)</span>
-</span><span id="save_simulation_animation-773"><a href="#save_simulation_animation-773"><span class="linenos">773</span></a>
-</span><span id="save_simulation_animation-774"><a href="#save_simulation_animation-774"><span class="linenos">774</span></a>    <span class="k">if</span> <span class="n">export_legend</span><span class="p">:</span>
-</span><span id="save_simulation_animation-775"><a href="#save_simulation_animation-775"><span class="linenos">775</span></a>        <span class="n">handles</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;legend_handles&quot;</span><span class="p">)</span>
-</span><span id="save_simulation_animation-776"><a href="#save_simulation_animation-776"><span class="linenos">776</span></a>        <span class="n">labels</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;legend_labels&quot;</span><span class="p">)</span>
-</span><span id="save_simulation_animation-777"><a href="#save_simulation_animation-777"><span class="linenos">777</span></a>        <span class="n">colorbar_specs</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;colorbar_specs&quot;</span><span class="p">,</span> <span class="p">[])</span>
-</span><span id="save_simulation_animation-778"><a href="#save_simulation_animation-778"><span class="linenos">778</span></a>        <span class="k">if</span> <span class="n">handles</span> <span class="ow">and</span> <span class="n">labels</span><span class="p">:</span>
-</span><span id="save_simulation_animation-779"><a href="#save_simulation_animation-779"><span class="linenos">779</span></a>            <span class="n">legend_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">out_path</span><span class="p">)</span>
-</span><span id="save_simulation_animation-780"><a href="#save_simulation_animation-780"><span class="linenos">780</span></a>            <span class="n">legend_pdf_path</span> <span class="o">=</span> <span class="n">legend_path</span><span class="o">.</span><span class="n">with_name</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">legend_path</span><span class="o">.</span><span class="n">stem</span><span class="si">}</span><span class="s2">_legend.pdf&quot;</span><span class="p">)</span>
-</span><span id="save_simulation_animation-781"><a href="#save_simulation_animation-781"><span class="linenos">781</span></a>            <span class="n">legend_fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">3.6</span><span class="p">,</span> <span class="mf">2.1</span><span class="p">))</span>
-</span><span id="save_simulation_animation-782"><a href="#save_simulation_animation-782"><span class="linenos">782</span></a>            <span class="n">legend_ax</span> <span class="o">=</span> <span class="n">legend_fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">((</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.58</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.37</span><span class="p">))</span>
-</span><span id="save_simulation_animation-783"><a href="#save_simulation_animation-783"><span class="linenos">783</span></a>            <span class="n">legend_ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;off&quot;</span><span class="p">)</span>
-</span><span id="save_simulation_animation-784"><a href="#save_simulation_animation-784"><span class="linenos">784</span></a>            <span class="n">legend_ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span>
-</span><span id="save_simulation_animation-785"><a href="#save_simulation_animation-785"><span class="linenos">785</span></a>                <span class="n">handles</span><span class="p">,</span>
-</span><span id="save_simulation_animation-786"><a href="#save_simulation_animation-786"><span class="linenos">786</span></a>                <span class="n">labels</span><span class="p">,</span>
-</span><span id="save_simulation_animation-787"><a href="#save_simulation_animation-787"><span class="linenos">787</span></a>                <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span>
-</span><span id="save_simulation_animation-788"><a href="#save_simulation_animation-788"><span class="linenos">788</span></a>                <span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-</span><span id="save_simulation_animation-789"><a href="#save_simulation_animation-789"><span class="linenos">789</span></a>                <span class="n">fontsize</span><span class="o">=</span><span class="s2">&quot;medium&quot;</span><span class="p">,</span>
-</span><span id="save_simulation_animation-790"><a href="#save_simulation_animation-790"><span class="linenos">790</span></a>                <span class="n">handletextpad</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
-</span><span id="save_simulation_animation-791"><a href="#save_simulation_animation-791"><span class="linenos">791</span></a>                <span class="n">handlelength</span><span class="o">=</span><span class="mf">1.8</span><span class="p">,</span>
-</span><span id="save_simulation_animation-792"><a href="#save_simulation_animation-792"><span class="linenos">792</span></a>                <span class="n">borderpad</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
-</span><span id="save_simulation_animation-793"><a href="#save_simulation_animation-793"><span class="linenos">793</span></a>            <span class="p">)</span>
-</span><span id="save_simulation_animation-794"><a href="#save_simulation_animation-794"><span class="linenos">794</span></a>            <span class="k">if</span> <span class="n">colorbar_specs</span><span class="p">:</span>
-</span><span id="save_simulation_animation-795"><a href="#save_simulation_animation-795"><span class="linenos">795</span></a>                <span class="n">cbar_width</span> <span class="o">=</span> <span class="mf">0.09</span>
-</span><span id="save_simulation_animation-796"><a href="#save_simulation_animation-796"><span class="linenos">796</span></a>                <span class="n">cbar_height</span> <span class="o">=</span> <span class="mf">0.50</span>
-</span><span id="save_simulation_animation-797"><a href="#save_simulation_animation-797"><span class="linenos">797</span></a>                <span class="n">total_width</span> <span class="o">=</span> <span class="mf">0.9</span>
-</span><span id="save_simulation_animation-798"><a href="#save_simulation_animation-798"><span class="linenos">798</span></a>                <span class="n">spacing</span> <span class="o">=</span> <span class="p">(</span><span class="n">total_width</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">colorbar_specs</span><span class="p">)</span> <span class="o">*</span> <span class="n">cbar_width</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">colorbar_specs</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-</span><span id="save_simulation_animation-799"><a href="#save_simulation_animation-799"><span class="linenos">799</span></a>                <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">spec</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">colorbar_specs</span><span class="p">):</span>
-</span><span id="save_simulation_animation-800"><a href="#save_simulation_animation-800"><span class="linenos">800</span></a>                    <span class="n">x</span> <span class="o">=</span> <span class="mf">0.05</span> <span class="o">+</span> <span class="n">spacing</span> <span class="o">*</span> <span class="p">(</span><span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">cbar_width</span> <span class="o">*</span> <span class="n">idx</span>
-</span><span id="save_simulation_animation-801"><a href="#save_simulation_animation-801"><span class="linenos">801</span></a>                    <span class="n">cax</span> <span class="o">=</span> <span class="n">legend_fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="n">cbar_width</span><span class="p">,</span> <span class="n">cbar_height</span><span class="p">))</span>
-</span><span id="save_simulation_animation-802"><a href="#save_simulation_animation-802"><span class="linenos">802</span></a>                    <span class="n">cb</span> <span class="o">=</span> <span class="n">legend_fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">spec</span><span class="p">[</span><span class="s2">&quot;mappable&quot;</span><span class="p">],</span> <span class="n">cax</span><span class="o">=</span><span class="n">cax</span><span class="p">,</span> <span class="n">orientation</span><span class="o">=</span><span class="s2">&quot;vertical&quot;</span><span class="p">)</span>
-</span><span id="save_simulation_animation-803"><a href="#save_simulation_animation-803"><span class="linenos">803</span></a>                    <span class="n">cb</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="n">spec</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">],</span> <span class="n">size</span><span class="o">=</span><span class="s2">&quot;small&quot;</span><span class="p">)</span>
-</span><span id="save_simulation_animation-804"><a href="#save_simulation_animation-804"><span class="linenos">804</span></a>                    <span class="n">fmt_info</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;formatter&quot;</span><span class="p">)</span>
-</span><span id="save_simulation_animation-805"><a href="#save_simulation_animation-805"><span class="linenos">805</span></a>                    <span class="k">if</span> <span class="n">fmt_info</span> <span class="ow">and</span> <span class="n">fmt_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;kind&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;scalar&quot;</span><span class="p">:</span>
-</span><span id="save_simulation_animation-806"><a href="#save_simulation_animation-806"><span class="linenos">806</span></a>                        <span class="n">formatter</span> <span class="o">=</span> <span class="n">ScalarFormatter</span><span class="p">(</span><span class="n">useMathText</span><span class="o">=</span><span class="n">fmt_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;use_math_text&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span>
-</span><span id="save_simulation_animation-807"><a href="#save_simulation_animation-807"><span class="linenos">807</span></a>                        <span class="n">power_limits</span> <span class="o">=</span> <span class="n">fmt_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;power_limits&quot;</span><span class="p">)</span>
-</span><span id="save_simulation_animation-808"><a href="#save_simulation_animation-808"><span class="linenos">808</span></a>                        <span class="k">if</span> <span class="n">power_limits</span><span class="p">:</span>
-</span><span id="save_simulation_animation-809"><a href="#save_simulation_animation-809"><span class="linenos">809</span></a>                            <span class="n">formatter</span><span class="o">.</span><span class="n">set_powerlimits</span><span class="p">(</span><span class="n">power_limits</span><span class="p">)</span>
-</span><span id="save_simulation_animation-810"><a href="#save_simulation_animation-810"><span class="linenos">810</span></a>                        <span class="n">cb</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
-</span><span id="save_simulation_animation-811"><a href="#save_simulation_animation-811"><span class="linenos">811</span></a>                        <span class="n">cb</span><span class="o">.</span><span class="n">update_ticks</span><span class="p">()</span>
-</span><span id="save_simulation_animation-812"><a href="#save_simulation_animation-812"><span class="linenos">812</span></a>                    <span class="n">cb</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">labelsize</span><span class="o">=</span><span class="s2">&quot;small&quot;</span><span class="p">)</span>
-</span><span id="save_simulation_animation-813"><a href="#save_simulation_animation-813"><span class="linenos">813</span></a>            <span class="n">legend_fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">legend_pdf_path</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;pdf&quot;</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
-</span><span id="save_simulation_animation-814"><a href="#save_simulation_animation-814"><span class="linenos">814</span></a>            <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">legend_fig</span><span class="p">)</span>
-</span><span id="save_simulation_animation-815"><a href="#save_simulation_animation-815"><span class="linenos">815</span></a>    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="save_simulation_animation-780"><a href="#save_simulation_animation-780"><span class="linenos">780</span></a><span class="k">def</span><span class="w"> </span><span class="nf">save_simulation_animation</span><span class="p">(</span>
+</span><span id="save_simulation_animation-781"><a href="#save_simulation_animation-781"><span class="linenos">781</span></a>    <span class="n">lattice_frame_obs</span><span class="p">:</span> <span class="n">LatticeFrameObservable</span><span class="p">,</span>
+</span><span id="save_simulation_animation-782"><a href="#save_simulation_animation-782"><span class="linenos">782</span></a>    <span class="n">out_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span id="save_simulation_animation-783"><a href="#save_simulation_animation-783"><span class="linenos">783</span></a>    <span class="n">fps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+</span><span id="save_simulation_animation-784"><a href="#save_simulation_animation-784"><span class="linenos">784</span></a>    <span class="n">dpi</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">150</span><span class="p">,</span>
+</span><span id="save_simulation_animation-785"><a href="#save_simulation_animation-785"><span class="linenos">785</span></a>    <span class="n">config</span><span class="p">:</span> <span class="n">PlotConfig</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="save_simulation_animation-786"><a href="#save_simulation_animation-786"><span class="linenos">786</span></a>    <span class="n">export_legend</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span id="save_simulation_animation-787"><a href="#save_simulation_animation-787"><span class="linenos">787</span></a>    <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+</span><span id="save_simulation_animation-788"><a href="#save_simulation_animation-788"><span class="linenos">788</span></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="save_simulation_animation-789"><a href="#save_simulation_animation-789"><span class="linenos">789</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Save an animation visualising onsite densities and bond currents over frames.</span>
+</span><span id="save_simulation_animation-790"><a href="#save_simulation_animation-790"><span class="linenos">790</span></a>
+</span><span id="save_simulation_animation-791"><a href="#save_simulation_animation-791"><span class="linenos">791</span></a><span class="sd">    Parameters:</span>
+</span><span id="save_simulation_animation-792"><a href="#save_simulation_animation-792"><span class="linenos">792</span></a><span class="sd">        lattice_frame_obs: Observable that recorded ``densities``, ``currents``,</span>
+</span><span id="save_simulation_animation-793"><a href="#save_simulation_animation-793"><span class="linenos">793</span></a><span class="sd">            and ``plaquette_oam`` during the simulation, with ``geometry`` set.</span>
+</span><span id="save_simulation_animation-794"><a href="#save_simulation_animation-794"><span class="linenos">794</span></a><span class="sd">        out_path: Destination file path (e.g. ``&quot;anim.mp4&quot;`` or ``&quot;anim.gif&quot;``).</span>
+</span><span id="save_simulation_animation-795"><a href="#save_simulation_animation-795"><span class="linenos">795</span></a><span class="sd">        fps: Frames per second in the output animation.</span>
+</span><span id="save_simulation_animation-796"><a href="#save_simulation_animation-796"><span class="linenos">796</span></a><span class="sd">        dpi: Output resolution.</span>
+</span><span id="save_simulation_animation-797"><a href="#save_simulation_animation-797"><span class="linenos">797</span></a><span class="sd">        config: Visual-style configuration object.  All style, label, and</span>
+</span><span id="save_simulation_animation-798"><a href="#save_simulation_animation-798"><span class="linenos">798</span></a><span class="sd">            per-frame data options live here.  See `PlotConfig` for the full</span>
+</span><span id="save_simulation_animation-799"><a href="#save_simulation_animation-799"><span class="linenos">799</span></a><span class="sd">            list of fields.  When omitted a default `PlotConfig` is used.</span>
+</span><span id="save_simulation_animation-800"><a href="#save_simulation_animation-800"><span class="linenos">800</span></a><span class="sd">        export_legend: When `True`, a standalone ``&lt;stem&gt;_legend.pdf`` file</span>
+</span><span id="save_simulation_animation-801"><a href="#save_simulation_animation-801"><span class="linenos">801</span></a><span class="sd">            containing the legend and colorbars is saved alongside the animation</span>
+</span><span id="save_simulation_animation-802"><a href="#save_simulation_animation-802"><span class="linenos">802</span></a><span class="sd">            (colorbars are then omitted from the animation itself).</span>
+</span><span id="save_simulation_animation-803"><a href="#save_simulation_animation-803"><span class="linenos">803</span></a><span class="sd">        **kwargs: *Deprecated.*  Flat `PlotConfig` field values passed as plain</span>
+</span><span id="save_simulation_animation-804"><a href="#save_simulation_animation-804"><span class="linenos">804</span></a><span class="sd">            keyword arguments (old calling style).  A `DeprecationWarning` is</span>
+</span><span id="save_simulation_animation-805"><a href="#save_simulation_animation-805"><span class="linenos">805</span></a><span class="sd">            raised; wrap them in ``config=PlotConfig(...)`` instead.</span>
+</span><span id="save_simulation_animation-806"><a href="#save_simulation_animation-806"><span class="linenos">806</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="save_simulation_animation-807"><a href="#save_simulation_animation-807"><span class="linenos">807</span></a>    <span class="n">config</span> <span class="o">=</span> <span class="n">_resolve_config</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</span><span id="save_simulation_animation-808"><a href="#save_simulation_animation-808"><span class="linenos">808</span></a>    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">ctx</span> <span class="o">=</span> <span class="n">_create_scene</span><span class="p">(</span>
+</span><span id="save_simulation_animation-809"><a href="#save_simulation_animation-809"><span class="linenos">809</span></a>        <span class="n">lattice_frame_obs</span><span class="o">=</span><span class="n">lattice_frame_obs</span><span class="p">,</span>
+</span><span id="save_simulation_animation-810"><a href="#save_simulation_animation-810"><span class="linenos">810</span></a>        <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
+</span><span id="save_simulation_animation-811"><a href="#save_simulation_animation-811"><span class="linenos">811</span></a>        <span class="n">include_colorbars</span><span class="o">=</span><span class="ow">not</span> <span class="n">export_legend</span><span class="p">,</span>
+</span><span id="save_simulation_animation-812"><a href="#save_simulation_animation-812"><span class="linenos">812</span></a>    <span class="p">)</span>
+</span><span id="save_simulation_animation-813"><a href="#save_simulation_animation-813"><span class="linenos">813</span></a>
+</span><span id="save_simulation_animation-814"><a href="#save_simulation_animation-814"><span class="linenos">814</span></a>    <span class="n">anim</span> <span class="o">=</span> <span class="n">animation</span><span class="o">.</span><span class="n">FuncAnimation</span><span class="p">(</span>
+</span><span id="save_simulation_animation-815"><a href="#save_simulation_animation-815"><span class="linenos">815</span></a>        <span class="n">fig</span><span class="p">,</span>
+</span><span id="save_simulation_animation-816"><a href="#save_simulation_animation-816"><span class="linenos">816</span></a>        <span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="n">_update_scene</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">i</span><span class="p">),</span>
+</span><span id="save_simulation_animation-817"><a href="#save_simulation_animation-817"><span class="linenos">817</span></a>        <span class="n">frames</span><span class="o">=</span><span class="n">ctx</span><span class="p">[</span><span class="s2">&quot;F&quot;</span><span class="p">],</span>
+</span><span id="save_simulation_animation-818"><a href="#save_simulation_animation-818"><span class="linenos">818</span></a>        <span class="n">interval</span><span class="o">=</span><span class="mi">1000</span> <span class="o">//</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">fps</span><span class="p">),</span>
+</span><span id="save_simulation_animation-819"><a href="#save_simulation_animation-819"><span class="linenos">819</span></a>        <span class="n">blit</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+</span><span id="save_simulation_animation-820"><a href="#save_simulation_animation-820"><span class="linenos">820</span></a>    <span class="p">)</span>
+</span><span id="save_simulation_animation-821"><a href="#save_simulation_animation-821"><span class="linenos">821</span></a>
+</span><span id="save_simulation_animation-822"><a href="#save_simulation_animation-822"><span class="linenos">822</span></a>    <span class="k">try</span><span class="p">:</span>
+</span><span id="save_simulation_animation-823"><a href="#save_simulation_animation-823"><span class="linenos">823</span></a>        <span class="n">anim</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">out_path</span><span class="p">,</span> <span class="n">writer</span><span class="o">=</span><span class="s2">&quot;ffmpeg&quot;</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="n">fps</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">)</span>
+</span><span id="save_simulation_animation-824"><a href="#save_simulation_animation-824"><span class="linenos">824</span></a>    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+</span><span id="save_simulation_animation-825"><a href="#save_simulation_animation-825"><span class="linenos">825</span></a>        <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.animation</span><span class="w"> </span><span class="kn">import</span> <span class="n">PillowWriter</span>
+</span><span id="save_simulation_animation-826"><a href="#save_simulation_animation-826"><span class="linenos">826</span></a>
+</span><span id="save_simulation_animation-827"><a href="#save_simulation_animation-827"><span class="linenos">827</span></a>        <span class="n">anim</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">out_path</span><span class="p">,</span> <span class="n">writer</span><span class="o">=</span><span class="n">PillowWriter</span><span class="p">(</span><span class="n">fps</span><span class="o">=</span><span class="n">fps</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">)</span>
+</span><span id="save_simulation_animation-828"><a href="#save_simulation_animation-828"><span class="linenos">828</span></a>
+</span><span id="save_simulation_animation-829"><a href="#save_simulation_animation-829"><span class="linenos">829</span></a>    <span class="k">if</span> <span class="n">export_legend</span><span class="p">:</span>
+</span><span id="save_simulation_animation-830"><a href="#save_simulation_animation-830"><span class="linenos">830</span></a>        <span class="n">handles</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;legend_handles&quot;</span><span class="p">)</span>
+</span><span id="save_simulation_animation-831"><a href="#save_simulation_animation-831"><span class="linenos">831</span></a>        <span class="n">labels</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;legend_labels&quot;</span><span class="p">)</span>
+</span><span id="save_simulation_animation-832"><a href="#save_simulation_animation-832"><span class="linenos">832</span></a>        <span class="n">colorbar_specs</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;colorbar_specs&quot;</span><span class="p">,</span> <span class="p">[])</span>
+</span><span id="save_simulation_animation-833"><a href="#save_simulation_animation-833"><span class="linenos">833</span></a>        <span class="k">if</span> <span class="n">handles</span> <span class="ow">and</span> <span class="n">labels</span><span class="p">:</span>
+</span><span id="save_simulation_animation-834"><a href="#save_simulation_animation-834"><span class="linenos">834</span></a>            <span class="n">legend_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">out_path</span><span class="p">)</span>
+</span><span id="save_simulation_animation-835"><a href="#save_simulation_animation-835"><span class="linenos">835</span></a>            <span class="n">legend_pdf_path</span> <span class="o">=</span> <span class="n">legend_path</span><span class="o">.</span><span class="n">with_name</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">legend_path</span><span class="o">.</span><span class="n">stem</span><span class="si">}</span><span class="s2">_legend.pdf&quot;</span><span class="p">)</span>
+</span><span id="save_simulation_animation-836"><a href="#save_simulation_animation-836"><span class="linenos">836</span></a>            <span class="n">legend_fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">3.6</span><span class="p">,</span> <span class="mf">2.1</span><span class="p">))</span>
+</span><span id="save_simulation_animation-837"><a href="#save_simulation_animation-837"><span class="linenos">837</span></a>            <span class="n">legend_ax</span> <span class="o">=</span> <span class="n">legend_fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">((</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.58</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.37</span><span class="p">))</span>
+</span><span id="save_simulation_animation-838"><a href="#save_simulation_animation-838"><span class="linenos">838</span></a>            <span class="n">legend_ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;off&quot;</span><span class="p">)</span>
+</span><span id="save_simulation_animation-839"><a href="#save_simulation_animation-839"><span class="linenos">839</span></a>            <span class="n">legend_ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span>
+</span><span id="save_simulation_animation-840"><a href="#save_simulation_animation-840"><span class="linenos">840</span></a>                <span class="n">handles</span><span class="p">,</span>
+</span><span id="save_simulation_animation-841"><a href="#save_simulation_animation-841"><span class="linenos">841</span></a>                <span class="n">labels</span><span class="p">,</span>
+</span><span id="save_simulation_animation-842"><a href="#save_simulation_animation-842"><span class="linenos">842</span></a>                <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span>
+</span><span id="save_simulation_animation-843"><a href="#save_simulation_animation-843"><span class="linenos">843</span></a>                <span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+</span><span id="save_simulation_animation-844"><a href="#save_simulation_animation-844"><span class="linenos">844</span></a>                <span class="n">fontsize</span><span class="o">=</span><span class="s2">&quot;medium&quot;</span><span class="p">,</span>
+</span><span id="save_simulation_animation-845"><a href="#save_simulation_animation-845"><span class="linenos">845</span></a>                <span class="n">handletextpad</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
+</span><span id="save_simulation_animation-846"><a href="#save_simulation_animation-846"><span class="linenos">846</span></a>                <span class="n">handlelength</span><span class="o">=</span><span class="mf">1.8</span><span class="p">,</span>
+</span><span id="save_simulation_animation-847"><a href="#save_simulation_animation-847"><span class="linenos">847</span></a>                <span class="n">borderpad</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+</span><span id="save_simulation_animation-848"><a href="#save_simulation_animation-848"><span class="linenos">848</span></a>            <span class="p">)</span>
+</span><span id="save_simulation_animation-849"><a href="#save_simulation_animation-849"><span class="linenos">849</span></a>            <span class="k">if</span> <span class="n">colorbar_specs</span><span class="p">:</span>
+</span><span id="save_simulation_animation-850"><a href="#save_simulation_animation-850"><span class="linenos">850</span></a>                <span class="n">cbar_width</span> <span class="o">=</span> <span class="mf">0.09</span>
+</span><span id="save_simulation_animation-851"><a href="#save_simulation_animation-851"><span class="linenos">851</span></a>                <span class="n">cbar_height</span> <span class="o">=</span> <span class="mf">0.50</span>
+</span><span id="save_simulation_animation-852"><a href="#save_simulation_animation-852"><span class="linenos">852</span></a>                <span class="n">total_width</span> <span class="o">=</span> <span class="mf">0.9</span>
+</span><span id="save_simulation_animation-853"><a href="#save_simulation_animation-853"><span class="linenos">853</span></a>                <span class="n">spacing</span> <span class="o">=</span> <span class="p">(</span><span class="n">total_width</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">colorbar_specs</span><span class="p">)</span> <span class="o">*</span> <span class="n">cbar_width</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">colorbar_specs</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+</span><span id="save_simulation_animation-854"><a href="#save_simulation_animation-854"><span class="linenos">854</span></a>                <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">spec</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">colorbar_specs</span><span class="p">):</span>
+</span><span id="save_simulation_animation-855"><a href="#save_simulation_animation-855"><span class="linenos">855</span></a>                    <span class="n">x</span> <span class="o">=</span> <span class="mf">0.05</span> <span class="o">+</span> <span class="n">spacing</span> <span class="o">*</span> <span class="p">(</span><span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">cbar_width</span> <span class="o">*</span> <span class="n">idx</span>
+</span><span id="save_simulation_animation-856"><a href="#save_simulation_animation-856"><span class="linenos">856</span></a>                    <span class="n">cax</span> <span class="o">=</span> <span class="n">legend_fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="n">cbar_width</span><span class="p">,</span> <span class="n">cbar_height</span><span class="p">))</span>
+</span><span id="save_simulation_animation-857"><a href="#save_simulation_animation-857"><span class="linenos">857</span></a>                    <span class="n">cb</span> <span class="o">=</span> <span class="n">legend_fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">spec</span><span class="p">[</span><span class="s2">&quot;mappable&quot;</span><span class="p">],</span> <span class="n">cax</span><span class="o">=</span><span class="n">cax</span><span class="p">,</span> <span class="n">orientation</span><span class="o">=</span><span class="s2">&quot;vertical&quot;</span><span class="p">)</span>
+</span><span id="save_simulation_animation-858"><a href="#save_simulation_animation-858"><span class="linenos">858</span></a>                    <span class="n">cb</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="n">spec</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">],</span> <span class="n">size</span><span class="o">=</span><span class="s2">&quot;small&quot;</span><span class="p">)</span>
+</span><span id="save_simulation_animation-859"><a href="#save_simulation_animation-859"><span class="linenos">859</span></a>                    <span class="n">fmt_info</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;formatter&quot;</span><span class="p">)</span>
+</span><span id="save_simulation_animation-860"><a href="#save_simulation_animation-860"><span class="linenos">860</span></a>                    <span class="k">if</span> <span class="n">fmt_info</span> <span class="ow">and</span> <span class="n">fmt_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;kind&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;scalar&quot;</span><span class="p">:</span>
+</span><span id="save_simulation_animation-861"><a href="#save_simulation_animation-861"><span class="linenos">861</span></a>                        <span class="n">formatter</span> <span class="o">=</span> <span class="n">ScalarFormatter</span><span class="p">(</span><span class="n">useMathText</span><span class="o">=</span><span class="n">fmt_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;use_math_text&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span>
+</span><span id="save_simulation_animation-862"><a href="#save_simulation_animation-862"><span class="linenos">862</span></a>                        <span class="n">power_limits</span> <span class="o">=</span> <span class="n">fmt_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;power_limits&quot;</span><span class="p">)</span>
+</span><span id="save_simulation_animation-863"><a href="#save_simulation_animation-863"><span class="linenos">863</span></a>                        <span class="k">if</span> <span class="n">power_limits</span><span class="p">:</span>
+</span><span id="save_simulation_animation-864"><a href="#save_simulation_animation-864"><span class="linenos">864</span></a>                            <span class="n">formatter</span><span class="o">.</span><span class="n">set_powerlimits</span><span class="p">(</span><span class="n">power_limits</span><span class="p">)</span>
+</span><span id="save_simulation_animation-865"><a href="#save_simulation_animation-865"><span class="linenos">865</span></a>                        <span class="n">cb</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+</span><span id="save_simulation_animation-866"><a href="#save_simulation_animation-866"><span class="linenos">866</span></a>                        <span class="n">cb</span><span class="o">.</span><span class="n">update_ticks</span><span class="p">()</span>
+</span><span id="save_simulation_animation-867"><a href="#save_simulation_animation-867"><span class="linenos">867</span></a>                    <span class="n">cb</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">labelsize</span><span class="o">=</span><span class="s2">&quot;small&quot;</span><span class="p">)</span>
+</span><span id="save_simulation_animation-868"><a href="#save_simulation_animation-868"><span class="linenos">868</span></a>            <span class="n">legend_fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">legend_pdf_path</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;pdf&quot;</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+</span><span id="save_simulation_animation-869"><a href="#save_simulation_animation-869"><span class="linenos">869</span></a>            <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">legend_fig</span><span class="p">)</span>
+</span><span id="save_simulation_animation-870"><a href="#save_simulation_animation-870"><span class="linenos">870</span></a>    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
 </span></pre></div>
 
 
-            <div class="docstring"><p>Save an animation visualizing onsite densities and bond currents over frames.</p>
+            <div class="docstring"><p>Save an animation visualising onsite densities and bond currents over frames.</p>
 
 <p>Parameters:
-    lattice_frame_obs: LatticeFrameObservable that recorded 'densities', 'currents', 'plaquette_oam' during the simulation and has geometry defined
-    out_path: output file (e.g., mp4 or gif)
-    fps: frames per second in output animation
-    dpi: resolution of output animation
-    density_cmap: colormap for site densities
-    density_vmin: min value for density colormap
-    density_vmax: max value for density colormap
-    current_max: max value for current colormap; if None, derived from data
-    site_marker_size: size of site occupation circles
-    show_flow_arrows: whether to show flow-direction arrows along bonds that indicate the current direction
-    arrows_per_edge: number of arrows to draw along each bond
-    arrow_scale: scaling factor for arrow lengths (w.r.t. current magnitude)
-    arrow_width: width of arrows
-    arrow_color: color of arrows
-    show_oam_indicators: whether to show orbital angular momentum indicators at plaquette centers (OAM from single-plaquette loop current sum)
-    oam_cmap: colormap for orbital angular momentum values
-    oam_vmax: max absolute value for OAM colormap; if None, derived from data
-    oam_marker_size: size of OAM indicator circles
-    show_oam_direction_arrows: whether to show circular arrows indicating OAM direction
-    oam_arrow_radius: radius of OAM circular arrows
-    oam_arrow_lw: line width of OAM circular arrows
-    oam_arrow_positive_color: color for positive OAM circular arrows
-    oam_arrow_negative_color: color for negative OAM circular arrows
-    oam_arrow_threshold: threshold for showing OAM circular arrows, relative to oam_vmax
-    frame_texts: optional list of strings to use as title text per frame; if None, uses frame index "frame i/F"
-    electric_field_vectors: optional list of 2D vectors per frame for an external electric field arrow
-    field_arrow_type: placement of the electric field arrow ("vertical" draws left, "horizontal" draws above)
-    field_arrow_label: optional label to display beside the electric field arrow
-    field_arrow_color: color for the electric field arrow and label
-    export_legend: whether to save a standalone legend PDF (legend + colorbars) alongside the animation</p>
+    lattice_frame_obs: Observable that recorded <code>densities</code>, <code>currents</code>,
+        and <code>plaquette_oam</code> during the simulation, with <code>geometry</code> set.
+    out_path: Destination file path (e.g. <code>"anim.mp4"</code> or <code>"anim.gif"</code>).
+    fps: Frames per second in the output animation.
+    dpi: Output resolution.
+    config: Visual-style configuration object.  All style, label, and
+        per-frame data options live here.  See <code><a href="#PlotConfig">PlotConfig</a></code> for the full
+        list of fields.  When omitted a default <code><a href="#PlotConfig">PlotConfig</a></code> is used.
+    export_legend: When <code>True</code>, a standalone <code>&lt;stem&gt;_legend.pdf</code> file
+        containing the legend and colorbars is saved alongside the animation
+        (colorbars are then omitted from the animation itself).
+    **kwargs: <em>Deprecated.</em>  Flat <code><a href="#PlotConfig">PlotConfig</a></code> field values passed as plain
+        keyword arguments (old calling style).  A <code>DeprecationWarning</code> is
+        raised; wrap them in <code>config=PlotConfig(...)</code> instead.</p>
 </div>
 
 
+                </section>
+                <section id="PlotConfig">
+                            <input id="PlotConfig-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+<div class="attr class">
+                    <div class="decorator decorator-dataclass">@dataclass</div>
+
+    <span class="def">class</span>
+    <span class="name">PlotConfig</span>:
+
+                <label class="view-source-button" for="PlotConfig-view-source"><span>View Source</span></label>
+
+    </div>
+    <a class="headerlink" href="#PlotConfig"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="PlotConfig-26"><a href="#PlotConfig-26"><span class="linenos"> 26</span></a><span class="nd">@dataclass</span>
+</span><span id="PlotConfig-27"><a href="#PlotConfig-27"><span class="linenos"> 27</span></a><span class="k">class</span><span class="w"> </span><span class="nc">PlotConfig</span><span class="p">:</span>
+</span><span id="PlotConfig-28"><a href="#PlotConfig-28"><span class="linenos"> 28</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Visual style configuration for `save_simulation_animation` and `show_simulation_frame`.</span>
+</span><span id="PlotConfig-29"><a href="#PlotConfig-29"><span class="linenos"> 29</span></a>
+</span><span id="PlotConfig-30"><a href="#PlotConfig-30"><span class="linenos"> 30</span></a><span class="sd">    Collect all visual/style parameters into one object and pass it as the</span>
+</span><span id="PlotConfig-31"><a href="#PlotConfig-31"><span class="linenos"> 31</span></a><span class="sd">    *config* argument rather than listing each keyword individually.  Old-style</span>
+</span><span id="PlotConfig-32"><a href="#PlotConfig-32"><span class="linenos"> 32</span></a><span class="sd">    flat keyword arguments are still accepted by the public functions but will</span>
+</span><span id="PlotConfig-33"><a href="#PlotConfig-33"><span class="linenos"> 33</span></a><span class="sd">    raise a `DeprecationWarning`; constructing a `PlotConfig` directly is the</span>
+</span><span id="PlotConfig-34"><a href="#PlotConfig-34"><span class="linenos"> 34</span></a><span class="sd">    preferred way going forward.</span>
+</span><span id="PlotConfig-35"><a href="#PlotConfig-35"><span class="linenos"> 35</span></a>
+</span><span id="PlotConfig-36"><a href="#PlotConfig-36"><span class="linenos"> 36</span></a><span class="sd">    Parameters:</span>
+</span><span id="PlotConfig-37"><a href="#PlotConfig-37"><span class="linenos"> 37</span></a><span class="sd">        density_cmap: Colormap name for site-occupation scatter.</span>
+</span><span id="PlotConfig-38"><a href="#PlotConfig-38"><span class="linenos"> 38</span></a><span class="sd">        density_vmin: Lower bound of the density colormap.</span>
+</span><span id="PlotConfig-39"><a href="#PlotConfig-39"><span class="linenos"> 39</span></a><span class="sd">        density_vmax: Upper bound of the density colormap.</span>
+</span><span id="PlotConfig-40"><a href="#PlotConfig-40"><span class="linenos"> 40</span></a><span class="sd">        current_max: Absolute maximum used to normalise bond-current arrows.</span>
+</span><span id="PlotConfig-41"><a href="#PlotConfig-41"><span class="linenos"> 41</span></a><span class="sd">            Derived from data when `None`.</span>
+</span><span id="PlotConfig-42"><a href="#PlotConfig-42"><span class="linenos"> 42</span></a><span class="sd">        site_marker_size: Scatter marker area (pts²) for site-occupation circles.</span>
+</span><span id="PlotConfig-43"><a href="#PlotConfig-43"><span class="linenos"> 43</span></a><span class="sd">        show_flow_arrows: Draw flow-direction arrows along bonds.</span>
+</span><span id="PlotConfig-44"><a href="#PlotConfig-44"><span class="linenos"> 44</span></a><span class="sd">        arrows_per_edge: Number of arrows distributed along each bond.</span>
+</span><span id="PlotConfig-45"><a href="#PlotConfig-45"><span class="linenos"> 45</span></a><span class="sd">        arrow_scale: Arrow-length scaling factor relative to current magnitude.</span>
+</span><span id="PlotConfig-46"><a href="#PlotConfig-46"><span class="linenos"> 46</span></a><span class="sd">        arrow_width: Arrow stem width in data units.</span>
+</span><span id="PlotConfig-47"><a href="#PlotConfig-47"><span class="linenos"> 47</span></a><span class="sd">        arrow_color: Colour of flow-direction arrows.</span>
+</span><span id="PlotConfig-48"><a href="#PlotConfig-48"><span class="linenos"> 48</span></a><span class="sd">        show_oam_indicators: Draw OAM-value scatter at plaquette centres.</span>
+</span><span id="PlotConfig-49"><a href="#PlotConfig-49"><span class="linenos"> 49</span></a><span class="sd">        oam_cmap: Colormap name for orbital angular momentum values.</span>
+</span><span id="PlotConfig-50"><a href="#PlotConfig-50"><span class="linenos"> 50</span></a><span class="sd">        oam_vmax: Absolute maximum for the OAM colormap. Derived from data when `None`.</span>
+</span><span id="PlotConfig-51"><a href="#PlotConfig-51"><span class="linenos"> 51</span></a><span class="sd">        oam_marker_size: Scatter marker area (pts²) for OAM indicator circles.</span>
+</span><span id="PlotConfig-52"><a href="#PlotConfig-52"><span class="linenos"> 52</span></a><span class="sd">        show_oam_direction_arrows: Draw circular arrows indicating OAM handedness.</span>
+</span><span id="PlotConfig-53"><a href="#PlotConfig-53"><span class="linenos"> 53</span></a><span class="sd">        oam_arrow_radius: Radius of the circular OAM arrows in data units.</span>
+</span><span id="PlotConfig-54"><a href="#PlotConfig-54"><span class="linenos"> 54</span></a><span class="sd">        oam_arrow_lw: Line width of the circular OAM arrows.</span>
+</span><span id="PlotConfig-55"><a href="#PlotConfig-55"><span class="linenos"> 55</span></a><span class="sd">        oam_arrow_positive_color: Colour for counter-clockwise (positive OAM) arrows.</span>
+</span><span id="PlotConfig-56"><a href="#PlotConfig-56"><span class="linenos"> 56</span></a><span class="sd">        oam_arrow_negative_color: Colour for clockwise (negative OAM) arrows.</span>
+</span><span id="PlotConfig-57"><a href="#PlotConfig-57"><span class="linenos"> 57</span></a><span class="sd">        oam_arrow_threshold: Relative threshold below which OAM direction arrows are hidden.</span>
+</span><span id="PlotConfig-58"><a href="#PlotConfig-58"><span class="linenos"> 58</span></a><span class="sd">        field_arrow_type: Placement of the electric-field arrow.  ``&quot;vertical&quot;``</span>
+</span><span id="PlotConfig-59"><a href="#PlotConfig-59"><span class="linenos"> 59</span></a><span class="sd">            draws it to the left of the lattice; ``&quot;horizontal&quot;`` draws it above.</span>
+</span><span id="PlotConfig-60"><a href="#PlotConfig-60"><span class="linenos"> 60</span></a><span class="sd">        field_arrow_label: Optional label placed beside the electric-field arrow.</span>
+</span><span id="PlotConfig-61"><a href="#PlotConfig-61"><span class="linenos"> 61</span></a><span class="sd">        field_arrow_color: Colour for the electric-field arrow and its label.</span>
+</span><span id="PlotConfig-62"><a href="#PlotConfig-62"><span class="linenos"> 62</span></a><span class="sd">        frame_texts: Per-frame title strings shown at the top-left corner.  When</span>
+</span><span id="PlotConfig-63"><a href="#PlotConfig-63"><span class="linenos"> 63</span></a><span class="sd">            `None` the default ``&quot;frame i/F&quot;`` counter is used.</span>
+</span><span id="PlotConfig-64"><a href="#PlotConfig-64"><span class="linenos"> 64</span></a><span class="sd">        electric_field_vectors: Per-frame 2-D vectors for an external electric-field</span>
+</span><span id="PlotConfig-65"><a href="#PlotConfig-65"><span class="linenos"> 65</span></a><span class="sd">            arrow overlay.  Pass `None` entries for frames where no arrow should</span>
+</span><span id="PlotConfig-66"><a href="#PlotConfig-66"><span class="linenos"> 66</span></a><span class="sd">            appear.</span>
+</span><span id="PlotConfig-67"><a href="#PlotConfig-67"><span class="linenos"> 67</span></a><span class="sd">        legend_bond_current_label: Legend entry for the bond-current arrow proxy artist.</span>
+</span><span id="PlotConfig-68"><a href="#PlotConfig-68"><span class="linenos"> 68</span></a><span class="sd">        legend_site_occupation_label: Legend entry for site-occupation markers.</span>
+</span><span id="PlotConfig-69"><a href="#PlotConfig-69"><span class="linenos"> 69</span></a><span class="sd">        legend_oam_label: Legend entry for plaquette-OAM markers.</span>
+</span><span id="PlotConfig-70"><a href="#PlotConfig-70"><span class="linenos"> 70</span></a><span class="sd">        colorbar_site_occupation_label: Colorbar axis label for site occupation.</span>
+</span><span id="PlotConfig-71"><a href="#PlotConfig-71"><span class="linenos"> 71</span></a><span class="sd">        colorbar_oam_label: Colorbar axis label for plaquette OAM.</span>
+</span><span id="PlotConfig-72"><a href="#PlotConfig-72"><span class="linenos"> 72</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="PlotConfig-73"><a href="#PlotConfig-73"><span class="linenos"> 73</span></a>
+</span><span id="PlotConfig-74"><a href="#PlotConfig-74"><span class="linenos"> 74</span></a>    <span class="c1"># --- Density -----------------------------------------------------------------</span>
+</span><span id="PlotConfig-75"><a href="#PlotConfig-75"><span class="linenos"> 75</span></a>    <span class="n">density_cmap</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Greys&quot;</span>
+</span><span id="PlotConfig-76"><a href="#PlotConfig-76"><span class="linenos"> 76</span></a>    <span class="n">density_vmin</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
+</span><span id="PlotConfig-77"><a href="#PlotConfig-77"><span class="linenos"> 77</span></a>    <span class="n">density_vmax</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>
+</span><span id="PlotConfig-78"><a href="#PlotConfig-78"><span class="linenos"> 78</span></a>    <span class="n">current_max</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span id="PlotConfig-79"><a href="#PlotConfig-79"><span class="linenos"> 79</span></a>    <span class="n">site_marker_size</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">320.0</span>
+</span><span id="PlotConfig-80"><a href="#PlotConfig-80"><span class="linenos"> 80</span></a>
+</span><span id="PlotConfig-81"><a href="#PlotConfig-81"><span class="linenos"> 81</span></a>    <span class="c1"># --- Flow-direction arrows ---------------------------------------------------</span>
+</span><span id="PlotConfig-82"><a href="#PlotConfig-82"><span class="linenos"> 82</span></a>    <span class="n">show_flow_arrows</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span id="PlotConfig-83"><a href="#PlotConfig-83"><span class="linenos"> 83</span></a>    <span class="n">arrows_per_edge</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span>
+</span><span id="PlotConfig-84"><a href="#PlotConfig-84"><span class="linenos"> 84</span></a>    <span class="n">arrow_scale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.55</span>
+</span><span id="PlotConfig-85"><a href="#PlotConfig-85"><span class="linenos"> 85</span></a>    <span class="n">arrow_width</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.04</span>
+</span><span id="PlotConfig-86"><a href="#PlotConfig-86"><span class="linenos"> 86</span></a>    <span class="n">arrow_color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;black&quot;</span>
+</span><span id="PlotConfig-87"><a href="#PlotConfig-87"><span class="linenos"> 87</span></a>
+</span><span id="PlotConfig-88"><a href="#PlotConfig-88"><span class="linenos"> 88</span></a>    <span class="c1"># --- OAM indicators ----------------------------------------------------------</span>
+</span><span id="PlotConfig-89"><a href="#PlotConfig-89"><span class="linenos"> 89</span></a>    <span class="n">show_oam_indicators</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span id="PlotConfig-90"><a href="#PlotConfig-90"><span class="linenos"> 90</span></a>    <span class="n">oam_cmap</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;RdBu&quot;</span>
+</span><span id="PlotConfig-91"><a href="#PlotConfig-91"><span class="linenos"> 91</span></a>    <span class="n">oam_vmax</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span id="PlotConfig-92"><a href="#PlotConfig-92"><span class="linenos"> 92</span></a>    <span class="n">oam_marker_size</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">180.0</span>
+</span><span id="PlotConfig-93"><a href="#PlotConfig-93"><span class="linenos"> 93</span></a>
+</span><span id="PlotConfig-94"><a href="#PlotConfig-94"><span class="linenos"> 94</span></a>    <span class="c1"># --- Circular OAM arrows -----------------------------------------------------</span>
+</span><span id="PlotConfig-95"><a href="#PlotConfig-95"><span class="linenos"> 95</span></a>    <span class="n">show_oam_direction_arrows</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span id="PlotConfig-96"><a href="#PlotConfig-96"><span class="linenos"> 96</span></a>    <span class="n">oam_arrow_radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.6</span>
+</span><span id="PlotConfig-97"><a href="#PlotConfig-97"><span class="linenos"> 97</span></a>    <span class="n">oam_arrow_lw</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.5</span>
+</span><span id="PlotConfig-98"><a href="#PlotConfig-98"><span class="linenos"> 98</span></a>    <span class="n">oam_arrow_positive_color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;blue&quot;</span>
+</span><span id="PlotConfig-99"><a href="#PlotConfig-99"><span class="linenos"> 99</span></a>    <span class="n">oam_arrow_negative_color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;red&quot;</span>
+</span><span id="PlotConfig-100"><a href="#PlotConfig-100"><span class="linenos">100</span></a>    <span class="n">oam_arrow_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.01</span>
+</span><span id="PlotConfig-101"><a href="#PlotConfig-101"><span class="linenos">101</span></a>
+</span><span id="PlotConfig-102"><a href="#PlotConfig-102"><span class="linenos">102</span></a>    <span class="c1"># --- Electric-field arrow ----------------------------------------------------</span>
+</span><span id="PlotConfig-103"><a href="#PlotConfig-103"><span class="linenos">103</span></a>    <span class="n">field_arrow_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;vertical&quot;</span>
+</span><span id="PlotConfig-104"><a href="#PlotConfig-104"><span class="linenos">104</span></a>    <span class="n">field_arrow_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span id="PlotConfig-105"><a href="#PlotConfig-105"><span class="linenos">105</span></a>    <span class="n">field_arrow_color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;green&quot;</span>
+</span><span id="PlotConfig-106"><a href="#PlotConfig-106"><span class="linenos">106</span></a>
+</span><span id="PlotConfig-107"><a href="#PlotConfig-107"><span class="linenos">107</span></a>    <span class="c1"># --- Per-frame data ----------------------------------------------------------</span>
+</span><span id="PlotConfig-108"><a href="#PlotConfig-108"><span class="linenos">108</span></a>    <span class="n">frame_texts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span id="PlotConfig-109"><a href="#PlotConfig-109"><span class="linenos">109</span></a>    <span class="n">electric_field_vectors</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span id="PlotConfig-110"><a href="#PlotConfig-110"><span class="linenos">110</span></a>
+</span><span id="PlotConfig-111"><a href="#PlotConfig-111"><span class="linenos">111</span></a>    <span class="c1"># --- Legend / colorbar labels ------------------------------------------------</span>
+</span><span id="PlotConfig-112"><a href="#PlotConfig-112"><span class="linenos">112</span></a>    <span class="n">legend_bond_current_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Bond Current&quot;</span>
+</span><span id="PlotConfig-113"><a href="#PlotConfig-113"><span class="linenos">113</span></a>    <span class="n">legend_site_occupation_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Site Occupation $</span><span class="se">\\</span><span class="s2">langle </span><span class="se">\\</span><span class="s2">hat n_i</span><span class="se">\\</span><span class="s2">rangle $&quot;</span>
+</span><span id="PlotConfig-114"><a href="#PlotConfig-114"><span class="linenos">114</span></a>    <span class="n">legend_oam_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Plaquette OAM&quot;</span>
+</span><span id="PlotConfig-115"><a href="#PlotConfig-115"><span class="linenos">115</span></a>    <span class="n">colorbar_site_occupation_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Site Occupation&quot;</span>
+</span><span id="PlotConfig-116"><a href="#PlotConfig-116"><span class="linenos">116</span></a>    <span class="n">colorbar_oam_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Plaquette OAM ($</span><span class="se">\\</span><span class="s2">hbar$)&quot;</span>
+</span></pre></div>
+
+
+            <div class="docstring"><p>Visual style configuration for <code><a href="#save_simulation_animation">save_simulation_animation</a></code> and <code><a href="#show_simulation_frame">show_simulation_frame</a></code>.</p>
+
+<p>Collect all visual/style parameters into one object and pass it as the
+<em>config</em> argument rather than listing each keyword individually.  Old-style
+flat keyword arguments are still accepted by the public functions but will
+raise a <code>DeprecationWarning</code>; constructing a <code><a href="#PlotConfig">PlotConfig</a></code> directly is the
+preferred way going forward.</p>
+
+<p>Parameters:
+    density_cmap: Colormap name for site-occupation scatter.
+    density_vmin: Lower bound of the density colormap.
+    density_vmax: Upper bound of the density colormap.
+    current_max: Absolute maximum used to normalise bond-current arrows.
+        Derived from data when <code>None</code>.
+    site_marker_size: Scatter marker area (pts²) for site-occupation circles.
+    show_flow_arrows: Draw flow-direction arrows along bonds.
+    arrows_per_edge: Number of arrows distributed along each bond.
+    arrow_scale: Arrow-length scaling factor relative to current magnitude.
+    arrow_width: Arrow stem width in data units.
+    arrow_color: Colour of flow-direction arrows.
+    show_oam_indicators: Draw OAM-value scatter at plaquette centres.
+    oam_cmap: Colormap name for orbital angular momentum values.
+    oam_vmax: Absolute maximum for the OAM colormap. Derived from data when <code>None</code>.
+    oam_marker_size: Scatter marker area (pts²) for OAM indicator circles.
+    show_oam_direction_arrows: Draw circular arrows indicating OAM handedness.
+    oam_arrow_radius: Radius of the circular OAM arrows in data units.
+    oam_arrow_lw: Line width of the circular OAM arrows.
+    oam_arrow_positive_color: Colour for counter-clockwise (positive OAM) arrows.
+    oam_arrow_negative_color: Colour for clockwise (negative OAM) arrows.
+    oam_arrow_threshold: Relative threshold below which OAM direction arrows are hidden.
+    field_arrow_type: Placement of the electric-field arrow.  <code>"vertical"</code>
+        draws it to the left of the lattice; <code>"horizontal"</code> draws it above.
+    field_arrow_label: Optional label placed beside the electric-field arrow.
+    field_arrow_color: Colour for the electric-field arrow and its label.
+    frame_texts: Per-frame title strings shown at the top-left corner.  When
+        <code>None</code> the default <code>"frame i/F"</code> counter is used.
+    electric_field_vectors: Per-frame 2-D vectors for an external electric-field
+        arrow overlay.  Pass <code>None</code> entries for frames where no arrow should
+        appear.
+    legend_bond_current_label: Legend entry for the bond-current arrow proxy artist.
+    legend_site_occupation_label: Legend entry for site-occupation markers.
+    legend_oam_label: Legend entry for plaquette-OAM markers.
+    colorbar_site_occupation_label: Colorbar axis label for site occupation.
+    colorbar_oam_label: Colorbar axis label for plaquette OAM.</p>
+</div>
+
+
+                            <div id="PlotConfig.__init__" class="classattr">
+                                <div class="attr function">
+            
+        <span class="name">PlotConfig</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="n">density_cmap</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;Greys&#39;</span>,</span><span class="param">	<span class="n">density_vmin</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>,</span><span class="param">	<span class="n">density_vmax</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>,</span><span class="param">	<span class="n">current_max</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">site_marker_size</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">320.0</span>,</span><span class="param">	<span class="n">show_flow_arrows</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>,</span><span class="param">	<span class="n">arrows_per_edge</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span>,</span><span class="param">	<span class="n">arrow_scale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.55</span>,</span><span class="param">	<span class="n">arrow_width</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.04</span>,</span><span class="param">	<span class="n">arrow_color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;black&#39;</span>,</span><span class="param">	<span class="n">show_oam_indicators</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>,</span><span class="param">	<span class="n">oam_cmap</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;RdBu&#39;</span>,</span><span class="param">	<span class="n">oam_vmax</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">oam_marker_size</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">180.0</span>,</span><span class="param">	<span class="n">show_oam_direction_arrows</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>,</span><span class="param">	<span class="n">oam_arrow_radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.6</span>,</span><span class="param">	<span class="n">oam_arrow_lw</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.5</span>,</span><span class="param">	<span class="n">oam_arrow_positive_color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;blue&#39;</span>,</span><span class="param">	<span class="n">oam_arrow_negative_color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;red&#39;</span>,</span><span class="param">	<span class="n">oam_arrow_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.01</span>,</span><span class="param">	<span class="n">field_arrow_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;vertical&#39;</span>,</span><span class="param">	<span class="n">field_arrow_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">field_arrow_color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;green&#39;</span>,</span><span class="param">	<span class="n">frame_texts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">electric_field_vectors</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">legend_bond_current_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;Bond Current&#39;</span>,</span><span class="param">	<span class="n">legend_site_occupation_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;Site Occupation $</span><span class="se">\\</span><span class="s1">langle </span><span class="se">\\</span><span class="s1">hat n_i</span><span class="se">\\</span><span class="s1">rangle $&#39;</span>,</span><span class="param">	<span class="n">legend_oam_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;Plaquette OAM&#39;</span>,</span><span class="param">	<span class="n">colorbar_site_occupation_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;Site Occupation&#39;</span>,</span><span class="param">	<span class="n">colorbar_oam_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;Plaquette OAM ($</span><span class="se">\\</span><span class="s1">hbar$)&#39;</span></span>)</span>
+
+        
+    </div>
+    <a class="headerlink" href="#PlotConfig.__init__"></a>
+    
+    
+
+                            </div>
+                            <div id="PlotConfig.density_cmap" class="classattr">
+                                <div class="attr variable">
+            <span class="name">density_cmap</span><span class="annotation">: str</span>        =
+<span class="default_value">&#39;Greys&#39;</span>
+
+        
+    </div>
+    <a class="headerlink" href="#PlotConfig.density_cmap"></a>
+    
+    
+
+                            </div>
+                            <div id="PlotConfig.density_vmin" class="classattr">
+                                <div class="attr variable">
+            <span class="name">density_vmin</span><span class="annotation">: float</span>        =
+<span class="default_value">0.0</span>
+
+        
+    </div>
+    <a class="headerlink" href="#PlotConfig.density_vmin"></a>
+    
+    
+
+                            </div>
+                            <div id="PlotConfig.density_vmax" class="classattr">
+                                <div class="attr variable">
+            <span class="name">density_vmax</span><span class="annotation">: float</span>        =
+<span class="default_value">1.0</span>
+
+        
+    </div>
+    <a class="headerlink" href="#PlotConfig.density_vmax"></a>
+    
+    
+
+                            </div>
+                            <div id="PlotConfig.current_max" class="classattr">
+                                <div class="attr variable">
+            <span class="name">current_max</span><span class="annotation">: float | None</span>        =
+<span class="default_value">None</span>
+
+        
+    </div>
+    <a class="headerlink" href="#PlotConfig.current_max"></a>
+    
+    
+
+                            </div>
+                            <div id="PlotConfig.site_marker_size" class="classattr">
+                                <div class="attr variable">
+            <span class="name">site_marker_size</span><span class="annotation">: float</span>        =
+<span class="default_value">320.0</span>
+
+        
+    </div>
+    <a class="headerlink" href="#PlotConfig.site_marker_size"></a>
+    
+    
+
+                            </div>
+                            <div id="PlotConfig.show_flow_arrows" class="classattr">
+                                <div class="attr variable">
+            <span class="name">show_flow_arrows</span><span class="annotation">: bool</span>        =
+<span class="default_value">True</span>
+
+        
+    </div>
+    <a class="headerlink" href="#PlotConfig.show_flow_arrows"></a>
+    
+    
+
+                            </div>
+                            <div id="PlotConfig.arrows_per_edge" class="classattr">
+                                <div class="attr variable">
+            <span class="name">arrows_per_edge</span><span class="annotation">: int</span>        =
+<span class="default_value">3</span>
+
+        
+    </div>
+    <a class="headerlink" href="#PlotConfig.arrows_per_edge"></a>
+    
+    
+
+                            </div>
+                            <div id="PlotConfig.arrow_scale" class="classattr">
+                                <div class="attr variable">
+            <span class="name">arrow_scale</span><span class="annotation">: float</span>        =
+<span class="default_value">0.55</span>
+
+        
+    </div>
+    <a class="headerlink" href="#PlotConfig.arrow_scale"></a>
+    
+    
+
+                            </div>
+                            <div id="PlotConfig.arrow_width" class="classattr">
+                                <div class="attr variable">
+            <span class="name">arrow_width</span><span class="annotation">: float</span>        =
+<span class="default_value">0.04</span>
+
+        
+    </div>
+    <a class="headerlink" href="#PlotConfig.arrow_width"></a>
+    
+    
+
+                            </div>
+                            <div id="PlotConfig.arrow_color" class="classattr">
+                                <div class="attr variable">
+            <span class="name">arrow_color</span><span class="annotation">: str</span>        =
+<span class="default_value">&#39;black&#39;</span>
+
+        
+    </div>
+    <a class="headerlink" href="#PlotConfig.arrow_color"></a>
+    
+    
+
+                            </div>
+                            <div id="PlotConfig.show_oam_indicators" class="classattr">
+                                <div class="attr variable">
+            <span class="name">show_oam_indicators</span><span class="annotation">: bool</span>        =
+<span class="default_value">True</span>
+
+        
+    </div>
+    <a class="headerlink" href="#PlotConfig.show_oam_indicators"></a>
+    
+    
+
+                            </div>
+                            <div id="PlotConfig.oam_cmap" class="classattr">
+                                <div class="attr variable">
+            <span class="name">oam_cmap</span><span class="annotation">: str</span>        =
+<span class="default_value">&#39;RdBu&#39;</span>
+
+        
+    </div>
+    <a class="headerlink" href="#PlotConfig.oam_cmap"></a>
+    
+    
+
+                            </div>
+                            <div id="PlotConfig.oam_vmax" class="classattr">
+                                <div class="attr variable">
+            <span class="name">oam_vmax</span><span class="annotation">: float | None</span>        =
+<span class="default_value">None</span>
+
+        
+    </div>
+    <a class="headerlink" href="#PlotConfig.oam_vmax"></a>
+    
+    
+
+                            </div>
+                            <div id="PlotConfig.oam_marker_size" class="classattr">
+                                <div class="attr variable">
+            <span class="name">oam_marker_size</span><span class="annotation">: float</span>        =
+<span class="default_value">180.0</span>
+
+        
+    </div>
+    <a class="headerlink" href="#PlotConfig.oam_marker_size"></a>
+    
+    
+
+                            </div>
+                            <div id="PlotConfig.show_oam_direction_arrows" class="classattr">
+                                <div class="attr variable">
+            <span class="name">show_oam_direction_arrows</span><span class="annotation">: bool</span>        =
+<span class="default_value">True</span>
+
+        
+    </div>
+    <a class="headerlink" href="#PlotConfig.show_oam_direction_arrows"></a>
+    
+    
+
+                            </div>
+                            <div id="PlotConfig.oam_arrow_radius" class="classattr">
+                                <div class="attr variable">
+            <span class="name">oam_arrow_radius</span><span class="annotation">: float</span>        =
+<span class="default_value">0.6</span>
+
+        
+    </div>
+    <a class="headerlink" href="#PlotConfig.oam_arrow_radius"></a>
+    
+    
+
+                            </div>
+                            <div id="PlotConfig.oam_arrow_lw" class="classattr">
+                                <div class="attr variable">
+            <span class="name">oam_arrow_lw</span><span class="annotation">: float</span>        =
+<span class="default_value">1.5</span>
+
+        
+    </div>
+    <a class="headerlink" href="#PlotConfig.oam_arrow_lw"></a>
+    
+    
+
+                            </div>
+                            <div id="PlotConfig.oam_arrow_positive_color" class="classattr">
+                                <div class="attr variable">
+            <span class="name">oam_arrow_positive_color</span><span class="annotation">: str</span>        =
+<span class="default_value">&#39;blue&#39;</span>
+
+        
+    </div>
+    <a class="headerlink" href="#PlotConfig.oam_arrow_positive_color"></a>
+    
+    
+
+                            </div>
+                            <div id="PlotConfig.oam_arrow_negative_color" class="classattr">
+                                <div class="attr variable">
+            <span class="name">oam_arrow_negative_color</span><span class="annotation">: str</span>        =
+<span class="default_value">&#39;red&#39;</span>
+
+        
+    </div>
+    <a class="headerlink" href="#PlotConfig.oam_arrow_negative_color"></a>
+    
+    
+
+                            </div>
+                            <div id="PlotConfig.oam_arrow_threshold" class="classattr">
+                                <div class="attr variable">
+            <span class="name">oam_arrow_threshold</span><span class="annotation">: float</span>        =
+<span class="default_value">0.01</span>
+
+        
+    </div>
+    <a class="headerlink" href="#PlotConfig.oam_arrow_threshold"></a>
+    
+    
+
+                            </div>
+                            <div id="PlotConfig.field_arrow_type" class="classattr">
+                                <div class="attr variable">
+            <span class="name">field_arrow_type</span><span class="annotation">: str</span>        =
+<span class="default_value">&#39;vertical&#39;</span>
+
+        
+    </div>
+    <a class="headerlink" href="#PlotConfig.field_arrow_type"></a>
+    
+    
+
+                            </div>
+                            <div id="PlotConfig.field_arrow_label" class="classattr">
+                                <div class="attr variable">
+            <span class="name">field_arrow_label</span><span class="annotation">: str | None</span>        =
+<span class="default_value">None</span>
+
+        
+    </div>
+    <a class="headerlink" href="#PlotConfig.field_arrow_label"></a>
+    
+    
+
+                            </div>
+                            <div id="PlotConfig.field_arrow_color" class="classattr">
+                                <div class="attr variable">
+            <span class="name">field_arrow_color</span><span class="annotation">: str</span>        =
+<span class="default_value">&#39;green&#39;</span>
+
+        
+    </div>
+    <a class="headerlink" href="#PlotConfig.field_arrow_color"></a>
+    
+    
+
+                            </div>
+                            <div id="PlotConfig.frame_texts" class="classattr">
+                                <div class="attr variable">
+            <span class="name">frame_texts</span><span class="annotation">: list[str] | None</span>        =
+<span class="default_value">None</span>
+
+        
+    </div>
+    <a class="headerlink" href="#PlotConfig.frame_texts"></a>
+    
+    
+
+                            </div>
+                            <div id="PlotConfig.electric_field_vectors" class="classattr">
+                                <div class="attr variable">
+            <span class="name">electric_field_vectors</span><span class="annotation">: list[numpy.ndarray | None] | None</span>        =
+<span class="default_value">None</span>
+
+        
+    </div>
+    <a class="headerlink" href="#PlotConfig.electric_field_vectors"></a>
+    
+    
+
+                            </div>
+                            <div id="PlotConfig.legend_bond_current_label" class="classattr">
+                                <div class="attr variable">
+            <span class="name">legend_bond_current_label</span><span class="annotation">: str</span>        =
+<span class="default_value">&#39;Bond Current&#39;</span>
+
+        
+    </div>
+    <a class="headerlink" href="#PlotConfig.legend_bond_current_label"></a>
+    
+    
+
+                            </div>
+                            <div id="PlotConfig.legend_site_occupation_label" class="classattr">
+                                <div class="attr variable">
+            <span class="name">legend_site_occupation_label</span><span class="annotation">: str</span>        =
+<span class="default_value">&#39;Site Occupation $\\langle \\hat n_i\\rangle $&#39;</span>
+
+        
+    </div>
+    <a class="headerlink" href="#PlotConfig.legend_site_occupation_label"></a>
+    
+    
+
+                            </div>
+                            <div id="PlotConfig.legend_oam_label" class="classattr">
+                                <div class="attr variable">
+            <span class="name">legend_oam_label</span><span class="annotation">: str</span>        =
+<span class="default_value">&#39;Plaquette OAM&#39;</span>
+
+        
+    </div>
+    <a class="headerlink" href="#PlotConfig.legend_oam_label"></a>
+    
+    
+
+                            </div>
+                            <div id="PlotConfig.colorbar_site_occupation_label" class="classattr">
+                                <div class="attr variable">
+            <span class="name">colorbar_site_occupation_label</span><span class="annotation">: str</span>        =
+<span class="default_value">&#39;Site Occupation&#39;</span>
+
+        
+    </div>
+    <a class="headerlink" href="#PlotConfig.colorbar_site_occupation_label"></a>
+    
+    
+
+                            </div>
+                            <div id="PlotConfig.colorbar_oam_label" class="classattr">
+                                <div class="attr variable">
+            <span class="name">colorbar_oam_label</span><span class="annotation">: str</span>        =
+<span class="default_value">&#39;Plaquette OAM ($\\hbar$)&#39;</span>
+
+        
+    </div>
+    <a class="headerlink" href="#PlotConfig.colorbar_oam_label"></a>
+    
+    
+
+                            </div>
                 </section>
                 <section id="fourier_at_omega">
                             <input id="fourier_at_omega-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
