@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "realspace-tb"
-version = "0.2.0"
+version = "0.2.1"
 description = "Real-space tight-binding simulations with time-dependent density matrix evolution"
 readme = "README.md"
 license = {text = "MIT"}
