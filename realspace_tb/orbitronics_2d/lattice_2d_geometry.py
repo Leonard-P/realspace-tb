@@ -28,6 +28,55 @@ class Lattice2DGeometry(ABC):
         pos = self.site_positions
         return pos[nn[:, 1]] - pos[nn[:, 0]]
 
+    def prepare_3d_current_segments(
+        self,
+        currents: NDArray[np.floating],
+        n_images: int = 0,
+        *,
+        current_threshold: float = 1e-10,
+    ) -> tuple[NDArray[np.floating], NDArray[np.floating], NDArray[np.floating]]:
+        """Prepare 3D current segments from 2D bond currents for field calculations (e.g. Biot-Savart).
+
+        This method extracts a 1D array of observable bond currents, filters out
+        negligible values below `current_threshold`, and pairs them with their
+        corresponding 3D start and end points in real space (padding z=0).
+
+        The default implementation supports finite systems only (`n_images=0`).
+        Periodic subclasses override this to yield periodically replicated
+        segments across `[-n_images, n_images]` lattice translations.
+
+        Returns:
+            Tuple of (r_start, r_end, J):
+            - r_start: (N_segments, 3) start coordinates in 3D.
+            - r_end: (N_segments, 3) end coordinates in 3D.
+            - J: (N_segments,) filtered and optionally replicated current values.
+        """
+        if n_images < 0:
+            raise ValueError("n_images must be >= 0")
+        if n_images > 0:
+            raise NotImplementedError(
+                "Periodic replication is not implemented for this geometry. If you use open boundaries, set n_images=0."
+            )
+
+        nn = self.nearest_neighbors
+        currents_arr = np.asarray(currents, dtype=float).reshape(-1)
+        if currents_arr.shape[0] != nn.shape[0]:
+            raise ValueError(
+                "currents must have one entry per nearest-neighbor bond"
+            )
+
+        r_i_2d = np.asarray(self.site_positions[nn[:, 0]], dtype=float)
+        r_k_2d = r_i_2d + np.asarray(self.bond_vectors, dtype=float)
+
+        mask = np.abs(currents_arr) > current_threshold
+        r_i_2d = r_i_2d[mask]
+        r_k_2d = r_k_2d[mask]
+        J = currents_arr[mask]
+
+        r_i = np.pad(r_i_2d, ((0, 0), (0, 1)), mode="constant")
+        r_k = np.pad(r_k_2d, ((0, 0), (0, 1)), mode="constant")
+        return r_i, r_k, J
+
     @abstractmethod
     def index_to_position(self, index: int) -> B.FCPUArray:
         """Convert site index to real space position"""

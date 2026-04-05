@@ -113,3 +113,67 @@ class HoneycombLatticeGeometry(Lattice2DGeometry):
         y = self._row_height * row + y_offset
 
         return np.array([x, y], dtype=B.FCPUDTYPE)
+
+    def prepare_3d_current_segments(
+        self,
+        currents: NDArray[np.floating],
+        n_images: int = 0,
+        *,
+        current_threshold: float = 1e-10,
+    ) -> tuple[NDArray[np.floating], NDArray[np.floating], NDArray[np.floating]]:
+        """Prepare 3D current segments, extending the system periodically if requested.
+
+        This converts the internal 2D bond currents into explicit 3D segments
+        (r_start, r_end, J) used for external sums like the Biot-Savart law.
+        It filters out magnitudes below `current_threshold` for efficiency.
+
+        If `n_images > 0`, it replicates the physical segments in periodic
+        directions (where `pbc_x` or `pbc_y` are True) across the spatial range
+        `[-n_images, n_images]`.
+        """
+        if n_images < 0:
+            raise ValueError("n_images must be >= 0")
+
+        nn = self.nearest_neighbors
+        currents_arr = np.asarray(currents, dtype=float).reshape(-1)
+        if currents_arr.shape[0] != nn.shape[0]:
+            raise ValueError(
+                "currents must have one entry per nearest-neighbor bond"
+            )
+
+        r_i_2d = np.asarray(self.site_positions[nn[:, 0]], dtype=float)
+        r_k_2d = r_i_2d + np.asarray(self.bond_vectors, dtype=float)
+
+        mask = np.abs(currents_arr) > current_threshold
+        r_i_2d = r_i_2d[mask]
+        r_k_2d = r_k_2d[mask]
+        J_base = currents_arr[mask]
+
+        if J_base.size == 0:
+            return (
+                np.zeros((0, 3), dtype=float),
+                np.zeros((0, 3), dtype=float),
+                np.zeros((0,), dtype=float),
+            )
+
+        x_range = range(-n_images, n_images + 1) if self.pbc_x else range(1)
+        y_range = range(-n_images, n_images + 1) if self.pbc_y else range(1)
+
+        cell_x = self.Lx * self._col_width
+        cell_y = self.Ly * self._row_height
+        shifts_2d = np.array(
+            [[ix * cell_x, iy * cell_y] for ix in x_range for iy in y_range],
+            dtype=float,
+        )
+
+        r_i_rep_2d = (r_i_2d[:, np.newaxis, :] + shifts_2d[np.newaxis, :, :]).reshape(
+            -1, 2
+        )
+        r_k_rep_2d = (r_k_2d[:, np.newaxis, :] + shifts_2d[np.newaxis, :, :]).reshape(
+            -1, 2
+        )
+        J_rep = np.repeat(J_base, shifts_2d.shape[0])
+
+        r_i = np.pad(r_i_rep_2d, ((0, 0), (0, 1)), mode="constant")
+        r_k = np.pad(r_k_rep_2d, ((0, 0), (0, 1)), mode="constant")
+        return r_i, r_k, J_rep

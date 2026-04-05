@@ -2,6 +2,7 @@ from ..observable import Observable, MeasurementWindow
 from .honeycomb_geometry import HoneycombLatticeGeometry
 from ..hamiltonian import Hamiltonian
 from .. import backend as B
+from .units import effective_electron_mass
 from typing import cast
 import numpy as np
 
@@ -15,11 +16,14 @@ class PlaquetteOAMObservable(Observable):
     def __init__(
         self,
         geometry: HoneycombLatticeGeometry,
-        electron_mass: float = 0.741,
+        electron_mass: float | None = None,
         window: MeasurementWindow | None = None,
         hamiltonian: Hamiltonian | None = None,
     ):
         super().__init__(window)
+
+        if electron_mass is None:
+            electron_mass = effective_electron_mass()
 
         if hamiltonian is None:
             print(
@@ -113,10 +117,13 @@ class OrbitalPolarizationObservable(PlaquetteOAMObservable):
     def __init__(
         self,
         geometry: HoneycombLatticeGeometry,
-        electron_mass: float = 0.741,
+        electron_mass: float | None = None,
         window: MeasurementWindow | None = None,
         hamiltonian: Hamiltonian | None = None,
     ):
+        if electron_mass is None:
+            electron_mass = effective_electron_mass()
+
         super().__init__(geometry, electron_mass, window, hamiltonian)
 
         self._origin = B.xp().array(geometry.origin)
@@ -212,11 +219,14 @@ class LatticeFrameObservable(Observable):
     def __init__(
         self,
         geometry: HoneycombLatticeGeometry,
-        electron_mass: float = 0.741,
+        electron_mass: float | None = None,
         window: MeasurementWindow | None = None,
         hamiltonian: Hamiltonian | None = None,
     ) -> None:
         super().__init__(window)
+
+        if electron_mass is None:
+            electron_mass = effective_electron_mass()
 
         self.geometry = geometry
 
