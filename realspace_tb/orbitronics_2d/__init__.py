@@ -25,7 +25,7 @@ from .biot_savart import (
     calculate_biot_savart_batch,
     biot_savart_on_plane,
 )
-from .plot_utils import show_simulation_frame, save_simulation_animation, PlotConfig
+from .plot_utils import show_simulation_frame, save_simulation_animation, PlotConfig, append_colorbar
 
 from .ohc import ohc, fourier_at_omega
 
@@ -51,4 +51,5 @@ __all__ = [
     "save_simulation_animation",
     "PlotConfig",
     "fourier_at_omega",
+    "append_colorbar",
 ]

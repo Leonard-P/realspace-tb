@@ -77,6 +77,31 @@ class Lattice2DGeometry(ABC):
         r_k = np.pad(r_k_2d, ((0, 0), (0, 1)), mode="constant")
         return r_i, r_k, J
 
+    def extent_along(self, direction: NDArray[np.floating]) -> float:
+        """Return geometric extent of the lattice sites along a 2D direction.
+
+        The extent is computed as ``max(r·n_hat) - min(r·n_hat)`` over all
+        site positions ``r`` and unit direction ``n_hat``.
+
+        Args:
+            direction: 2D direction vector. It does not need to be normalized.
+
+        Returns:
+            Real-space length of the system along ``direction`` in units of
+            ``a_NN``.
+        """
+        n = np.asarray(direction, dtype=float).reshape(-1)
+        if n.size != 2:
+            raise ValueError("direction must be a 2D vector")
+
+        norm = np.linalg.norm(n)
+        if norm <= 0.0:
+            raise ValueError("direction must be non-zero")
+
+        n_hat = n / norm
+        projections = np.asarray(self.site_positions, dtype=float) @ n_hat
+        return float(np.max(projections) - np.min(projections))
+
     @abstractmethod
     def index_to_position(self, index: int) -> B.FCPUArray:
         """Convert site index to real space position"""
