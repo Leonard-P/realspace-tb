@@ -110,9 +110,9 @@ class PlotConfig:
     # --- Legend / colorbar labels ------------------------------------------------
     legend_bond_current_label: str = "Bond Current"
     legend_site_occupation_label: str = "Site Occupation $\\langle \\hat n_i\\rangle $"
-    legend_oam_label: str = "Plaquette OAM"
+    legend_oam_label: str = "Vorticity"  # "Plaquette OAM"
     colorbar_site_occupation_label: str = "Site Occupation"
-    colorbar_oam_label: str = "Plaquette OAM ($\\hbar$)"
+    colorbar_oam_label: str = "Vorticity [a.u.]"  # "Plaquette OAM ($\\hbar$)"
 
 
 # Frozen set of all PlotConfig field names — used by the **kwargs deprecation shim.
@@ -164,11 +164,11 @@ def _build_geometry_segments(geometry: Lattice2DGeometry) -> np.ndarray:
         array of shape (E, 2, 2): [ [ (x_i, y_i), (x_i+dx, y_i+dy) ], ... ].
     """
     rows = geometry.nearest_neighbors[:, 0]
-    pos = geometry.site_positions   # (N, 2)
-    bv = geometry.bond_vectors      # (E, 2)
+    pos = geometry.site_positions  # (N, 2)
+    bv = geometry.bond_vectors  # (E, 2)
     segs = np.empty((len(rows), 2, 2), dtype=float)
-    segs[:, 0, :] = pos[rows]        # start: r_i
-    segs[:, 1, :] = pos[rows] + bv   # end:   r_i + (r_j − r_i)  [short vector]
+    segs[:, 0, :] = pos[rows]  # start: r_i
+    segs[:, 1, :] = pos[rows] + bv  # end:   r_i + (r_j − r_i)  [short vector]
     return segs
 
 
@@ -291,8 +291,12 @@ def _create_scene(
         if processed:
             field_vectors_processed = processed
 
-    if field_vectors_processed is not None and any(v is not None for v in field_vectors_processed):
-        non_null_vectors = np.array([v for v in field_vectors_processed if v is not None])
+    if field_vectors_processed is not None and any(
+        v is not None for v in field_vectors_processed
+    ):
+        non_null_vectors = np.array(
+            [v for v in field_vectors_processed if v is not None]
+        )
         mags = np.linalg.norm(non_null_vectors, axis=1)
         max_mag = float(np.max(mags)) if mags.size else 0.0
         if max_mag == 0.0:
@@ -305,7 +309,7 @@ def _create_scene(
         field_scale_factor = 0.2 * span_max / max_mag
 
         vec0 = next((v for v in field_vectors_processed if v is not None), np.zeros(2))
-        scaled0 =  vec0 * field_scale_factor
+        scaled0 = vec0 * field_scale_factor
         field_quiv = ax.quiver(
             [field_base[0]],
             [field_base[1]],
@@ -350,13 +354,33 @@ def _create_scene(
         # Expand axis limits to include the arrow
         cur_xlim = ax.get_xlim()
         cur_ylim = ax.get_ylim()
-        all_tips = [field_base + field_scale_factor * v for v in field_vectors_processed if v is not None]
+        all_tips = [
+            field_base + field_scale_factor * v
+            for v in field_vectors_processed
+            if v is not None
+        ]
         if all_tips:
             tips_arr = np.array(all_tips)
-            new_xmin = min(cur_xlim[0], field_base[0] - 0.1 * span_max, np.min(tips_arr[:, 0]) - 0.1 * span_max)
-            new_xmax = max(cur_xlim[1], field_base[0] + 0.1 * span_max, np.max(tips_arr[:, 0]) + 0.1 * span_max)
-            new_ymin = min(cur_ylim[0], field_base[1] - 0.1 * span_max, np.min(tips_arr[:, 1]) - 0.1 * span_max)
-            new_ymax = max(cur_ylim[1], field_base[1] + 0.1 * span_max, np.max(tips_arr[:, 1]) + 0.1 * span_max)
+            new_xmin = min(
+                cur_xlim[0],
+                field_base[0] - 0.1 * span_max,
+                np.min(tips_arr[:, 0]) - 0.1 * span_max,
+            )
+            new_xmax = max(
+                cur_xlim[1],
+                field_base[0] + 0.1 * span_max,
+                np.max(tips_arr[:, 0]) + 0.1 * span_max,
+            )
+            new_ymin = min(
+                cur_ylim[0],
+                field_base[1] - 0.1 * span_max,
+                np.min(tips_arr[:, 1]) - 0.1 * span_max,
+            )
+            new_ymax = max(
+                cur_ylim[1],
+                field_base[1] + 0.1 * span_max,
+                np.max(tips_arr[:, 1]) + 0.1 * span_max,
+            )
             ax.set_xlim(new_xmin, new_xmax)
             ax.set_ylim(new_ymin, new_ymax)
 
@@ -371,7 +395,9 @@ def _create_scene(
         safe_lengths = np.where(lengths == 0, 1.0, lengths)
         dirs = dP / safe_lengths[:, None]  # (E,2)
 
-        fracs = (np.arange(1, arrows_per_edge + 1) / (arrows_per_edge + 1)).astype(float)
+        fracs = (np.arange(1, arrows_per_edge + 1) / (arrows_per_edge + 1)).astype(
+            float
+        )
         Px = (P0[:, 0:1] + fracs * dP[:, 0:1]).reshape(-1)
         Py = (P0[:, 1:2] + fracs * dP[:, 1:2]).reshape(-1)
         dirx = np.repeat(dirs[:, 0], arrows_per_edge)
@@ -412,7 +438,7 @@ def _create_scene(
     oam_vmax_f: float = 1.0
 
     if show_oam_indicators:
-        curl_all = animation_values["plaquette_oam"]  # (F, C)
+        curl_all = animation_values["current_vorts"]  # (F, C)
         curl_vals0 = np.asarray(curl_all[0])
         curl_sites = lattice_frame_obs.plaquette_anchor_indices
         curl_pos = geometry.site_positions[curl_sites.astype(int)]
@@ -634,9 +660,18 @@ def _create_scene(
         if include_colorbars and cbar_layout is not None:
             oam_y = max(
                 0.05,
-                cbar_layout["occ_y"] - cbar_layout["cbar_spacing"] - cbar_layout["cbar_h"],
+                cbar_layout["occ_y"]
+                - cbar_layout["cbar_spacing"]
+                - cbar_layout["cbar_h"],
             )
-            cax_oam = fig.add_axes((cbar_layout["cbar_x"], oam_y, cbar_layout["cbar_w"], cbar_layout["cbar_h"]))
+            cax_oam = fig.add_axes(
+                (
+                    cbar_layout["cbar_x"],
+                    oam_y,
+                    cbar_layout["cbar_w"],
+                    cbar_layout["cbar_h"],
+                )
+            )
             cb_oam = fig.colorbar(oam_sm, cax=cax_oam, orientation="vertical")
             formatter = ScalarFormatter(useMathText=True)
             formatter.set_powerlimits((-2, 2))
@@ -789,7 +824,7 @@ def save_simulation_animation(
 
     Parameters:
         lattice_frame_obs: Observable that recorded ``densities``, ``currents``,
-            and ``plaquette_oam`` during the simulation, with ``geometry`` set.
+            and ``current_vorts`` during the simulation, with ``geometry`` set.
         out_path: Destination file path (e.g. ``"anim.mp4"`` or ``"anim.gif"``).
         fps: Frames per second in the output animation.
         dpi: Output resolution.
@@ -849,15 +884,21 @@ def save_simulation_animation(
                 cbar_width = 0.09
                 cbar_height = 0.50
                 total_width = 0.9
-                spacing = (total_width - len(colorbar_specs) * cbar_width) / (len(colorbar_specs) + 1)
+                spacing = (total_width - len(colorbar_specs) * cbar_width) / (
+                    len(colorbar_specs) + 1
+                )
                 for idx, spec in enumerate(colorbar_specs):
                     x = 0.05 + spacing * (idx + 1) + cbar_width * idx
                     cax = legend_fig.add_axes((x, 0.05, cbar_width, cbar_height))
-                    cb = legend_fig.colorbar(spec["mappable"], cax=cax, orientation="vertical")
+                    cb = legend_fig.colorbar(
+                        spec["mappable"], cax=cax, orientation="vertical"
+                    )
                     cb.set_label(spec["label"], size="small")
                     fmt_info = spec.get("formatter")
                     if fmt_info and fmt_info.get("kind") == "scalar":
-                        formatter = ScalarFormatter(useMathText=fmt_info.get("use_math_text", False))
+                        formatter = ScalarFormatter(
+                            useMathText=fmt_info.get("use_math_text", False)
+                        )
                         power_limits = fmt_info.get("power_limits")
                         if power_limits:
                             formatter.set_powerlimits(power_limits)
@@ -880,7 +921,7 @@ def show_simulation_frame(
 
     Parameters:
         lattice_frame_obs: Observable that recorded ``densities``, ``currents``,
-            and ``plaquette_oam`` during the simulation, with ``geometry`` set.
+            and ``current_vorts`` during the simulation, with ``geometry`` set.
         frame: Index of the frame to render.
         config: Visual-style configuration object.  All style, label, and
             per-frame data options live here.  See `PlotConfig` for the full

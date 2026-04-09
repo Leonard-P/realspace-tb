@@ -9,12 +9,13 @@ Core API:
 
 # Public core
 from . import backend as backend
-from .rk4 import RK4NeumannSolver
+from .lindbladsolver import RK4NeumannSolver
 from .hamiltonian import Hamiltonian
 from .observable import Observable, MeasurementWindow
 
 # Version
 from importlib.metadata import version, PackageNotFoundError
+
 try:
     __version__ = version("realspace_tb")
 except PackageNotFoundError:
@@ -27,6 +28,7 @@ from . import orbitronics_2d as orbitronics_2d
 __all__ = [
     "backend",
     "RK4NeumannSolver",
+    "RK6NeumannSolver",
     "orbitronics_2d",
     "Hamiltonian",
     "Observable",

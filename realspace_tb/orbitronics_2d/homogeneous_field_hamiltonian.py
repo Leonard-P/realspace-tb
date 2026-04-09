@@ -22,9 +22,6 @@ def _build_hopping_csr(geometry: Lattice2DGeometry, dtype: type) -> "B.SparseArr
     )
 
 
-2
-
-
 class HomogeneousFieldAmplitude(ABC):
     """Abstract base class for homogeneous electric field with only scalar time dependence."""
 
@@ -176,3 +173,13 @@ class LinearFieldHamiltonianPeierls(Hamiltonian):
         H_t.data *= phase_factors
 
         return H_t
+
+    def derivative_at_time(self, t: float) -> B.SparseArray:
+        # Time derivative of the Hamiltonian for Peierls substitution
+        dtheta_dt = -self.theta_matrix.data * self.field_amplitude.at_time(t)
+        phase_factors = B.xp().exp(
+            -1j * self.theta_matrix.data * self.field_amplitude.integrate_to_time(t)
+        )
+        dH_dt = self.H_0.copy()
+        dH_dt.data *= 1j * dtheta_dt * phase_factors
+        return dH_dt

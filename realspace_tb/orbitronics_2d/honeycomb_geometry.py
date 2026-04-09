@@ -2,29 +2,43 @@ from .lattice_2d_geometry import Lattice2DGeometry
 from .. import backend as B
 import numpy as np
 from numpy.typing import NDArray
+from typing import Tuple
+
 
 class HoneycombLatticeGeometry(Lattice2DGeometry):
     def __init__(self, Lx: int, Ly: int, pbc_x: bool = False, pbc_y: bool = False):
         super().__init__()
-        
+
         self.Lx = Lx
         self.Ly = Ly
         self.pbc_x = pbc_x
         self.pbc_y = pbc_y
 
-        self.plaquette_path_offsets_ccw = np.array([
-            (0, 1), (1, 2), (2, Lx + 2), (Lx + 2, Lx + 1), (Lx + 1, Lx), (Lx, 0)
-        ])
+        self.plaquette_path_offsets_ccw = np.array(
+            [(0, 1), (1, 2), (2, Lx + 2), (Lx + 2, Lx + 1), (Lx + 1, Lx), (Lx, 0)]
+        )
 
         self._row_height = 1.5
         self._col_width = np.sqrt(3) / 2
 
         self.plaquette_area = np.sqrt(3) * 3 / 2
 
-        self._origin = np.array([(self.Lx - 1) * self._col_width, (self.Ly - 1) * self._row_height]) / 2
+        self._origin = (
+            np.array(
+                [(self.Lx - 1) * self._col_width, (self.Ly - 1) * self._row_height]
+            )
+            / 2
+        )
         self._nearest_neighbors: "B.FCPUArray | None" = None
         self._bond_vectors_cache: "NDArray[np.floating] | None" = None
         self._bravais_site_indices: "B.FCPUArray | None" = None
+        self._plaquette_indices: "B.FCPUArray | None" = None
+        self._plaquette_positions: "B.FCPUArray | None" = None
+        self._plaquette_anchors_cpu: "B.FCPUArray | None" = None
+
+        assert np.allclose(
+            np.linalg.norm(self.bond_vectors, axis=1), 1.0
+        )  # ensure that Lx, Ly are chosen for a correct supercell
 
     def _build_neighbors(self) -> None:
         """Populate ``_nearest_neighbors`` and ``_bond_vectors_cache`` together."""
@@ -61,14 +75,136 @@ class HoneycombLatticeGeometry(Lattice2DGeometry):
                 # Short bond vector: neighbour position in the periodic image
                 r_i = self.index_to_position(index)
                 r_j = self.index_to_position(neighbor_index)
-                r_j_image = r_j + np.array([
-                    wrap_c * Lx * self._col_width,
-                    wrap_r * Ly * self._row_height,
-                ], dtype=B.FCPUDTYPE)
+                r_j_image = r_j + np.array(
+                    [
+                        wrap_c * Lx * self._col_width,
+                        wrap_r * Ly * self._row_height,
+                    ],
+                    dtype=B.FCPUDTYPE,
+                )
                 bond_vecs.append(r_j_image - r_i)
 
         self._nearest_neighbors = np.array(neighbors, dtype=int)
         self._bond_vectors_cache = np.array(bond_vecs, dtype=B.FCPUDTYPE)
+
+    def _list_plaquettes(self) -> None:
+        """List all plaquettes as lists of site indices in CCW order."""
+        Lx, Ly = self.Lx, self.Ly
+        pbc_x, pbc_y = self.pbc_x, self.pbc_y
+        # Create plaquette edge indices from anchor positions using relative coordinate offsets
+
+        ax = self.bravais_site_indices % Lx
+        ay = self.bravais_site_indices // Lx
+
+        self._plaquette_anchors_cpu = self.bravais_site_indices
+
+        path_offsets = self.plaquette_path_offsets_ccw.astype(np.int64)
+        i_offsets = path_offsets[:, 0]
+        j_offsets = path_offsets[:, 1]
+
+        i_dr = i_offsets // Lx
+        i_dc = i_offsets % Lx
+        j_dr = j_offsets // Lx
+        j_dc = j_offsets % Lx
+
+        rows_r = ay[:, None] + i_dr[None, :]
+        rows_c = ax[:, None] + i_dc[None, :]
+        cols_r = ay[:, None] + j_dr[None, :]
+        cols_c = ax[:, None] + j_dc[None, :]
+
+        if pbc_x:
+            rows_c = rows_c % Lx
+            cols_c = cols_c % Lx
+            x_in_bounds = np.ones_like(rows_c, dtype=bool)
+        else:
+            x_in_bounds = (rows_c >= 0) & (rows_c < Lx) & (cols_c >= 0) & (cols_c < Lx)
+
+        if pbc_y:
+            rows_r = rows_r % Ly
+            cols_r = cols_r % Ly
+            y_in_bounds = np.ones_like(rows_r, dtype=bool)
+        else:
+            y_in_bounds = (rows_r >= 0) & (rows_r < Ly) & (cols_r >= 0) & (cols_r < Ly)
+
+        in_bounds = x_in_bounds & y_in_bounds
+
+        if pbc_x or pbc_y:
+            valid_edge = in_bounds
+        else:
+            dx_r = rows_r - ay[:, None]
+            dy_r = rows_c - ax[:, None]
+            dx_c = cols_r - ay[:, None]
+            dy_c = cols_c - ax[:, None]
+
+            flat = path_offsets.ravel()
+            w = int((flat % Lx).max())
+            h = int((flat // Lx).max())
+
+            valid_rows = (dx_r >= 0) & (dy_r >= 0) & (dx_r <= w) & (dy_r <= h)
+            valid_cols = (dx_c >= 0) & (dy_c >= 0) & (dx_c <= w) & (dy_c <= h)
+
+            valid_edge = in_bounds & valid_rows & valid_cols
+
+        rows_cpu = (rows_r * Lx + rows_c).astype(np.int64)
+        cols_cpu = (cols_r * Lx + cols_c).astype(np.int64)
+
+        # only keep plaquettes whose edges all lie within the system
+        cell_mask = valid_edge.all(axis=1)
+        self._plaquette_anchors_cpu = self._plaquette_anchors_cpu[cell_mask]
+        self._n_cells = self._plaquette_anchors_cpu.shape[0]
+
+        rows_cpu = rows_cpu[cell_mask]
+        cols_cpu = cols_cpu[cell_mask]
+
+        self._plaquette_indices = B.xp().array([rows_cpu, cols_cpu], dtype=B.xp().int64)
+
+        # compute plaquette centers, handling PBC by unwrapping in periodic directions
+        plaquette_positions = []
+        for indices in rows_cpu:
+            positions = np.array([self.index_to_position(int(idx)) for idx in indices])
+            if self.pbc_y:
+                lattice_y = self.Ly * self._row_height
+                y_vals = positions[:, 1]
+                if np.max(y_vals) - np.min(y_vals) > lattice_y / 2:
+                    positions[:, 1] = np.where(
+                        y_vals < lattice_y / 2, y_vals + lattice_y, y_vals
+                    )
+            if self.pbc_x:
+                lattice_x = self.Lx * self._col_width
+                x_vals = positions[:, 0]
+                if np.max(x_vals) - np.min(x_vals) > lattice_x / 2:
+                    positions[:, 0] = np.where(
+                        x_vals < lattice_x / 2, x_vals + lattice_x, x_vals
+                    )
+            center = np.mean(positions, axis=0)
+            plaquette_positions.append(center)
+        self._plaquette_positions = B.xp().array(plaquette_positions, dtype=B.FCPUDTYPE)
+
+    @property
+    def plaquettes(self) -> Tuple[B.FCPUArray, B.FCPUArray]:
+        """Tuple of (plaquette_indices, plaquette_positions).
+        plaquette_indices: Array of site indices in CCW order for each plaquette [[i, j, k, ...], ...]
+        plaquette_positions: Array of positions for each plaquette, center of boundary sites.
+        """
+        if self._plaquette_indices is None:
+            self._list_plaquettes()
+        return self._plaquette_indices, self._plaquette_positions
+
+    @property
+    def site_plaquette_count(self) -> B.FCPUArray:
+        """Count of boundary plaquettes per site index."""
+        # ensure plaquette data exists
+        plaquette_indices, _ = self.plaquettes  # (2, n_cells, n_edges)
+
+        # flatten cell edges
+        all_sites = plaquette_indices[0].ravel()
+        N = self.Lx * self.Ly
+
+        # use np.bincount on CPU (fast indexed count)
+        counts = np.bincount(all_sites.astype(np.int64), minlength=N)
+
+        # cast to backend array
+        return B.xp().array(counts, dtype=B.xp().int64)
 
     @property
     def nearest_neighbors(self) -> B.FCPUArray:
@@ -95,8 +231,17 @@ class HoneycombLatticeGeometry(Lattice2DGeometry):
             return self._bravais_site_indices
 
         # Return indices where (i + j) % 2 == 0 (A sublattice)
-        self._bravais_site_indices = np.array([i for i in range(self.Lx * self.Ly) if sum(divmod(i, self.Lx)) % 2 == 0])
+        self._bravais_site_indices = np.array(
+            [i for i in range(self.Lx * self.Ly) if sum(divmod(i, self.Lx)) % 2 == 0]
+        )
         return self._bravais_site_indices
+
+    @property
+    def plaquette_anchors(self) -> B.FCPUArray:
+        """Indices of the anchor sites for each plaquette."""
+        if self._plaquette_anchors_cpu is None:
+            self._list_plaquettes()
+        return self._plaquette_anchors_cpu
 
     @property
     def origin(self) -> B.FCPUArray:
