@@ -2,6 +2,7 @@ from ..observable import Observable, MeasurementWindow
 from .honeycomb_geometry import HoneycombLatticeGeometry
 from ..hamiltonian import Hamiltonian
 from .. import backend as B
+from .units import effective_electron_mass
 from typing import cast
 import numpy as np
 
@@ -243,10 +244,13 @@ class OrbitalPolarizationObservable(VorticityObservable):
     def __init__(
         self,
         geometry: HoneycombLatticeGeometry,
-        electron_mass: float = 0.741,
+        electron_mass: float | None = None,
         window: MeasurementWindow | None = None,
         hamiltonian: Hamiltonian | None = None,
     ):
+        if electron_mass is None:
+            electron_mass = effective_electron_mass()
+
         super().__init__(geometry, window, hamiltonian)
 
         self._origin = B.xp().array(geometry.origin)

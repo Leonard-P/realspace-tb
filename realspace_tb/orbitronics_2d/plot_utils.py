@@ -10,6 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import ScalarFormatter
 from matplotlib import animation
+from matplotlib.colorbar import Colorbar
 from matplotlib.patches import Arc, RegularPolygon
 from matplotlib import cm
 from matplotlib.colors import Normalize
@@ -68,6 +69,13 @@ class PlotConfig:
         legend_oam_label: Legend entry for plaquette-OAM markers.
         colorbar_site_occupation_label: Colorbar axis label for site occupation.
         colorbar_oam_label: Colorbar axis label for plaquette OAM.
+        colorbar_layout_direction: Layout direction for the default colorbars.
+            'vertical' (default) stacks them below each other, 'horizontal' places
+            the OAM colorbar next to the site occupation colorbar.
+        colorbar_width: Absolute colorbar width in figure coordinates.
+            When `None`, a sensible default is used.
+        colorbar_height: Absolute colorbar height in figure coordinates.
+            When `None`, a sensible default is used.
     """
 
     # --- Density -----------------------------------------------------------------
@@ -110,9 +118,12 @@ class PlotConfig:
     # --- Legend / colorbar labels ------------------------------------------------
     legend_bond_current_label: str = "Bond Current"
     legend_site_occupation_label: str = "Site Occupation $\\langle \\hat n_i\\rangle $"
-    legend_oam_label: str = "Vorticity"  # "Plaquette OAM"
+    legend_oam_label: str = "Vorticity"
     colorbar_site_occupation_label: str = "Site Occupation"
-    colorbar_oam_label: str = "Vorticity [a.u.]"  # "Plaquette OAM ($\\hbar$)"
+    colorbar_oam_label: str = "Vorticity [a.u.]"
+    colorbar_layout_direction: str = "vertical"
+    colorbar_width: float | None = None
+    colorbar_height: float | None = None
 
 
 # Frozen set of all PlotConfig field names — used by the **kwargs deprecation shim.
@@ -144,6 +155,87 @@ def _resolve_config(
         )
         return PlotConfig(**kwargs)
     return PlotConfig()
+
+
+def append_colorbar(
+    fig: plt.Figure,
+    ax: plt.Axes,
+    mappable: Any,
+    label: str | None = None,
+    direction: str = "vertical",
+    colorbar_width: float | None = None,
+    colorbar_height: float | None = None,
+    **kwargs: Any,
+) -> Colorbar:
+    """Append a colorbar to the figure dynamically using absolute positioned axes.
+
+    This avoids stealing space from the main axes (which can ruin 'equal' aspect plots).
+    Subsequent calls to this function will stack colorbars in a grid format.
+
+    Args:
+        fig: The matplotlib Figure.
+        ax: The main matplotlib Axes.
+        mappable: The ScalarMappable to draw the colorbar for.
+        label: Optional label for the colorbar.
+        direction: 'vertical' (starts a new row below the lowest colorbar) or
+            'horizontal' (starts a new column to the right of the last appended colorbar).
+        colorbar_width: Optional absolute colorbar width in figure coordinates.
+            If omitted and previous appended colorbars exist, their width is reused.
+        colorbar_height: Optional absolute colorbar height in figure coordinates.
+            If omitted and previous appended colorbars exist, their height is reused.
+        **kwargs: Additional keyword arguments passed to `fig.colorbar()`.
+
+    Returns:
+        The created Colorbar instance.
+    """
+    fig.canvas.draw()
+    ax_bbox = ax.get_position()
+
+    cbar_axes = [a for a in fig.axes if a.get_label() == "appended_colorbar"]
+    if cbar_axes:
+        # Keep geometry stable across subsequent calls (e.g. after figure resizing).
+        ref_bbox = cbar_axes[0].get_position()
+        cbar_w = float(ref_bbox.width)
+        cbar_h = float(ref_bbox.height)
+    else:
+        cbar_w = 0.02
+        cbar_h = min(0.35, max(0.12, ax_bbox.height * 0.6))
+
+    if colorbar_width is not None:
+        cbar_w = float(colorbar_width)
+    if colorbar_height is not None:
+        cbar_h = float(colorbar_height)
+
+    cbar_spacing_y = cbar_h * 0.2
+    cbar_spacing_x = cbar_w * 5
+
+    if not cbar_axes:
+        # First colorbar: align top with main ax, pad right
+        cax_x = min(0.98 - cbar_w, ax_bbox.x1 + 0.02)
+        cax_y = min(0.95 - cbar_h, ax_bbox.y0 + ax_bbox.height - cbar_h)
+        cax_y = max(0.05, cax_y)
+    else:
+        if direction == "vertical":
+            # Stack below the lowest colorbar in the grid
+            min_y0 = min(a.get_position().y0 for a in cbar_axes)
+            # Re-use the starting x-coordinate of the first appended colorbar
+            first_x0 = cbar_axes[0].get_position().x0
+            cax_x = first_x0
+            cax_y = max(0.05, min_y0 - cbar_spacing_y - cbar_h)
+        elif direction == "horizontal":
+            # Stack to the right of the *last* appended colorbar
+            last_cax_bbox = cbar_axes[-1].get_position()
+            cax_x = last_cax_bbox.x1 + cbar_spacing_x
+            cax_y = last_cax_bbox.y0
+        else:
+            raise ValueError("direction must be 'vertical' or 'horizontal'")
+
+    cax = fig.add_axes((cax_x, cax_y, cbar_w, cbar_h), label="appended_colorbar")
+    cb = fig.colorbar(mappable, cax=cax, orientation="vertical", **kwargs)
+    if label:
+        cb.set_label(label, size="small")
+    cb.ax.tick_params(labelsize="small")
+    return cb
 
 
 def _build_geometry_segments(geometry: Lattice2DGeometry) -> np.ndarray:
@@ -621,27 +713,17 @@ def _create_scene(
             "formatter": None,
         }
     ]
-    cbar_layout: dict[str, float] | None = None
     if include_colorbars:
-        fig.canvas.draw()
-        ax_bbox = ax.get_position()
-        cbar_w = 0.02
-        cbar_h = min(0.35, max(0.12, ax_bbox.height * 0.6))
-        cbar_spacing = 0.02
-        cbar_x = min(0.98 - cbar_w, ax_bbox.x1 + 0.02)
-        occ_y = min(0.95 - cbar_h, ax_bbox.y0 + ax_bbox.height - cbar_h)
-        occ_y = max(0.05, occ_y)
-        cbar_layout = {
-            "cbar_w": cbar_w,
-            "cbar_h": cbar_h,
-            "cbar_spacing": cbar_spacing,
-            "cbar_x": cbar_x,
-            "occ_y": occ_y,
-        }
-        cax_occ = fig.add_axes((cbar_x, occ_y, cbar_w, cbar_h))
-        cb_occ = fig.colorbar(occ_sm, cax=cax_occ, orientation="vertical")
-        cb_occ.set_label(config.colorbar_site_occupation_label, size="small")
-        cb_occ.ax.tick_params(labelsize="small")
+        append_colorbar(
+            fig,
+            ax,
+            occ_sm,
+            label=config.colorbar_site_occupation_label,
+            direction="vertical",
+            colorbar_width=config.colorbar_width,
+            colorbar_height=config.colorbar_height,
+        )
+
     if show_oam_indicators and curl_sc is not None:
         oam_norm = Normalize(vmin=-oam_vmax_f, vmax=oam_vmax_f)
         oam_sm = cm.ScalarMappable(norm=oam_norm, cmap=plt.get_cmap(oam_cmap))
@@ -657,28 +739,20 @@ def _create_scene(
                 },
             }
         )
-        if include_colorbars and cbar_layout is not None:
-            oam_y = max(
-                0.05,
-                cbar_layout["occ_y"]
-                - cbar_layout["cbar_spacing"]
-                - cbar_layout["cbar_h"],
+        if include_colorbars:
+            cb_oam = append_colorbar(
+                fig,
+                ax,
+                oam_sm,
+                label=config.colorbar_oam_label,
+                direction=config.colorbar_layout_direction,
+                colorbar_width=config.colorbar_width,
+                colorbar_height=config.colorbar_height,
             )
-            cax_oam = fig.add_axes(
-                (
-                    cbar_layout["cbar_x"],
-                    oam_y,
-                    cbar_layout["cbar_w"],
-                    cbar_layout["cbar_h"],
-                )
-            )
-            cb_oam = fig.colorbar(oam_sm, cax=cax_oam, orientation="vertical")
             formatter = ScalarFormatter(useMathText=True)
             formatter.set_powerlimits((-2, 2))
             cb_oam.ax.yaxis.set_major_formatter(formatter)
             cb_oam.update_ticks()
-            cb_oam.set_label(config.colorbar_oam_label, size="small")
-            cb_oam.ax.tick_params(labelsize="small")
 
     ctx: dict[str, Any] = {
         "F": F,
@@ -824,7 +898,7 @@ def save_simulation_animation(
 
     Parameters:
         lattice_frame_obs: Observable that recorded ``densities``, ``currents``,
-            and ``current_vorts`` during the simulation, with ``geometry`` set.
+            and ``plaquette_oam`` during the simulation, with ``geometry`` set.
         out_path: Destination file path (e.g. ``"anim.mp4"`` or ``"anim.gif"``).
         fps: Frames per second in the output animation.
         dpi: Output resolution.
@@ -921,7 +995,7 @@ def show_simulation_frame(
 
     Parameters:
         lattice_frame_obs: Observable that recorded ``densities``, ``currents``,
-            and ``current_vorts`` during the simulation, with ``geometry`` set.
+            and ``plaquette_oam`` during the simulation, with ``geometry`` set.
         frame: Index of the frame to render.
         config: Visual-style configuration object.  All style, label, and
             per-frame data options live here.  See `PlotConfig` for the full
