@@ -54,6 +54,7 @@ realspace_tb
   Hamiltonian      -- abstract base class: return sparse H(t)
   Observable       -- abstract base class: measure from rho(t)
   MeasurementWindow-- control when measurements happen
+  NeumannSolver    -- right hand site of the Lindblad / Von-Neumann equation
   RK4NeumannSolver -- RK4 time integrator (von Neumann + optional relaxation)
 
 realspace_tb.orbitronics_2d
@@ -61,7 +62,7 @@ realspace_tb.orbitronics_2d
   LinearFieldHamiltonian         -- dipole-gauge E-field coupling
   LinearFieldHamiltonianPeierls  -- Peierls-gauge E-field coupling
   RampedACFieldAmplitude         -- ramped AC electric field E(t)
-  observables.*                  -- OAM, density, currents, composite frame
+  observables.*                  -- vortices, vortex fluxes, vortex sources, density, currents, composite   frame
   units                          -- default graphene material/unit conversion constants
   ohc, fourier_at_omega          -- orbital Hall conductivity analysis
   biot_savart.*                  -- magnetic-field reconstruction from bond currents
@@ -93,7 +94,7 @@ m_eff = units.effective_electron_mass(t_hop_ev=1.6, a_nn_m=0.25e-9)
 I0 = units.current_unit_amperes(t_hop_ev=1.6)
 ```
 
-The OAM observables default to `DEFAULT_EFFECTIVE_ELECTRON_MASS`, and the Biot-Savart helpers default to `DEFAULT_T_HOP_EV` and `DEFAULT_A_NN_M`.
+The orbital polarization observables default to `DEFAULT_EFFECTIVE_ELECTRON_MASS`, and the Biot-Savart helpers default to `DEFAULT_T_HOP_EV` and `DEFAULT_A_NN_M`.
 
 **Solver.** `RK4NeumannSolver().evolve()` integrates the (optionally damped) von Neumann equation in-place. The density matrix `rho` is modified directly — copy it beforehand if needed.
 
@@ -101,11 +102,13 @@ The OAM observables default to `DEFAULT_EFFECTIVE_ELECTRON_MASS`, and the Biot-S
 
 | Observable | Output shape | Description |
 |---|---|---|
-| `PlaquetteOAMObservable` | `(frames, plaquettes)` | Orbital angular momentum per hexagonal plaquette from loop currents |
+| `VorticityObservable` | `(frames, plaquettes)` | Current vortices at the unit plaquettes |
+| `VortSourceObservable` | `(frames, plaquettes)` | Sources of vortices / orbital torque |
+| `VortFluxObservable` | `(frames, plaquettes, plaquettes)` | Flow of current vortices |
 | `OrbitalPolarizationObservable` | `(frames, 2)` | Macroscopic orbital polarization vector |
 | `SiteDensityObservable` | `(frames, sites)` | Diagonal of the density matrix |
 | `BondCurrentObservable` | `(frames, bonds)` | Gauge-invariant nearest-neighbor bond currents |
-| `LatticeFrameObservable` | dict | Composite: density + currents + OAM (for animation) |
+| `LatticeFrameObservable` | dict | Composite: density + currents + vorticity (for animation) |
 
 ## Common pitfalls
 
