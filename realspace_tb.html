@@ -55,11 +55,11 @@
             <li>
                     <a class="class" href="#RK4NeumannSolver">RK4NeumannSolver</a>
                             <ul class="memberlist">
-                        <li>
-                                <a class="function" href="#RK4NeumannSolver.evolve">evolve</a>
-                        </li>
                 </ul>
 
+            </li>
+            <li>
+                    <a class="variable" href="#RK6NeumannSolver">RK6NeumannSolver</a>
             </li>
             <li>
                     <a class="class" href="#Hamiltonian">Hamiltonian</a>
@@ -163,30 +163,32 @@ realspace_tb    </h1>
 </span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a>
 </span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a><span class="c1"># Public core</span>
 </span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">backend</span> <span class="k">as</span> <span class="n">backend</span>
-</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">.rk4</span><span class="w"> </span><span class="kn">import</span> <span class="n">RK4NeumannSolver</span>
+</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">.lindbladsolver</span><span class="w"> </span><span class="kn">import</span> <span class="n">RK4NeumannSolver</span>
 </span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">.hamiltonian</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hamiltonian</span>
 </span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">.observable</span><span class="w"> </span><span class="kn">import</span> <span class="n">Observable</span><span class="p">,</span> <span class="n">MeasurementWindow</span>
 </span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a>
 </span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a><span class="c1"># Version</span>
 </span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">importlib.metadata</span><span class="w"> </span><span class="kn">import</span> <span class="n">version</span><span class="p">,</span> <span class="n">PackageNotFoundError</span>
-</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a><span class="k">try</span><span class="p">:</span>
-</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a>    <span class="n">__version__</span> <span class="o">=</span> <span class="n">version</span><span class="p">(</span><span class="s2">&quot;realspace_tb&quot;</span><span class="p">)</span>
-</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a><span class="k">except</span> <span class="n">PackageNotFoundError</span><span class="p">:</span>
-</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a>    <span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;0+unknown&quot;</span>
-</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a>
+</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a>
+</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a><span class="k">try</span><span class="p">:</span>
+</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a>    <span class="n">__version__</span> <span class="o">=</span> <span class="n">version</span><span class="p">(</span><span class="s2">&quot;realspace_tb&quot;</span><span class="p">)</span>
+</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a><span class="k">except</span> <span class="n">PackageNotFoundError</span><span class="p">:</span>
+</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a>    <span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;0+unknown&quot;</span>
 </span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a>
-</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a><span class="c1"># subpackage namespace</span>
-</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">orbitronics_2d</span> <span class="k">as</span> <span class="n">orbitronics_2d</span>
-</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a>
-</span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a><span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-</span><span id="L-28"><a href="#L-28"><span class="linenos">28</span></a>    <span class="s2">&quot;backend&quot;</span><span class="p">,</span>
-</span><span id="L-29"><a href="#L-29"><span class="linenos">29</span></a>    <span class="s2">&quot;RK4NeumannSolver&quot;</span><span class="p">,</span>
-</span><span id="L-30"><a href="#L-30"><span class="linenos">30</span></a>    <span class="s2">&quot;orbitronics_2d&quot;</span><span class="p">,</span>
-</span><span id="L-31"><a href="#L-31"><span class="linenos">31</span></a>    <span class="s2">&quot;Hamiltonian&quot;</span><span class="p">,</span>
-</span><span id="L-32"><a href="#L-32"><span class="linenos">32</span></a>    <span class="s2">&quot;Observable&quot;</span><span class="p">,</span>
-</span><span id="L-33"><a href="#L-33"><span class="linenos">33</span></a>    <span class="s2">&quot;MeasurementWindow&quot;</span><span class="p">,</span>
-</span><span id="L-34"><a href="#L-34"><span class="linenos">34</span></a>    <span class="s2">&quot;__version__&quot;</span><span class="p">,</span>
-</span><span id="L-35"><a href="#L-35"><span class="linenos">35</span></a><span class="p">]</span>
+</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a>
+</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a><span class="c1"># subpackage namespace</span>
+</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">orbitronics_2d</span> <span class="k">as</span> <span class="n">orbitronics_2d</span>
+</span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a>
+</span><span id="L-28"><a href="#L-28"><span class="linenos">28</span></a><span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+</span><span id="L-29"><a href="#L-29"><span class="linenos">29</span></a>    <span class="s2">&quot;backend&quot;</span><span class="p">,</span>
+</span><span id="L-30"><a href="#L-30"><span class="linenos">30</span></a>    <span class="s2">&quot;RK4NeumannSolver&quot;</span><span class="p">,</span>
+</span><span id="L-31"><a href="#L-31"><span class="linenos">31</span></a>    <span class="s2">&quot;RK6NeumannSolver&quot;</span><span class="p">,</span>
+</span><span id="L-32"><a href="#L-32"><span class="linenos">32</span></a>    <span class="s2">&quot;orbitronics_2d&quot;</span><span class="p">,</span>
+</span><span id="L-33"><a href="#L-33"><span class="linenos">33</span></a>    <span class="s2">&quot;Hamiltonian&quot;</span><span class="p">,</span>
+</span><span id="L-34"><a href="#L-34"><span class="linenos">34</span></a>    <span class="s2">&quot;Observable&quot;</span><span class="p">,</span>
+</span><span id="L-35"><a href="#L-35"><span class="linenos">35</span></a>    <span class="s2">&quot;MeasurementWindow&quot;</span><span class="p">,</span>
+</span><span id="L-36"><a href="#L-36"><span class="linenos">36</span></a>    <span class="s2">&quot;__version__&quot;</span><span class="p">,</span>
+</span><span id="L-37"><a href="#L-37"><span class="linenos">37</span></a><span class="p">]</span>
 </span></pre></div>
 
 
@@ -196,128 +198,54 @@ realspace_tb    </h1>
 <div class="attr class">
             
     <span class="def">class</span>
-    <span class="name">RK4NeumannSolver</span>:
+    <span class="name">RK4NeumannSolver</span><wbr>(<span class="base">realspace_tb.lindbladsolver.NeumannSolver</span>):
 
                 <label class="view-source-button" for="RK4NeumannSolver-view-source"><span>View Source</span></label>
 
     </div>
     <a class="headerlink" href="#RK4NeumannSolver"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="RK4NeumannSolver-10"><a href="#RK4NeumannSolver-10"><span class="linenos"> 10</span></a><span class="k">class</span><span class="w"> </span><span class="nc">RK4NeumannSolver</span><span class="p">:</span>
-</span><span id="RK4NeumannSolver-11"><a href="#RK4NeumannSolver-11"><span class="linenos"> 11</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Implements the RK4 integration method. Currently support the basic case of von Neumann equation with simple decay term and a scalarly time-dependent Hamiltonian.&quot;&quot;&quot;</span>
-</span><span id="RK4NeumannSolver-12"><a href="#RK4NeumannSolver-12"><span class="linenos"> 12</span></a>
-</span><span id="RK4NeumannSolver-13"><a href="#RK4NeumannSolver-13"><span class="linenos"> 13</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">_time_evolution_derivative</span><span class="p">(</span>
-</span><span id="RK4NeumannSolver-14"><a href="#RK4NeumannSolver-14"><span class="linenos"> 14</span></a>        <span class="bp">self</span><span class="p">,</span>
-</span><span id="RK4NeumannSolver-15"><a href="#RK4NeumannSolver-15"><span class="linenos"> 15</span></a>        <span class="n">t</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-</span><span id="RK4NeumannSolver-16"><a href="#RK4NeumannSolver-16"><span class="linenos"> 16</span></a>        <span class="n">rho</span><span class="p">:</span> <span class="n">B</span><span class="o">.</span><span class="n">Array</span><span class="p">,</span>
-</span><span id="RK4NeumannSolver-17"><a href="#RK4NeumannSolver-17"><span class="linenos"> 17</span></a>        <span class="n">H</span><span class="p">:</span> <span class="n">B</span><span class="o">.</span><span class="n">SparseArray</span><span class="p">,</span>
-</span><span id="RK4NeumannSolver-18"><a href="#RK4NeumannSolver-18"><span class="linenos"> 18</span></a>        <span class="n">rho_0</span><span class="p">:</span> <span class="s2">&quot;B.Array | None&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="RK4NeumannSolver-19"><a href="#RK4NeumannSolver-19"><span class="linenos"> 19</span></a>        <span class="n">tau</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">),</span>
-</span><span id="RK4NeumannSolver-20"><a href="#RK4NeumannSolver-20"><span class="linenos"> 20</span></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">B</span><span class="o">.</span><span class="n">Array</span><span class="p">:</span>
-</span><span id="RK4NeumannSolver-21"><a href="#RK4NeumannSolver-21"><span class="linenos"> 21</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="RK4NeumannSolver-22"><a href="#RK4NeumannSolver-22"><span class="linenos"> 22</span></a><span class="sd">        Calculate the time derivative of the density matrix from damped Neumann equation:</span>
-</span><span id="RK4NeumannSolver-23"><a href="#RK4NeumannSolver-23"><span class="linenos"> 23</span></a><span class="sd">        ∂ρ/∂t = -i[H, ρ] + (ρ₀ - ρ) / τ</span>
-</span><span id="RK4NeumannSolver-24"><a href="#RK4NeumannSolver-24"><span class="linenos"> 24</span></a>
-</span><span id="RK4NeumannSolver-25"><a href="#RK4NeumannSolver-25"><span class="linenos"> 25</span></a><span class="sd">        Parameters:</span>
-</span><span id="RK4NeumannSolver-26"><a href="#RK4NeumannSolver-26"><span class="linenos"> 26</span></a><span class="sd">            t: Current time.</span>
-</span><span id="RK4NeumannSolver-27"><a href="#RK4NeumannSolver-27"><span class="linenos"> 27</span></a><span class="sd">            rho: Density matrix ρ(t) (dense).</span>
-</span><span id="RK4NeumannSolver-28"><a href="#RK4NeumannSolver-28"><span class="linenos"> 28</span></a><span class="sd">            H: Hamiltonian (sparse).</span>
-</span><span id="RK4NeumannSolver-29"><a href="#RK4NeumannSolver-29"><span class="linenos"> 29</span></a><span class="sd">            rho_0: Initial density matrix ρ₀ (dense), used for decay term.</span>
-</span><span id="RK4NeumannSolver-30"><a href="#RK4NeumannSolver-30"><span class="linenos"> 30</span></a><span class="sd">            tau: Relaxation time constant τ. Default is infinity (no decay).</span>
-</span><span id="RK4NeumannSolver-31"><a href="#RK4NeumannSolver-31"><span class="linenos"> 31</span></a>
-</span><span id="RK4NeumannSolver-32"><a href="#RK4NeumannSolver-32"><span class="linenos"> 32</span></a><span class="sd">        Returns:</span>
-</span><span id="RK4NeumannSolver-33"><a href="#RK4NeumannSolver-33"><span class="linenos"> 33</span></a><span class="sd">            The time derivative of the density matrix (dense).</span>
-</span><span id="RK4NeumannSolver-34"><a href="#RK4NeumannSolver-34"><span class="linenos"> 34</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="RK4NeumannSolver-35"><a href="#RK4NeumannSolver-35"><span class="linenos"> 35</span></a>
-</span><span id="RK4NeumannSolver-36"><a href="#RK4NeumannSolver-36"><span class="linenos"> 36</span></a>        <span class="c1"># Calculate [H, ρ]</span>
-</span><span id="RK4NeumannSolver-37"><a href="#RK4NeumannSolver-37"><span class="linenos"> 37</span></a>        <span class="n">d_rho_dt</span> <span class="o">=</span> <span class="n">H</span> <span class="o">@</span> <span class="n">rho</span> <span class="o">-</span> <span class="n">rho</span> <span class="o">@</span> <span class="n">H</span>  <span class="c1"># TODO check if sparse multiplication works</span>
-</span><span id="RK4NeumannSolver-38"><a href="#RK4NeumannSolver-38"><span class="linenos"> 38</span></a>        <span class="c1"># else:</span>
-</span><span id="RK4NeumannSolver-39"><a href="#RK4NeumannSolver-39"><span class="linenos"> 39</span></a>        <span class="c1">#     d_rho_dt = H.dot(rho) - csr_matrix.dot(rho, H)</span>
-</span><span id="RK4NeumannSolver-40"><a href="#RK4NeumannSolver-40"><span class="linenos"> 40</span></a>        <span class="n">d_rho_dt</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span><span class="n">j</span>
-</span><span id="RK4NeumannSolver-41"><a href="#RK4NeumannSolver-41"><span class="linenos"> 41</span></a>
-</span><span id="RK4NeumannSolver-42"><a href="#RK4NeumannSolver-42"><span class="linenos"> 42</span></a>        <span class="k">if</span> <span class="n">tau</span> <span class="o">!=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">rho_0</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="RK4NeumannSolver-43"><a href="#RK4NeumannSolver-43"><span class="linenos"> 43</span></a>            <span class="n">d_rho_dt</span> <span class="o">+=</span> <span class="p">(</span><span class="n">rho_0</span> <span class="o">-</span> <span class="n">rho</span><span class="p">)</span> <span class="o">/</span> <span class="n">tau</span>
-</span><span id="RK4NeumannSolver-44"><a href="#RK4NeumannSolver-44"><span class="linenos"> 44</span></a>
-</span><span id="RK4NeumannSolver-45"><a href="#RK4NeumannSolver-45"><span class="linenos"> 45</span></a>        <span class="k">return</span> <span class="n">d_rho_dt</span>
-</span><span id="RK4NeumannSolver-46"><a href="#RK4NeumannSolver-46"><span class="linenos"> 46</span></a>
-</span><span id="RK4NeumannSolver-47"><a href="#RK4NeumannSolver-47"><span class="linenos"> 47</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">_rk4_step</span><span class="p">(</span>
-</span><span id="RK4NeumannSolver-48"><a href="#RK4NeumannSolver-48"><span class="linenos"> 48</span></a>        <span class="bp">self</span><span class="p">,</span>
-</span><span id="RK4NeumannSolver-49"><a href="#RK4NeumannSolver-49"><span class="linenos"> 49</span></a>        <span class="n">t</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-</span><span id="RK4NeumannSolver-50"><a href="#RK4NeumannSolver-50"><span class="linenos"> 50</span></a>        <span class="n">rho</span><span class="p">:</span> <span class="n">B</span><span class="o">.</span><span class="n">Array</span><span class="p">,</span>
-</span><span id="RK4NeumannSolver-51"><a href="#RK4NeumannSolver-51"><span class="linenos"> 51</span></a>        <span class="n">H</span><span class="p">:</span> <span class="n">Hamiltonian</span><span class="p">,</span>
-</span><span id="RK4NeumannSolver-52"><a href="#RK4NeumannSolver-52"><span class="linenos"> 52</span></a>        <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-</span><span id="RK4NeumannSolver-53"><a href="#RK4NeumannSolver-53"><span class="linenos"> 53</span></a>        <span class="n">rho_0</span><span class="p">:</span> <span class="s2">&quot;B.Array | None&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="RK4NeumannSolver-54"><a href="#RK4NeumannSolver-54"><span class="linenos"> 54</span></a>        <span class="n">tau</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">),</span>
-</span><span id="RK4NeumannSolver-55"><a href="#RK4NeumannSolver-55"><span class="linenos"> 55</span></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="RK4NeumannSolver-56"><a href="#RK4NeumannSolver-56"><span class="linenos"> 56</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="RK4NeumannSolver-57"><a href="#RK4NeumannSolver-57"><span class="linenos"> 57</span></a><span class="sd">        Perform a single Runge-Kutta 4th order step to evolve the density matrix (in-place).</span>
-</span><span id="RK4NeumannSolver-58"><a href="#RK4NeumannSolver-58"><span class="linenos"> 58</span></a>
-</span><span id="RK4NeumannSolver-59"><a href="#RK4NeumannSolver-59"><span class="linenos"> 59</span></a><span class="sd">        Parameters:</span>
-</span><span id="RK4NeumannSolver-60"><a href="#RK4NeumannSolver-60"><span class="linenos"> 60</span></a><span class="sd">            t: Current time.</span>
-</span><span id="RK4NeumannSolver-61"><a href="#RK4NeumannSolver-61"><span class="linenos"> 61</span></a><span class="sd">            rho: Density matrix ρ(t) (dense).</span>
-</span><span id="RK4NeumannSolver-62"><a href="#RK4NeumannSolver-62"><span class="linenos"> 62</span></a><span class="sd">            H: Hamiltonian (sparse).</span>
-</span><span id="RK4NeumannSolver-63"><a href="#RK4NeumannSolver-63"><span class="linenos"> 63</span></a><span class="sd">            dt: Time step interval.</span>
-</span><span id="RK4NeumannSolver-64"><a href="#RK4NeumannSolver-64"><span class="linenos"> 64</span></a><span class="sd">            rho_0: Initial density matrix for the decay term.</span>
-</span><span id="RK4NeumannSolver-65"><a href="#RK4NeumannSolver-65"><span class="linenos"> 65</span></a><span class="sd">            tau: Decay time constant τ.</span>
-</span><span id="RK4NeumannSolver-66"><a href="#RK4NeumannSolver-66"><span class="linenos"> 66</span></a>
-</span><span id="RK4NeumannSolver-67"><a href="#RK4NeumannSolver-67"><span class="linenos"> 67</span></a><span class="sd">        Returns:</span>
-</span><span id="RK4NeumannSolver-68"><a href="#RK4NeumannSolver-68"><span class="linenos"> 68</span></a><span class="sd">            None. The density matrix is evolved in-place one RK4 step.</span>
-</span><span id="RK4NeumannSolver-69"><a href="#RK4NeumannSolver-69"><span class="linenos"> 69</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="RK4NeumannSolver-70"><a href="#RK4NeumannSolver-70"><span class="linenos"> 70</span></a>        <span class="n">k1</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_evolution_derivative</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">H</span><span class="o">.</span><span class="n">at_time</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="n">rho_0</span><span class="p">,</span> <span class="n">tau</span><span class="p">)</span>
-</span><span id="RK4NeumannSolver-71"><a href="#RK4NeumannSolver-71"><span class="linenos"> 71</span></a>
-</span><span id="RK4NeumannSolver-72"><a href="#RK4NeumannSolver-72"><span class="linenos"> 72</span></a>        <span class="n">k2</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_evolution_derivative</span><span class="p">(</span>
-</span><span id="RK4NeumannSolver-73"><a href="#RK4NeumannSolver-73"><span class="linenos"> 73</span></a>            <span class="n">t</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">dt</span><span class="p">,</span> <span class="n">rho</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">k1</span><span class="p">,</span> <span class="n">H</span><span class="o">.</span><span class="n">at_time</span><span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">dt</span><span class="p">),</span> <span class="n">rho_0</span><span class="p">,</span> <span class="n">tau</span>
-</span><span id="RK4NeumannSolver-74"><a href="#RK4NeumannSolver-74"><span class="linenos"> 74</span></a>        <span class="p">)</span>
-</span><span id="RK4NeumannSolver-75"><a href="#RK4NeumannSolver-75"><span class="linenos"> 75</span></a>        <span class="n">k3</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_evolution_derivative</span><span class="p">(</span>
-</span><span id="RK4NeumannSolver-76"><a href="#RK4NeumannSolver-76"><span class="linenos"> 76</span></a>            <span class="n">t</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">dt</span><span class="p">,</span> <span class="n">rho</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">k2</span><span class="p">,</span> <span class="n">H</span><span class="o">.</span><span class="n">at_time</span><span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">dt</span><span class="p">),</span> <span class="n">rho_0</span><span class="p">,</span> <span class="n">tau</span>
-</span><span id="RK4NeumannSolver-77"><a href="#RK4NeumannSolver-77"><span class="linenos"> 77</span></a>        <span class="p">)</span>
-</span><span id="RK4NeumannSolver-78"><a href="#RK4NeumannSolver-78"><span class="linenos"> 78</span></a>        <span class="n">k4</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_evolution_derivative</span><span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="n">dt</span><span class="p">,</span> <span class="n">rho</span> <span class="o">+</span> <span class="n">k3</span><span class="p">,</span> <span class="n">H</span><span class="o">.</span><span class="n">at_time</span><span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="n">dt</span><span class="p">),</span> <span class="n">rho_0</span><span class="p">,</span> <span class="n">tau</span><span class="p">)</span>
-</span><span id="RK4NeumannSolver-79"><a href="#RK4NeumannSolver-79"><span class="linenos"> 79</span></a>
-</span><span id="RK4NeumannSolver-80"><a href="#RK4NeumannSolver-80"><span class="linenos"> 80</span></a>        <span class="n">rho</span> <span class="o">+=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="mf">6.0</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">k1</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">k2</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">k3</span> <span class="o">+</span> <span class="n">k4</span><span class="p">)</span>
-</span><span id="RK4NeumannSolver-81"><a href="#RK4NeumannSolver-81"><span class="linenos"> 81</span></a>
-</span><span id="RK4NeumannSolver-82"><a href="#RK4NeumannSolver-82"><span class="linenos"> 82</span></a>        <span class="c1"># Ensure hermiticity</span>
-</span><span id="RK4NeumannSolver-83"><a href="#RK4NeumannSolver-83"><span class="linenos"> 83</span></a>        <span class="n">rho</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">(</span><span class="n">rho</span> <span class="o">+</span> <span class="n">rho</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">conj</span><span class="p">())</span> <span class="o">/</span> <span class="mf">2.0</span>
-</span><span id="RK4NeumannSolver-84"><a href="#RK4NeumannSolver-84"><span class="linenos"> 84</span></a>
-</span><span id="RK4NeumannSolver-85"><a href="#RK4NeumannSolver-85"><span class="linenos"> 85</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">evolve</span><span class="p">(</span>
-</span><span id="RK4NeumannSolver-86"><a href="#RK4NeumannSolver-86"><span class="linenos"> 86</span></a>        <span class="bp">self</span><span class="p">,</span>
-</span><span id="RK4NeumannSolver-87"><a href="#RK4NeumannSolver-87"><span class="linenos"> 87</span></a>        <span class="n">rho</span><span class="p">:</span> <span class="n">B</span><span class="o">.</span><span class="n">Array</span><span class="p">,</span>
-</span><span id="RK4NeumannSolver-88"><a href="#RK4NeumannSolver-88"><span class="linenos"> 88</span></a>        <span class="n">H</span><span class="p">:</span> <span class="n">Hamiltonian</span><span class="p">,</span>
-</span><span id="RK4NeumannSolver-89"><a href="#RK4NeumannSolver-89"><span class="linenos"> 89</span></a>        <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-</span><span id="RK4NeumannSolver-90"><a href="#RK4NeumannSolver-90"><span class="linenos"> 90</span></a>        <span class="n">total_time</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-</span><span id="RK4NeumannSolver-91"><a href="#RK4NeumannSolver-91"><span class="linenos"> 91</span></a>        <span class="n">rho_0</span><span class="p">:</span> <span class="s2">&quot;B.Array | None&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="RK4NeumannSolver-92"><a href="#RK4NeumannSolver-92"><span class="linenos"> 92</span></a>        <span class="n">tau</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">),</span>
-</span><span id="RK4NeumannSolver-93"><a href="#RK4NeumannSolver-93"><span class="linenos"> 93</span></a>        <span class="n">observables</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Observable</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="RK4NeumannSolver-94"><a href="#RK4NeumannSolver-94"><span class="linenos"> 94</span></a>        <span class="n">progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-</span><span id="RK4NeumannSolver-95"><a href="#RK4NeumannSolver-95"><span class="linenos"> 95</span></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="RK4NeumannSolver-96"><a href="#RK4NeumannSolver-96"><span class="linenos"> 96</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="RK4NeumannSolver-97"><a href="#RK4NeumannSolver-97"><span class="linenos"> 97</span></a><span class="sd">        Evolve the density matrix using the RK4 method.</span>
-</span><span id="RK4NeumannSolver-98"><a href="#RK4NeumannSolver-98"><span class="linenos"> 98</span></a>
-</span><span id="RK4NeumannSolver-99"><a href="#RK4NeumannSolver-99"><span class="linenos"> 99</span></a><span class="sd">        Parameters:</span>
-</span><span id="RK4NeumannSolver-100"><a href="#RK4NeumannSolver-100"><span class="linenos">100</span></a><span class="sd">            rho: Initial density matrix ρ(t=0) (dense).</span>
-</span><span id="RK4NeumannSolver-101"><a href="#RK4NeumannSolver-101"><span class="linenos">101</span></a><span class="sd">            H: Hamiltonian (sparse).</span>
-</span><span id="RK4NeumannSolver-102"><a href="#RK4NeumannSolver-102"><span class="linenos">102</span></a><span class="sd">            dt: Time step interval.</span>
-</span><span id="RK4NeumannSolver-103"><a href="#RK4NeumannSolver-103"><span class="linenos">103</span></a><span class="sd">            total_time: Total simulation time.</span>
-</span><span id="RK4NeumannSolver-104"><a href="#RK4NeumannSolver-104"><span class="linenos">104</span></a><span class="sd">            rho_0: Initial density matrix for the decay term. If None, rho at t=0 is used.</span>
-</span><span id="RK4NeumannSolver-105"><a href="#RK4NeumannSolver-105"><span class="linenos">105</span></a><span class="sd">            tau: Decay time constant τ.</span>
-</span><span id="RK4NeumannSolver-106"><a href="#RK4NeumannSolver-106"><span class="linenos">106</span></a><span class="sd">            observables: List of observables to measure at each step.</span>
-</span><span id="RK4NeumannSolver-107"><a href="#RK4NeumannSolver-107"><span class="linenos">107</span></a>
-</span><span id="RK4NeumannSolver-108"><a href="#RK4NeumannSolver-108"><span class="linenos">108</span></a><span class="sd">        Returns:</span>
-</span><span id="RK4NeumannSolver-109"><a href="#RK4NeumannSolver-109"><span class="linenos">109</span></a><span class="sd">            None. The density matrix is evolved in-place over the total time. Measurements are handled by Observables.</span>
-</span><span id="RK4NeumannSolver-110"><a href="#RK4NeumannSolver-110"><span class="linenos">110</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="RK4NeumannSolver-111"><a href="#RK4NeumannSolver-111"><span class="linenos">111</span></a>        <span class="n">n_steps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">total_time</span> <span class="o">/</span> <span class="n">dt</span><span class="p">)</span>
-</span><span id="RK4NeumannSolver-112"><a href="#RK4NeumannSolver-112"><span class="linenos">112</span></a>
-</span><span id="RK4NeumannSolver-113"><a href="#RK4NeumannSolver-113"><span class="linenos">113</span></a>        <span class="k">if</span> <span class="n">tau</span> <span class="o">!=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">rho_0</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="RK4NeumannSolver-114"><a href="#RK4NeumannSolver-114"><span class="linenos">114</span></a>            <span class="n">rho_0</span> <span class="o">=</span> <span class="n">rho</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-</span><span id="RK4NeumannSolver-115"><a href="#RK4NeumannSolver-115"><span class="linenos">115</span></a>
-</span><span id="RK4NeumannSolver-116"><a href="#RK4NeumannSolver-116"><span class="linenos">116</span></a>        <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">trange</span><span class="p">(</span><span class="n">n_steps</span><span class="p">,</span> <span class="n">disable</span><span class="o">=</span><span class="ow">not</span> <span class="n">progress</span><span class="p">):</span>
-</span><span id="RK4NeumannSolver-117"><a href="#RK4NeumannSolver-117"><span class="linenos">117</span></a>            <span class="n">t</span> <span class="o">=</span> <span class="n">step</span> <span class="o">*</span> <span class="n">dt</span>
-</span><span id="RK4NeumannSolver-118"><a href="#RK4NeumannSolver-118"><span class="linenos">118</span></a>
-</span><span id="RK4NeumannSolver-119"><a href="#RK4NeumannSolver-119"><span class="linenos">119</span></a>            <span class="k">for</span> <span class="n">observable</span> <span class="ow">in</span> <span class="n">observables</span> <span class="ow">or</span> <span class="p">[]:</span>
-</span><span id="RK4NeumannSolver-120"><a href="#RK4NeumannSolver-120"><span class="linenos">120</span></a>                <span class="n">observable</span><span class="o">.</span><span class="n">measure</span><span class="p">(</span><span class="n">rho</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
-</span><span id="RK4NeumannSolver-121"><a href="#RK4NeumannSolver-121"><span class="linenos">121</span></a>
-</span><span id="RK4NeumannSolver-122"><a href="#RK4NeumannSolver-122"><span class="linenos">122</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_rk4_step</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">rho_0</span><span class="p">,</span> <span class="n">tau</span><span class="p">)</span>
-</span><span id="RK4NeumannSolver-123"><a href="#RK4NeumannSolver-123"><span class="linenos">123</span></a>
-</span><span id="RK4NeumannSolver-124"><a href="#RK4NeumannSolver-124"><span class="linenos">124</span></a>        <span class="k">for</span> <span class="n">observable</span> <span class="ow">in</span> <span class="n">observables</span> <span class="ow">or</span> <span class="p">[]:</span>
-</span><span id="RK4NeumannSolver-125"><a href="#RK4NeumannSolver-125"><span class="linenos">125</span></a>            <span class="n">observable</span><span class="o">.</span><span class="n">finalize</span><span class="p">()</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="RK4NeumannSolver-102"><a href="#RK4NeumannSolver-102"><span class="linenos">102</span></a><span class="k">class</span><span class="w"> </span><span class="nc">RK4NeumannSolver</span><span class="p">(</span><span class="n">NeumannSolver</span><span class="p">):</span>
+</span><span id="RK4NeumannSolver-103"><a href="#RK4NeumannSolver-103"><span class="linenos">103</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Implements the RK4 integration method. Currently support the basic case of von Neumann equation with simple decay term and a scalarly time-dependent Hamiltonian.&quot;&quot;&quot;</span>
+</span><span id="RK4NeumannSolver-104"><a href="#RK4NeumannSolver-104"><span class="linenos">104</span></a>
+</span><span id="RK4NeumannSolver-105"><a href="#RK4NeumannSolver-105"><span class="linenos">105</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">_step</span><span class="p">(</span>
+</span><span id="RK4NeumannSolver-106"><a href="#RK4NeumannSolver-106"><span class="linenos">106</span></a>        <span class="bp">self</span><span class="p">,</span>
+</span><span id="RK4NeumannSolver-107"><a href="#RK4NeumannSolver-107"><span class="linenos">107</span></a>        <span class="n">t</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+</span><span id="RK4NeumannSolver-108"><a href="#RK4NeumannSolver-108"><span class="linenos">108</span></a>        <span class="n">rho</span><span class="p">:</span> <span class="n">B</span><span class="o">.</span><span class="n">Array</span><span class="p">,</span>
+</span><span id="RK4NeumannSolver-109"><a href="#RK4NeumannSolver-109"><span class="linenos">109</span></a>        <span class="n">H</span><span class="p">:</span> <span class="n">Hamiltonian</span><span class="p">,</span>
+</span><span id="RK4NeumannSolver-110"><a href="#RK4NeumannSolver-110"><span class="linenos">110</span></a>        <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+</span><span id="RK4NeumannSolver-111"><a href="#RK4NeumannSolver-111"><span class="linenos">111</span></a>        <span class="n">rho_0</span><span class="p">:</span> <span class="s2">&quot;B.Array | None&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="RK4NeumannSolver-112"><a href="#RK4NeumannSolver-112"><span class="linenos">112</span></a>        <span class="n">tau</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">),</span>
+</span><span id="RK4NeumannSolver-113"><a href="#RK4NeumannSolver-113"><span class="linenos">113</span></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="RK4NeumannSolver-114"><a href="#RK4NeumannSolver-114"><span class="linenos">114</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="RK4NeumannSolver-115"><a href="#RK4NeumannSolver-115"><span class="linenos">115</span></a><span class="sd">        Perform a single Runge-Kutta 4th order step to evolve the density matrix (in-place).</span>
+</span><span id="RK4NeumannSolver-116"><a href="#RK4NeumannSolver-116"><span class="linenos">116</span></a>
+</span><span id="RK4NeumannSolver-117"><a href="#RK4NeumannSolver-117"><span class="linenos">117</span></a><span class="sd">        Parameters:</span>
+</span><span id="RK4NeumannSolver-118"><a href="#RK4NeumannSolver-118"><span class="linenos">118</span></a><span class="sd">            t: Current time.</span>
+</span><span id="RK4NeumannSolver-119"><a href="#RK4NeumannSolver-119"><span class="linenos">119</span></a><span class="sd">            rho: Density matrix ρ(t) (dense).</span>
+</span><span id="RK4NeumannSolver-120"><a href="#RK4NeumannSolver-120"><span class="linenos">120</span></a><span class="sd">            H: Hamiltonian (sparse).</span>
+</span><span id="RK4NeumannSolver-121"><a href="#RK4NeumannSolver-121"><span class="linenos">121</span></a><span class="sd">            dt: Time step interval.</span>
+</span><span id="RK4NeumannSolver-122"><a href="#RK4NeumannSolver-122"><span class="linenos">122</span></a><span class="sd">            rho_0: Initial density matrix for the decay term.</span>
+</span><span id="RK4NeumannSolver-123"><a href="#RK4NeumannSolver-123"><span class="linenos">123</span></a><span class="sd">            tau: Decay time constant τ.</span>
+</span><span id="RK4NeumannSolver-124"><a href="#RK4NeumannSolver-124"><span class="linenos">124</span></a>
+</span><span id="RK4NeumannSolver-125"><a href="#RK4NeumannSolver-125"><span class="linenos">125</span></a><span class="sd">        Returns:</span>
+</span><span id="RK4NeumannSolver-126"><a href="#RK4NeumannSolver-126"><span class="linenos">126</span></a><span class="sd">            None. The density matrix is evolved in-place one RK4 step.</span>
+</span><span id="RK4NeumannSolver-127"><a href="#RK4NeumannSolver-127"><span class="linenos">127</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="RK4NeumannSolver-128"><a href="#RK4NeumannSolver-128"><span class="linenos">128</span></a>        <span class="n">k1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_evolution_derivative</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">H</span><span class="o">.</span><span class="n">at_time</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="n">rho_0</span><span class="p">,</span> <span class="n">tau</span><span class="p">)</span>
+</span><span id="RK4NeumannSolver-129"><a href="#RK4NeumannSolver-129"><span class="linenos">129</span></a>
+</span><span id="RK4NeumannSolver-130"><a href="#RK4NeumannSolver-130"><span class="linenos">130</span></a>        <span class="n">k2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_evolution_derivative</span><span class="p">(</span>
+</span><span id="RK4NeumannSolver-131"><a href="#RK4NeumannSolver-131"><span class="linenos">131</span></a>            <span class="n">t</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">dt</span><span class="p">,</span> <span class="n">rho</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">dt</span> <span class="o">*</span> <span class="n">k1</span><span class="p">,</span> <span class="n">H</span><span class="o">.</span><span class="n">at_time</span><span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">dt</span><span class="p">),</span> <span class="n">rho_0</span><span class="p">,</span> <span class="n">tau</span>
+</span><span id="RK4NeumannSolver-132"><a href="#RK4NeumannSolver-132"><span class="linenos">132</span></a>        <span class="p">)</span>
+</span><span id="RK4NeumannSolver-133"><a href="#RK4NeumannSolver-133"><span class="linenos">133</span></a>        <span class="n">k3</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_evolution_derivative</span><span class="p">(</span>
+</span><span id="RK4NeumannSolver-134"><a href="#RK4NeumannSolver-134"><span class="linenos">134</span></a>            <span class="n">t</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">dt</span><span class="p">,</span> <span class="n">rho</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">dt</span> <span class="o">*</span> <span class="n">k2</span><span class="p">,</span> <span class="n">H</span><span class="o">.</span><span class="n">at_time</span><span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">dt</span><span class="p">),</span> <span class="n">rho_0</span><span class="p">,</span> <span class="n">tau</span>
+</span><span id="RK4NeumannSolver-135"><a href="#RK4NeumannSolver-135"><span class="linenos">135</span></a>        <span class="p">)</span>
+</span><span id="RK4NeumannSolver-136"><a href="#RK4NeumannSolver-136"><span class="linenos">136</span></a>        <span class="n">k4</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_evolution_derivative</span><span class="p">(</span>
+</span><span id="RK4NeumannSolver-137"><a href="#RK4NeumannSolver-137"><span class="linenos">137</span></a>            <span class="n">t</span> <span class="o">+</span> <span class="n">dt</span><span class="p">,</span> <span class="n">rho</span> <span class="o">+</span> <span class="n">dt</span> <span class="o">*</span> <span class="n">k3</span><span class="p">,</span> <span class="n">H</span><span class="o">.</span><span class="n">at_time</span><span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="n">dt</span><span class="p">),</span> <span class="n">rho_0</span><span class="p">,</span> <span class="n">tau</span>
+</span><span id="RK4NeumannSolver-138"><a href="#RK4NeumannSolver-138"><span class="linenos">138</span></a>        <span class="p">)</span>
+</span><span id="RK4NeumannSolver-139"><a href="#RK4NeumannSolver-139"><span class="linenos">139</span></a>
+</span><span id="RK4NeumannSolver-140"><a href="#RK4NeumannSolver-140"><span class="linenos">140</span></a>        <span class="n">rho</span> <span class="o">+=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="mf">6.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">dt</span> <span class="o">*</span> <span class="p">(</span><span class="n">k1</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">k2</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">k3</span> <span class="o">+</span> <span class="n">k4</span><span class="p">)</span>
+</span><span id="RK4NeumannSolver-141"><a href="#RK4NeumannSolver-141"><span class="linenos">141</span></a>
+</span><span id="RK4NeumannSolver-142"><a href="#RK4NeumannSolver-142"><span class="linenos">142</span></a>        <span class="c1"># Ensure hermiticity</span>
+</span><span id="RK4NeumannSolver-143"><a href="#RK4NeumannSolver-143"><span class="linenos">143</span></a>        <span class="n">rho</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">(</span><span class="n">rho</span> <span class="o">+</span> <span class="n">rho</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">conj</span><span class="p">())</span> <span class="o">/</span> <span class="mf">2.0</span>
 </span></pre></div>
 
 
@@ -325,78 +253,17 @@ realspace_tb    </h1>
 </div>
 
 
-                            <div id="RK4NeumannSolver.evolve" class="classattr">
-                                        <input id="RK4NeumannSolver.evolve-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-<div class="attr function">
-            
-        <span class="def">def</span>
-        <span class="name">evolve</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">rho</span><span class="p">:</span> <span class="s1">&#39;NDArray[np.complex128] | NDArray[np.complex64] | NDArray[np.float64] | NDArray[np.float32] | cp.ndarray&#39;</span>,</span><span class="param">	<span class="n">H</span><span class="p">:</span> <span class="n"><a href="#Hamiltonian">Hamiltonian</a></span>,</span><span class="param">	<span class="n">dt</span><span class="p">:</span> <span class="nb">float</span>,</span><span class="param">	<span class="n">total_time</span><span class="p">:</span> <span class="nb">float</span>,</span><span class="param">	<span class="n">rho_0</span><span class="p">:</span> <span class="s1">&#39;B.Array | None&#39;</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">tau</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">inf</span>,</span><span class="param">	<span class="n">observables</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n"><a href="#Observable">Observable</a></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span></span><span class="return-annotation">) -> <span class="kc">None</span>:</span></span>
+                </section>
+                <section id="RK6NeumannSolver">
+                    <div class="attr variable">
+            <span class="name">RK6NeumannSolver</span>
 
-                <label class="view-source-button" for="RK4NeumannSolver.evolve-view-source"><span>View Source</span></label>
-
+        
     </div>
-    <a class="headerlink" href="#RK4NeumannSolver.evolve"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="RK4NeumannSolver.evolve-85"><a href="#RK4NeumannSolver.evolve-85"><span class="linenos"> 85</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">evolve</span><span class="p">(</span>
-</span><span id="RK4NeumannSolver.evolve-86"><a href="#RK4NeumannSolver.evolve-86"><span class="linenos"> 86</span></a>        <span class="bp">self</span><span class="p">,</span>
-</span><span id="RK4NeumannSolver.evolve-87"><a href="#RK4NeumannSolver.evolve-87"><span class="linenos"> 87</span></a>        <span class="n">rho</span><span class="p">:</span> <span class="n">B</span><span class="o">.</span><span class="n">Array</span><span class="p">,</span>
-</span><span id="RK4NeumannSolver.evolve-88"><a href="#RK4NeumannSolver.evolve-88"><span class="linenos"> 88</span></a>        <span class="n">H</span><span class="p">:</span> <span class="n">Hamiltonian</span><span class="p">,</span>
-</span><span id="RK4NeumannSolver.evolve-89"><a href="#RK4NeumannSolver.evolve-89"><span class="linenos"> 89</span></a>        <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-</span><span id="RK4NeumannSolver.evolve-90"><a href="#RK4NeumannSolver.evolve-90"><span class="linenos"> 90</span></a>        <span class="n">total_time</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-</span><span id="RK4NeumannSolver.evolve-91"><a href="#RK4NeumannSolver.evolve-91"><span class="linenos"> 91</span></a>        <span class="n">rho_0</span><span class="p">:</span> <span class="s2">&quot;B.Array | None&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="RK4NeumannSolver.evolve-92"><a href="#RK4NeumannSolver.evolve-92"><span class="linenos"> 92</span></a>        <span class="n">tau</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">),</span>
-</span><span id="RK4NeumannSolver.evolve-93"><a href="#RK4NeumannSolver.evolve-93"><span class="linenos"> 93</span></a>        <span class="n">observables</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Observable</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="RK4NeumannSolver.evolve-94"><a href="#RK4NeumannSolver.evolve-94"><span class="linenos"> 94</span></a>        <span class="n">progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-</span><span id="RK4NeumannSolver.evolve-95"><a href="#RK4NeumannSolver.evolve-95"><span class="linenos"> 95</span></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="RK4NeumannSolver.evolve-96"><a href="#RK4NeumannSolver.evolve-96"><span class="linenos"> 96</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="RK4NeumannSolver.evolve-97"><a href="#RK4NeumannSolver.evolve-97"><span class="linenos"> 97</span></a><span class="sd">        Evolve the density matrix using the RK4 method.</span>
-</span><span id="RK4NeumannSolver.evolve-98"><a href="#RK4NeumannSolver.evolve-98"><span class="linenos"> 98</span></a>
-</span><span id="RK4NeumannSolver.evolve-99"><a href="#RK4NeumannSolver.evolve-99"><span class="linenos"> 99</span></a><span class="sd">        Parameters:</span>
-</span><span id="RK4NeumannSolver.evolve-100"><a href="#RK4NeumannSolver.evolve-100"><span class="linenos">100</span></a><span class="sd">            rho: Initial density matrix ρ(t=0) (dense).</span>
-</span><span id="RK4NeumannSolver.evolve-101"><a href="#RK4NeumannSolver.evolve-101"><span class="linenos">101</span></a><span class="sd">            H: Hamiltonian (sparse).</span>
-</span><span id="RK4NeumannSolver.evolve-102"><a href="#RK4NeumannSolver.evolve-102"><span class="linenos">102</span></a><span class="sd">            dt: Time step interval.</span>
-</span><span id="RK4NeumannSolver.evolve-103"><a href="#RK4NeumannSolver.evolve-103"><span class="linenos">103</span></a><span class="sd">            total_time: Total simulation time.</span>
-</span><span id="RK4NeumannSolver.evolve-104"><a href="#RK4NeumannSolver.evolve-104"><span class="linenos">104</span></a><span class="sd">            rho_0: Initial density matrix for the decay term. If None, rho at t=0 is used.</span>
-</span><span id="RK4NeumannSolver.evolve-105"><a href="#RK4NeumannSolver.evolve-105"><span class="linenos">105</span></a><span class="sd">            tau: Decay time constant τ.</span>
-</span><span id="RK4NeumannSolver.evolve-106"><a href="#RK4NeumannSolver.evolve-106"><span class="linenos">106</span></a><span class="sd">            observables: List of observables to measure at each step.</span>
-</span><span id="RK4NeumannSolver.evolve-107"><a href="#RK4NeumannSolver.evolve-107"><span class="linenos">107</span></a>
-</span><span id="RK4NeumannSolver.evolve-108"><a href="#RK4NeumannSolver.evolve-108"><span class="linenos">108</span></a><span class="sd">        Returns:</span>
-</span><span id="RK4NeumannSolver.evolve-109"><a href="#RK4NeumannSolver.evolve-109"><span class="linenos">109</span></a><span class="sd">            None. The density matrix is evolved in-place over the total time. Measurements are handled by Observables.</span>
-</span><span id="RK4NeumannSolver.evolve-110"><a href="#RK4NeumannSolver.evolve-110"><span class="linenos">110</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="RK4NeumannSolver.evolve-111"><a href="#RK4NeumannSolver.evolve-111"><span class="linenos">111</span></a>        <span class="n">n_steps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">total_time</span> <span class="o">/</span> <span class="n">dt</span><span class="p">)</span>
-</span><span id="RK4NeumannSolver.evolve-112"><a href="#RK4NeumannSolver.evolve-112"><span class="linenos">112</span></a>
-</span><span id="RK4NeumannSolver.evolve-113"><a href="#RK4NeumannSolver.evolve-113"><span class="linenos">113</span></a>        <span class="k">if</span> <span class="n">tau</span> <span class="o">!=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">rho_0</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="RK4NeumannSolver.evolve-114"><a href="#RK4NeumannSolver.evolve-114"><span class="linenos">114</span></a>            <span class="n">rho_0</span> <span class="o">=</span> <span class="n">rho</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-</span><span id="RK4NeumannSolver.evolve-115"><a href="#RK4NeumannSolver.evolve-115"><span class="linenos">115</span></a>
-</span><span id="RK4NeumannSolver.evolve-116"><a href="#RK4NeumannSolver.evolve-116"><span class="linenos">116</span></a>        <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">trange</span><span class="p">(</span><span class="n">n_steps</span><span class="p">,</span> <span class="n">disable</span><span class="o">=</span><span class="ow">not</span> <span class="n">progress</span><span class="p">):</span>
-</span><span id="RK4NeumannSolver.evolve-117"><a href="#RK4NeumannSolver.evolve-117"><span class="linenos">117</span></a>            <span class="n">t</span> <span class="o">=</span> <span class="n">step</span> <span class="o">*</span> <span class="n">dt</span>
-</span><span id="RK4NeumannSolver.evolve-118"><a href="#RK4NeumannSolver.evolve-118"><span class="linenos">118</span></a>
-</span><span id="RK4NeumannSolver.evolve-119"><a href="#RK4NeumannSolver.evolve-119"><span class="linenos">119</span></a>            <span class="k">for</span> <span class="n">observable</span> <span class="ow">in</span> <span class="n">observables</span> <span class="ow">or</span> <span class="p">[]:</span>
-</span><span id="RK4NeumannSolver.evolve-120"><a href="#RK4NeumannSolver.evolve-120"><span class="linenos">120</span></a>                <span class="n">observable</span><span class="o">.</span><span class="n">measure</span><span class="p">(</span><span class="n">rho</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
-</span><span id="RK4NeumannSolver.evolve-121"><a href="#RK4NeumannSolver.evolve-121"><span class="linenos">121</span></a>
-</span><span id="RK4NeumannSolver.evolve-122"><a href="#RK4NeumannSolver.evolve-122"><span class="linenos">122</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_rk4_step</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">rho_0</span><span class="p">,</span> <span class="n">tau</span><span class="p">)</span>
-</span><span id="RK4NeumannSolver.evolve-123"><a href="#RK4NeumannSolver.evolve-123"><span class="linenos">123</span></a>
-</span><span id="RK4NeumannSolver.evolve-124"><a href="#RK4NeumannSolver.evolve-124"><span class="linenos">124</span></a>        <span class="k">for</span> <span class="n">observable</span> <span class="ow">in</span> <span class="n">observables</span> <span class="ow">or</span> <span class="p">[]:</span>
-</span><span id="RK4NeumannSolver.evolve-125"><a href="#RK4NeumannSolver.evolve-125"><span class="linenos">125</span></a>            <span class="n">observable</span><span class="o">.</span><span class="n">finalize</span><span class="p">()</span>
-</span></pre></div>
+    <a class="headerlink" href="#RK6NeumannSolver"></a>
+    
+    
 
-
-            <div class="docstring"><p>Evolve the density matrix using the RK4 method.</p>
-
-<p>Parameters:
-    rho: Initial density matrix ρ(t=0) (dense).
-    H: Hamiltonian (sparse).
-    dt: Time step interval.
-    total_time: Total simulation time.
-    rho_0: Initial density matrix for the decay term. If None, rho at t=0 is used.
-    tau: Decay time constant τ.
-    observables: List of observables to measure at each step.</p>
-
-<p>Returns:
-    None. The density matrix is evolved in-place over the total time. Measurements are handled by Observables.</p>
-</div>
-
-
-                            </div>
                 </section>
                 <section id="Hamiltonian">
                             <input id="Hamiltonian-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
