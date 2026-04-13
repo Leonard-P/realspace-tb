@@ -59,43 +59,12 @@ class VorticityObservable(Observable):
         return self._c * B.xp().sum(I_edges, axis=1)  # (n_cells,)
 
 
-class VortSourceObservable(VorticityObservable):
-    r"""Measures the vorticity source
-
-    $$\sum_{(R,R')\in\partial P} \hat{f}_{R\rightarrow R'}$$
-    """
-
-    def _compute_edge_forces(self, rho: B.Array, t: float) -> B.Array:
-        r"""Compute bond currents along plaquette edges.
-
-        Uses the gauge-invariant formula
-        $f_{i<-j}(t) = 2\,\mathrm{Im}(dH_{ij}(t)_dt\,\rho_{ji}(t))$.
-        When no Hamiltonian is stored (`t_{hop} = -1`), this reduces to
-        $2\,\mathrm{Im}(0.0*\rho_{ij})$.
-        """
-        if self._hamiltonian is not None:
-            dH_dt = self._hamiltonian.derivative_at_time(t)
-            xp = B.xp()
-            rows_flat = self._rows.ravel()
-            cols_flat = self._cols.ravel()
-            # Order reversed due to sign-change from -1.0 to +1.0 in self._c, which flips the current direction convention and thus the order of indices in the current formula. This is a bit subtle and could be made clearer by defining a helper function for the current that takes care of the index ordering and sign convention.
-            # h_ij = xp.asarray(H_t[rows_flat, cols_flat]).reshape(self._rows.shape)
-            dh_ij_dt = xp.asarray(dH_dt[cols_flat, rows_flat]).reshape(self._cols.shape)
-            # return 2.0 * xp.imag(h_ij * rho[self._cols, self._rows])
-            return 2.0 * xp.imag(dh_ij_dt * rho[self._rows, self._cols])
-        # return 2.0 * xp.imag(h_ij * rho[self._rows, self._cols])
-        return 2.0 * B.xp().imag(0.0 * rho[self._cols, self._rows])
-
-    def _compute(self, rho: B.Array, t: float) -> B.Array:
-        F_edges = self._compute_edge_forces(rho, t)
-        return self._c * B.xp().sum(F_edges, axis=1)  # (n_cells,)
-
-
 class VortFluxObservable(VorticityObservable):
     r"""Measures the unmodified vorticity flux
 
-    $$\Omega_{P_{i}\rightarrow P}=\sum_{X\in\partial P}
-    \frac{1}{d_{X}}\sum_{(R,R')\in\partial P_{i}}\hat{\Pi}^{R\rightarrow R'}_{X}$$
+    $$\hat{\Omega}_{P_{i}\rightarrow P}
+    =\frac{1}{2}\Bigl(\hat{\Lambda}_{P_{i}\rightarrow P}-\hat{\Lambda}_{P\rightarrow P_{i}}\Bigr)$$
+    This observable is already ANTISYMMETRIC
     """
 
     def __init__(
@@ -173,22 +142,23 @@ class VortFluxObservable(VorticityObservable):
         )
 
     def _compute(self, rho: B.Array, t: float) -> B.Array:
-        return self._compute_vort_fluxes(rho, t)
+        Lambda = self._compute_vort_fluxes(rho, t)
+        return 0.5 * (Lambda - Lambda.T)
 
 
-class VortFluxModObservable(VortFluxObservable):
-    r"""Measures the modified vorticity flux (the bond force terms are already included)
+class VortSourceObservable(VortFluxObservable):
+    r"""Measures the vorticity source
 
-    $$\Omega_{P_{i}\rightarrow P}=\sum_{X\in\partial P}
-    \frac{1}{d_{X}}\sum_{(R,R')\in\partial P_{i}}\hat{\Pi}^{R\rightarrow R'}_{X}
-    -\delta_{P,P_{i}}\Omega_{f,P_{i}}$$
+    $$\hat{\Omega}_{f,P_{i}}=-\frac{1}{2}\sum_{P}\Bigl(\hat{\Lambda}_{P_{i}\rightarrow P}+\hat{\Lambda}_{P\rightarrow P_{i}}\Bigr)
+    +\sum_{(\mathbf{R},\mathbf{R}')\in\partial P_{i}}\hat{f}_{\mathbf{R}\rightarrow\mathbf{R}'}$$
+    This observable already captures the SYMMETRIC part of the old vorticity flux
     """
 
     def _compute_edge_forces(self, rho: B.Array, t: float) -> B.Array:
-        r"""Compute bond forces along plaquette edges.
+        r"""Compute bond currents along plaquette edges.
 
         Uses the gauge-invariant formula
-        $F_{i<-j}(t) = 2\,\mathrm{Im}(dH_{ij}(t)_dt\,\rho_{ji}(t))$.
+        $f_{i<-j}(t) = 2\,\mathrm{Im}(dH_{ij}(t)_dt\,\rho_{ji}(t))$.
         When no Hamiltonian is stored (`t_{hop} = -1`), this reduces to
         $2\,\mathrm{Im}(0.0*\rho_{ij})$.
         """
@@ -205,7 +175,24 @@ class VortFluxModObservable(VortFluxObservable):
         # return 2.0 * xp.imag(h_ij * rho[self._rows, self._cols])
         return 2.0 * B.xp().imag(0.0 * rho[self._cols, self._rows])
 
-    def _compute_vort_fluxes(self, rho: B.Array, t: float) -> B.Array:
+    def _compute(self, rho: B.Array, t: float) -> B.Array:
+        Lambda = self._compute_vort_fluxes(rho, t)
+        F_edges = self._compute_edge_forces(rho, t)
+        return -0.5 * B.xp().sum(Lambda + Lambda.T, axis=1) + self._c * B.xp().sum(
+            F_edges, axis=1
+        )  # (n_cells,)
+
+
+class VortFluxModObservable(VortSourceObservable):
+    r"""Measures the modified vorticity flux
+
+    $$\Omega_{P_{i}\rightarrow P}=\sum_{X\in\partial P}
+    \frac{1}{d_{X}}\sum_{(R,R')\in\partial P_{i}}\hat{\Pi}^{R\rightarrow R'}_{X}
+    -\delta_{P,P_{i}}\Omega_{f,P_{i}}$$
+    This observable is NEITHER symmetric nor antisymmetric.
+    """
+
+    def _compute(self, rho: B.Array, t: float) -> B.Array:
         F_edges = self._compute_edge_forces(rho, t)
         Pi = self._compute_edge_fluxes_per_plaquette(rho, t)
         return (
@@ -216,23 +203,6 @@ class VortFluxModObservable(VortFluxObservable):
                 )
             ).T
         ) - B.xp().diag(self._c * B.xp().sum(F_edges, axis=1))
-
-    def _compute(self, rho: B.Array, t: float) -> B.Array:
-        return self._compute_vort_fluxes(rho, t)
-
-
-class VortFluxModSymmObservable(VortFluxModObservable):
-    def _compute(self, rho: B.Array, t: float) -> B.Array:
-        Omega = self._compute_vort_fluxes(rho, t)
-        OmegaSymm = 0.5 * (Omega + Omega.T)
-        return OmegaSymm
-
-
-class VortFluxModAntiSymmObservable(VortFluxModObservable):
-    def _compute(self, rho: B.Array, t: float) -> B.Array:
-        Omega = self._compute_vort_fluxes(rho, t)
-        OmegaAntiSymm = 0.5 * (Omega - Omega.T)
-        return OmegaAntiSymm
 
 
 class OrbitalPolarizationObservable(VorticityObservable):
