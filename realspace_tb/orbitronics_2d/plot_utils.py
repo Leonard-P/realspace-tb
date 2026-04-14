@@ -120,7 +120,11 @@ class PlotConfig:
     legend_site_occupation_label: str = "Site Occupation $\\langle \\hat n_i\\rangle $"
     legend_oam_label: str = "Vorticity"
     colorbar_site_occupation_label: str = "Site Occupation"
+    colorbar_site_occupation_fontsize: float = 16
+    colorbar_site_occupation_textsize: float = 12
     colorbar_oam_label: str = "Vorticity [a.u.]"
+    colorbar_oam_fontsize: float = 16
+    colorbar_oam_textsize: float = 12
     colorbar_layout_direction: str = "vertical"
     colorbar_width: float | None = None
     colorbar_height: float | None = None
@@ -714,7 +718,7 @@ def _create_scene(
         }
     ]
     if include_colorbars:
-        append_colorbar(
+        cb_occ = append_colorbar(
             fig,
             ax,
             occ_sm,
@@ -723,6 +727,11 @@ def _create_scene(
             colorbar_width=config.colorbar_width,
             colorbar_height=config.colorbar_height,
         )
+        cb_occ.set_label(
+            config.colorbar_site_occupation_label,
+            fontsize=config.colorbar_site_occupation_fontsize,
+        )
+        cb_occ.ax.tick_params(labelsize=config.colorbar_site_occupation_textsize)
 
     if show_oam_indicators and curl_sc is not None:
         oam_norm = Normalize(vmin=-oam_vmax_f, vmax=oam_vmax_f)
@@ -751,6 +760,10 @@ def _create_scene(
             )
             formatter = ScalarFormatter(useMathText=True)
             formatter.set_powerlimits((-2, 2))
+            cb_oam.set_label(
+                config.colorbar_oam_label, fontsize=config.colorbar_oam_fontsize
+            )
+            cb_oam.ax.tick_params(labelsize=config.colorbar_oam_textsize)
             cb_oam.ax.yaxis.set_major_formatter(formatter)
             cb_oam.update_ticks()
 
@@ -788,6 +801,7 @@ def _create_scene(
         "field_label_offset": label_offset_value,
         "colorbar_specs": colorbar_specs,
     }
+
     return fig, ax, ctx
 
 
