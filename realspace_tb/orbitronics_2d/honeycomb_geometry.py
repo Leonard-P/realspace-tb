@@ -35,6 +35,8 @@ class HoneycombLatticeGeometry(Lattice2DGeometry):
         self._plaquette_indices: "B.FCPUArray | None" = None
         self._plaquette_positions: "B.FCPUArray | None" = None
         self._plaquette_anchors_cpu: "B.FCPUArray | None" = None
+        self._plaq_xstep: np.floating | None = None
+        self._plaq_ystep: np.floating | None = None
 
         assert np.allclose(
             np.linalg.norm(self.bond_vectors, axis=1), 1.0
@@ -179,22 +181,31 @@ class HoneycombLatticeGeometry(Lattice2DGeometry):
             center = np.mean(positions, axis=0)
             plaquette_positions.append(center)
         self._plaquette_positions = B.xp().array(plaquette_positions, dtype=B.FCPUDTYPE)
+        self._plaq_xstep = B.xp().diff(np.unique(self._plaquette_positions[:, 0]))[0]
+        self._plaq_ystep = B.xp().diff(np.unique(self._plaquette_positions[:, 1]))[0]
 
     @property
-    def plaquettes(self) -> Tuple[B.FCPUArray, B.FCPUArray]:
+    def plaquettes(self) -> Tuple[B.FCPUArray, B.FCPUArray, float, float]:
         """Tuple of (plaquette_indices, plaquette_positions).
-        plaquette_indices: Array of site indices in CCW order for each plaquette [[i, j, k, ...], ...]
+        plaquette_indices: Array of site indices in CCW order for each plaquette [[i, j, k, ...], ...].
         plaquette_positions: Array of positions for each plaquette, center of boundary sites.
+        plaq_xstep: x-distance of two nearest neighboring plaquette centers.
+        plaq_ystep: y-distance of two nearest neighboring plaquette centers.
         """
         if self._plaquette_indices is None:
             self._list_plaquettes()
-        return self._plaquette_indices, self._plaquette_positions
+        return (
+            self._plaquette_indices,
+            self._plaquette_positions,
+            self._plaq_xstep,
+            self._plaq_ystep,
+        )
 
     @property
     def site_plaquette_count(self) -> B.FCPUArray:
         """Count of boundary plaquettes per site index."""
         # ensure plaquette data exists
-        plaquette_indices, _ = self.plaquettes  # (2, n_cells, n_edges)
+        plaquette_indices, _, _, _ = self.plaquettes  # (2, n_cells, n_edges)
 
         # flatten cell edges
         all_sites = plaquette_indices[0].ravel()
