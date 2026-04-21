@@ -43,3 +43,14 @@ class Hamiltonian(ABC):
         return (self.eigenstates * occupied @ self.eigenstates.T.conj()).astype(
             B.DTYPE, copy=False
         )
+
+    def thermal_state_density_matrix(
+        self, fermi_level: float = 0.0, beta: float = float("inf")
+    ) -> B.Array:
+        if beta == float("inf"):
+            return self.ground_state_density_matrix(fermi_level)
+        else:
+            exponent = beta * (self.eigenvalues - fermi_level)
+            exponent = np.clip(exponent, -595, 595)
+            weights = 1.0 / (np.exp(exponent) + 1.0)
+            return (self.eigenstates * weights) @ self.eigenstates.T.conj()
