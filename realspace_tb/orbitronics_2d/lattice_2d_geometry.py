@@ -3,6 +3,7 @@ from .. import backend as B
 import numpy as np
 from numpy.typing import NDArray
 
+
 class Lattice2DGeometry(ABC):
     def __init__(self) -> None:
         self._site_positions: "B.FCPUArray | None" = None
@@ -10,9 +11,10 @@ class Lattice2DGeometry(ABC):
     @property
     def site_positions(self) -> B.FCPUArray:
         if self._site_positions is None:
-            self._site_positions = np.array([
-                self.index_to_position(i) for i in range(self.Lx * self.Ly)
-            ], dtype=B.FCPUDTYPE)
+            self._site_positions = np.array(
+                [self.index_to_position(i) for i in range(self.Lx * self.Ly)],
+                dtype=B.FCPUDTYPE,
+            )
         return self._site_positions
 
     @property
@@ -61,9 +63,7 @@ class Lattice2DGeometry(ABC):
         nn = self.nearest_neighbors
         currents_arr = np.asarray(currents, dtype=float).reshape(-1)
         if currents_arr.shape[0] != nn.shape[0]:
-            raise ValueError(
-                "currents must have one entry per nearest-neighbor bond"
-            )
+            raise ValueError("currents must have one entry per nearest-neighbor bond")
 
         r_i_2d = np.asarray(self.site_positions[nn[:, 0]], dtype=float)
         r_k_2d = r_i_2d + np.asarray(self.bond_vectors, dtype=float)
@@ -126,10 +126,10 @@ class Lattice2DGeometry(ABC):
 
     Lx: int
     Ly: int
+    dim: int = 2
 
     # [[i, j], ...] the integer offsets of the plaquette that need to be added to the bravais lattice index to traverse the ring of bonds i->j around the plaquette counter-clockwise (looking against z)
     plaquette_path_offsets_ccw: NDArray[np.int_]
 
     # real space area of a single plaquette, often the unit cell area
     plaquette_area: float
-
