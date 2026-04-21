@@ -140,8 +140,8 @@ class HoneycombLatticeGeometry(Lattice2DGeometry):
             w = int((flat % Lx).max())
             h = int((flat // Lx).max())
 
-            valid_rows = (dx_r >= 0) & (dy_r >= 0) & (dx_r <= w) & (dy_r <= h)
-            valid_cols = (dx_c >= 0) & (dy_c >= 0) & (dx_c <= w) & (dy_c <= h)
+            valid_rows = (dx_r >= 0) & (dy_r >= 0) & (dx_r <= w + 1) & (dy_r <= h + 1)
+            valid_cols = (dx_c >= 0) & (dy_c >= 0) & (dx_c <= w + 1) & (dy_c <= h + 1)
 
             valid_edge = in_bounds & valid_rows & valid_cols
 
