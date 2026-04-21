@@ -5,13 +5,16 @@ from abc import ABC, abstractmethod
 import numpy as np
 
 
-def _build_hopping_csr(geometry: Lattice2DGeometry, dtype: type) -> "B.SparseArray":
-    """Build a sparse -1 nearest-neighbor hopping matrix from geometry."""
+def _build_hopping_csr(
+    geometry: Lattice2DGeometry, t_hop: float = -0.0367, dtype: type = B.DTYPE
+) -> "B.SparseArray":
+    """Build a sparse nearest-neighbor hopping matrix from geometry with t_hop.
+    Default t_hop = -0.0367 roughly equals 1 eV"""
     size = geometry.Lx * geometry.Ly
     nn = geometry.nearest_neighbors  # (E, 2)
     rows = np.concatenate([nn[:, 0], nn[:, 1]])
     cols = np.concatenate([nn[:, 1], nn[:, 0]])
-    data = B.xp().full(len(rows), -1.0, dtype=dtype)
+    data = B.xp().full(len(rows), t_hop, dtype=dtype)
     return (
         B.xp_sparse()
         .coo_matrix(
@@ -99,14 +102,17 @@ class RampedACFieldAmplitude(HomogeneousFieldAmplitude):
 
 class LinearFieldHamiltonian(Hamiltonian):
     def __init__(
-        self, geometry: Lattice2DGeometry, field_amplitude: HomogeneousFieldAmplitude
+        self,
+        geometry: Lattice2DGeometry,
+        t_hop: float,
+        field_amplitude: HomogeneousFieldAmplitude,
     ):
         super().__init__()
 
         self.geometry = geometry
         self.field_amplitude = field_amplitude
 
-        self.H_0 = _build_hopping_csr(geometry, dtype=B.FDTYPE)
+        self.H_0 = _build_hopping_csr(geometry, t_hop, dtype=B.FDTYPE)
 
         # Sparse diagonal: diag(r_i · E_direction), centred around zero
         position_shifts = B.xp().array(
@@ -132,14 +138,17 @@ class LinearFieldHamiltonianPeierls(Hamiltonian):
     """
 
     def __init__(
-        self, geometry: Lattice2DGeometry, field_amplitude: HomogeneousFieldAmplitude
+        self,
+        geometry: Lattice2DGeometry,
+        t_hop,
+        field_amplitude: HomogeneousFieldAmplitude,
     ):
         super().__init__()
 
         self.geometry = geometry
         self.field_amplitude = field_amplitude
 
-        self.H_0 = _build_hopping_csr(geometry, dtype=B.DTYPE)
+        self.H_0 = _build_hopping_csr(geometry, t_hop, dtype=B.DTYPE)
 
         # for Peierls substitution, we need a phase shift matrix with elements theta_kl = (r_k - r_l) . A(t)
         size = geometry.Lx * geometry.Ly
