@@ -1,4 +1,5 @@
 from ..observable import Observable, MeasurementWindow
+from .lattice_2d_geometry import Lattice2DGeometry
 from .honeycomb_geometry import HoneycombLatticeGeometry
 from ..hamiltonian import Hamiltonian
 from .. import backend as B
@@ -54,9 +55,12 @@ class VorticityObservable(Observable):
         # return 2.0 * xp.imag(h_ij * rho[self._rows, self._cols])
         return 2.0 * B.xp().imag(rho[self._cols, self._rows])
 
-    def _compute(self, rho: B.Array, t: float) -> B.Array:
+    def _compute_vortices(self, rho: B.Array, t: float) -> B.Array:
         I_edges = self._compute_edge_currents(rho, t)
-        return self._c * B.xp().sum(I_edges, axis=1)  # (n_cells,)
+        return B.xp().sum(I_edges, axis=1)  # (n_cells,)
+
+    def _compute(self, rho: B.Array, t: float) -> B.Array:
+        return self._c * self._compute_vortices(rho, t)
 
 
 class VortFluxObservable(VorticityObservable):
@@ -205,64 +209,42 @@ class VortFluxModObservable(VortSourceObservable):
         ) - B.xp().diag(self._c * B.xp().sum(F_edges, axis=1))
 
 
-class OrbitalPolarizationObservable(VorticityObservable):
-    r"""Measures the orbital polarization using loop currents around cells as
+class VortPolObservable(VorticityObservable):
+    r"""Measures the vortex polarization
 
-    $$\expval{P_{orb}} = -i\frac{m_e}{A_\mathrm{tot}} \sum_\alpha\sum_{(k,l)\in\circlearrowleft_{\vec R_\alpha}} (\sqrt 3\,\vec R_\alpha +\frac{5}{12}\begin{pmatrix}0&-1\\1&0\end{pmatrix} (\vec r_l - \vec r_k)) \Im \rho_{kl}$$
+    $$\mu^{i}_{\omega}=\sum_{k}\frac{\Omega_{k}}{A_{k}}\sum_{(R,R')\in\partial P_{k}}J_{R\rightarrow R'}(t)
+    |R'-R|\hat{n}^{k}_{i}(R^{k}+\alpha^{k}-R^{ref})$$
+    \alpha^{k} is chosen such that R^{k}+\alpha^{k} points to the center of the plaquette k.
+    1. WARNING: Observable is well-defined only along the direction of the OBC!
+    2. WARNING: Currently hard-coded for 2D lattices, whose plaquettes have all their normal
+                vectors pointing along one (z-)direction and all equal surface area.
     """
 
     def __init__(
         self,
         geometry: HoneycombLatticeGeometry,
-        electron_mass: float | None = None,
         window: MeasurementWindow | None = None,
         hamiltonian: Hamiltonian | None = None,
     ):
-        if electron_mass is None:
-            electron_mass = effective_electron_mass()
 
         super().__init__(geometry, window, hamiltonian)
-
-        self._origin = B.xp().array(geometry.origin)
-        self._m = electron_mass
-        self._c1 = -self._m * (B.xp().sqrt(3.0) / 2.0)
-        self._c2 = -self._m * (5.0 / 24.0)
+        assert isinstance(
+            geometry, Lattice2DGeometry
+        ), "Currently supports only Lattice2DGeometry with all plaquettes pointing in the same direction."
         _, plaquette_positions = geometry.plaquettes
+        origin = B.xp().mean(plaquette_positions, axis=0)
+        # Put the origin of CF in the centre of the current vortices
+        self._plaq_pos = plaquette_positions - origin
+        # Total area of plaquettes of the system
         self._A = plaquette_positions.shape[0] * geometry.plaquette_area
 
-        site_positions = B.xp().array(
-            [geometry.index_to_position(i) for i in range(geometry.Lx * geometry.Ly)],
-            dtype=B.FDTYPE,
-        )
-
-        # Edge vectors r_l - r_k per (cell, edge)
-        self._edge_vecs = (
-            site_positions[self._cols] - site_positions[self._rows]
-        )  # (n_cells, L, 2)
-        # Their 90° rotation R @ (r_l - r_k) with R @ v = [-v_y, v_x]
-        self._rot_edge_vecs = B.xp().stack(
-            (-self._edge_vecs[..., 1], self._edge_vecs[..., 0]), axis=-1
-        )  # (n_cells, L, 2)
-
-        # per-plaquette positions
-        self._plaquette_positions = plaquette_positions
-
     def _compute(self, rho: B.Array, t: float) -> B.Array:
-        # Bond currents along the oriented loop edges for each cell
-        I_edges = self._compute_edge_currents(rho, t)
+        # Calculate vorticity in each plaquette
+        vortices = self._c * self._compute_vortices(rho, t)
+        # Multiply vortices with plaquette positions
+        vort_times_r = self._plaq_pos * vortices[:, np.newaxis]
 
-        # R_alpha * sum_edges I_edge per cell
-        curl_per_cell = B.xp().sum(I_edges, axis=1)  # (n_cells,)
-        centered = self._plaquette_positions - self._origin  # (n_cells, 2)
-        term1_vec = centered.T @ curl_per_cell  # (2,)
-
-        # Term 2: sum_edges [ R @ (r_l - r_k) * I_edge ] over cells
-        weighted_rot_edges = (I_edges[..., None] * self._rot_edge_vecs).sum(
-            axis=1
-        )  # (n_cells, 2)
-        term2_vec = B.xp().sum(weighted_rot_edges, axis=0)  # (2,)
-
-        return (self._c1 * term1_vec + self._c2 * term2_vec) / self._A
+        return B.xp().sum(vort_times_r, axis=0) / self._A
 
 
 class SiteDensityObservable(Observable):
