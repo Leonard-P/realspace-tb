@@ -98,6 +98,51 @@ class RampedACFieldAmplitude(HomogeneousFieldAmplitude):
         raise NotImplementedError(
             "Integration of array time inputs not implemented yet."
         )
+    
+class RampedConstantFieldAmplitude(HomogeneousFieldAmplitude):
+    """
+    Initially ramped and, from T_ramp onwards, constant electric field amplitude.
+    E(t) = E0 * sin^2(pi * t / 2 * T_ramp), capped at E0.
+    """
+
+    def __init__(self, E0: float, T_ramp: float, direction: B.FCPUArray):
+        self.E0 = B.FDTYPE(E0)
+        self.T_ramp = B.FDTYPE(T_ramp)
+        self.direction = B.FDTYPE(direction)
+
+    def at_time(self, t: "float | B.Array") -> "float | B.Array":
+        xp = B.xp()
+        if xp.isscalar(t):
+            if t < self.T_ramp:
+                ramp = xp.sin(np.pi * t / (2 * self.T_ramp)) ** 2
+            else:
+                ramp = 1.0
+            return self.E0 * ramp
+
+        ramp = xp.where(
+            t < self.T_ramp,
+            xp.sin(xp.pi * t / (2 * self.T_ramp)) ** 2,
+            xp.ones_like(t, dtype=B.FDTYPE),
+        )
+        return self.E0 * ramp
+    
+    def integrate_to_time(self, t: "float | B.Array") -> "float | B.Array":
+        """Integrate the field amplitude from time 0 to t. Needed for Peierls substitution."""
+        xp = B.xp()
+        T = self.T_ramp
+        pi = xp.pi
+        if xp.isscalar(t):
+            integral = 0.0
+            s = t if t < T else T
+            if t > 0.0 and T > 0.0:
+                integral += -(T * xp.sin(pi * s / T) - pi * s) / (2 * pi)
+            if t > T:
+                integral += t - T
+            return self.E0 * integral
+
+        raise NotImplementedError(
+            "Integration of array time inputs not implemented yet."
+        )
 
 
 class LinearFieldHamiltonian(Hamiltonian):
