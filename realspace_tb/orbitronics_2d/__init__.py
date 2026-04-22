@@ -15,6 +15,7 @@ from .homogeneous_field_hamiltonian import (
     LinearFieldHamiltonian,
     LinearFieldHamiltonianPeierls,
     HomogeneousFieldAmplitude,
+    RampedConstantFieldAmplitude,
 )
 
 from . import observables as observables
@@ -41,6 +42,7 @@ __all__ = [
     "LinearFieldHamiltonianPeierls",
     "Lattice2DGeometry",
     "HomogeneousFieldAmplitude",
+    "RampedConstantFieldAmplitude",
     # functions
     "net_current_vectors",
     "calculate_biot_savart_vectorized",
