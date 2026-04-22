@@ -1145,6 +1145,8 @@ def _create_scene(
     title = ax.text(0.02, 0.98, "", transform=ax.transAxes, va="top", ha="left")
     if frame_texts is not None and len(frame_texts) > 0:
         title.set_text(frame_texts[0])
+    else:
+        title.set_text("frame 1/1")
 
     # Legend and colorbars
     handles: list[mlines.Line2D] = []
