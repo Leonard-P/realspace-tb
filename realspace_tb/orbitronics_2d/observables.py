@@ -6,6 +6,7 @@ from .. import backend as B
 from .units import effective_electron_mass
 from typing import cast, Tuple
 import numpy as np
+from collections import deque
 
 
 class VorticityObservable(Observable):
@@ -69,9 +70,9 @@ class VortPolObservable(VorticityObservable):
     $$\mu^{i}_{\omega}=\sum_{k}\frac{\Omega_{k}}{A_{k}}\sum_{(R,R')\in\partial P_{k}}J_{R\rightarrow R'}(t)
     |R'-R|\hat{n}^{k}_{i}(R^{k}+\alpha^{k}-R^{ref})$$
     \alpha^{k} is chosen such that R^{k}+\alpha^{k} points to the center of the plaquette k.
-    1. WARNING: Observable is well-defined only along the direction of the OBC!
-    2. WARNING: Currently hard-coded for 2D lattices, whose plaquettes have all their normal
+    1. WARNING: Currently hard-coded for 2D lattices, whose plaquettes have all their normal
                 vectors pointing along one (z-)direction and all equal surface area.
+    2. WARNING: Observable is well-defined only along the direction of the OBC.!
     """
 
     def __init__(
@@ -82,9 +83,14 @@ class VortPolObservable(VorticityObservable):
     ):
 
         super().__init__(geometry, window, hamiltonian)
-        assert isinstance(
-            geometry, Lattice2DGeometry
-        ), "Currently supports only Lattice2DGeometry with all plaquettes pointing in the same direction."
+        if not isinstance(geometry, Lattice2DGeometry):
+            raise TypeError(
+                "Currently supports only Lattice2DGeometry with all plaquettespointing in the same direction."
+            )
+        if geometry.pbc_x and geometry.pbc_y:
+            raise ValueError(
+                "Observable is well-defined only along the direction of the OBC. Please ensure that at least one of the directions has OBC."
+            )
         _, plaquette_positions, _, _ = geometry.plaquettes
         origin = B.xp().mean(plaquette_positions, axis=0)
         # Put the origin of CF in the centre of the current vortices
@@ -286,12 +292,61 @@ class VortSourceObservable(VortFluxObservable):
         # return 2.0 * xp.imag(h_ij * rho[self._rows, self._cols])
         return 2.0 * B.xp().imag(0.0 * rho[self._cols, self._rows])
 
-    def _compute(self, rho: B.Array, t: float) -> B.Array:
+    def compute_vort_sources(self, rho: B.Array, t: float) -> B.Array:
+        """Compute constituents of  the vorticity source observable separately"""
         Lambda = self._compute_vort_fluxes(rho, t)
         F_edges = self._compute_edge_forces(rho, t)
-        return -0.5 * B.xp().sum(Lambda + Lambda.T, axis=1) + self._c * B.xp().sum(
-            F_edges, axis=1
-        )  # (n_cells,)
+        vort_src_1 = B.xp().sum(Lambda + Lambda.T, axis=1)
+        vort_src_2 = B.xp().sum(F_edges, axis=1)
+        return vort_src_1, vort_src_2
+
+    def _compute(self, rho: B.Array, t: float) -> B.Array:
+        vort_src_1, vort_src_2 = self.compute_vort_sources(rho, t)
+        return -0.5 * vort_src_1 + self._c * vort_src_2  # (n_cells,)
+
+
+class VortSourcePolObservable(VortSourceObservable):
+    r"""Measures the vortex source polarization
+
+    $$\mu^{i}_{\omega}=\sum_{k}\frac{\Omega_{k}}{A_{k}}\sum_{(R,R')\in\partial P_{k}}f_{R\rightarrow R'}(t)
+    |R'-R|\hat{n}^{k}_{i}(R^{k}+\alpha^{k}-R^{ref})$$
+    \alpha^{k} is chosen such that R^{k}+\alpha^{k} points to the center of the plaquette k.
+    1. WARNING: Currently hard-coded for 2D lattices, whose plaquettes have all their normal
+                vectors pointing along one (z-)direction and all equal surface area.
+    2. WARNING: Observable is well-defined only along the direction of the OBC!
+    """
+
+    def __init__(
+        self,
+        geometry: HoneycombLatticeGeometry,
+        window: MeasurementWindow | None = None,
+        hamiltonian: Hamiltonian | None = None,
+    ):
+
+        super().__init__(geometry, window, hamiltonian)
+        if not isinstance(geometry, Lattice2DGeometry):
+            raise TypeError(
+                "Currently supports only Lattice2DGeometry with all plaquettespointing in the same direction."
+            )
+        if geometry.pbc_x and geometry.pbc_y:
+            raise ValueError(
+                "Observable is well-defined only along the direction of the OBC. Please ensure that at least one of the directions has OBC."
+            )
+        _, plaquette_positions, _, _ = geometry.plaquettes
+        origin = B.xp().mean(plaquette_positions, axis=0)
+        # Put the origin of CF in the centre of the current vortices
+        self._plaq_pos = plaquette_positions - origin
+        # Total area of plaquettes of the system
+        self._A = plaquette_positions.shape[0] * geometry.plaquette_area
+
+    def _compute(self, rho: B.Array, t: float) -> B.Array:
+        # Calculate vortex source in each plaquette
+        vort_src_1, vort_src_2 = self.compute_vort_sources(rho, t)
+        vort_sources = -0.5 * vort_src_1 + self._c * vort_src_2
+        # Multiply vortex sources with plaquette positions
+        vort_sources_times_r = self._plaq_pos * vort_sources[:, np.newaxis]
+
+        return B.xp().sum(vort_sources_times_r, axis=0) / self._A
 
 
 class VortFluxModObservable(VortSourceObservable):
@@ -300,20 +355,24 @@ class VortFluxModObservable(VortSourceObservable):
     $$\Omega_{P_{i}\rightarrow P}=\sum_{X\in\partial P}
     \frac{1}{d_{X}}\sum_{(R,R')\in\partial P_{i}}\hat{\Pi}^{R\rightarrow R'}_{X}
     -\delta_{P,P_{i}}\Omega_{f,P_{i}}$$
-    This observable is NEITHER symmetric nor antisymmetric.
+    This observable is antisymmetric in the off-diagonal part, yet has finite diagonal elements that capture the vorticity sources
     """
 
-    def _compute(self, rho: B.Array, t: float) -> B.Array:
+    def _compute_Lambda_and_F_edges(
+        self, rho: B.Array, t: float
+    ) -> Tuple[B.Array, B.Array]:
+        Lambda = self._compute_vort_fluxes(rho, t)
         F_edges = self._compute_edge_forces(rho, t)
-        Pi = self._compute_edge_fluxes_per_plaquette(rho, t)
-        return (
-            self._c
-            * (
-                (B.xp().sum(Pi, axis=1)).reshape(
-                    self._num_plaquettes, self._num_plaquettes
-                )
-            ).T
-        ) - B.xp().diag(self._c * B.xp().sum(F_edges, axis=1))
+        return Lambda, F_edges
+
+    def _compute(self, rho: B.Array, t: float) -> B.Array:
+        Lambda, F_edges = self._compute_Lambda_and_F_edges(rho, t)
+        vort_flux_unmod = 0.5 * (Lambda - Lambda.T)
+        vort_src = -0.5 * B.xp().sum(Lambda + Lambda.T, axis=1) + self._c * B.xp().sum(
+            F_edges, axis=1
+        )
+
+        return vort_flux_unmod - B.xp().diag(vort_src)
 
 
 class SiteDensityObservable(Observable):

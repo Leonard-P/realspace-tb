@@ -30,7 +30,9 @@ class HoneycombLatticeGeometry(Lattice2DGeometry):
             / 2
         )
         self._nearest_neighbors: "B.FCPUArray | None" = None
+        self._next_nearest_neighbors: "B.FCPUArray | None" = None
         self._bond_vectors_cache: "NDArray[np.floating] | None" = None
+        self._nnn_bond_vectors_cache: "NDArray[np.floating] | None" = None
         self._bravais_site_indices: "B.FCPUArray | None" = None
         self._plaquette_indices: "B.FCPUArray | None" = None
         self._plaquette_positions: "B.FCPUArray | None" = None
@@ -88,6 +90,54 @@ class HoneycombLatticeGeometry(Lattice2DGeometry):
 
         self._nearest_neighbors = np.array(neighbors, dtype=int)
         self._bond_vectors_cache = np.array(bond_vecs, dtype=B.FCPUDTYPE)
+
+    def _build_next_nearest_neighbors(self) -> None:
+        """Populate ``_next_nearest_neighbors`` with (i, j) pairs for next-nearest neighbors."""
+        Lx, Ly = self.Lx, self.Ly
+        next_neighbors: list[list[int]] = []
+        bond_vecs: list[NDArray[np.floating]] = []
+
+        for index in range(Lx * Ly):
+            row = index // Lx
+            col = index % Lx
+
+            for dr, dc in [(1, 1), (1, -1), (0, 2)]:
+                nrow, ncol = row + dr, col + dc
+
+                # periodic wrap flags (±1 if we crossed a boundary, else 0)
+                wrap_r = wrap_c = 0
+                # Handle periodic boundary conditions
+                if not (0 <= nrow < Ly):
+                    if not self.pbc_y:
+                        continue
+                    wrap_r = nrow // Ly
+                    nrow %= Ly
+
+                if not (0 <= ncol < Lx):
+                    if not self.pbc_x:
+                        continue
+                    wrap_c = ncol // Lx
+                    ncol %= Lx
+
+                neighbor_index = nrow * Lx + ncol
+                next_neighbors.append([index, neighbor_index])
+
+                # Short bond vector: neighbour position in the periodic image
+                r_i = self.index_to_position(index)
+                r_j = self.index_to_position(neighbor_index)
+
+                # Shift by the supercell dimensions to get the correct periodic image
+                r_j_image = r_j + np.array(
+                    [
+                        wrap_c * Lx * self._col_width,
+                        wrap_r * Ly * self._row_height,
+                    ],
+                    dtype=B.FCPUDTYPE,
+                )
+                bond_vecs.append(r_j_image - r_i)
+
+        self._next_nearest_neighbors = np.array(next_neighbors, dtype=int)
+        self._nnn_bond_vectors_cache = np.array(bond_vecs, dtype=B.FCPUDTYPE)
 
     def _list_plaquettes(self) -> None:
         """List all plaquettes as lists of site indices in CCW order."""
@@ -225,6 +275,13 @@ class HoneycombLatticeGeometry(Lattice2DGeometry):
         return self._nearest_neighbors  # type: ignore[return-value]
 
     @property
+    def next_nearest_neighbors(self) -> B.FCPUArray:
+        """Array of next-nearest neighbor indices [[i, j], ...] = <i, j>"""
+        if self._next_nearest_neighbors is None:
+            self._build_next_nearest_neighbors()
+        return self._next_nearest_neighbors  # type: ignore[return-value]
+
+    @property
     def bond_vectors(self) -> NDArray[np.floating]:
         """Short bond displacement vectors ``r_j - r_i`` for each neighbor pair.
 
@@ -234,6 +291,17 @@ class HoneycombLatticeGeometry(Lattice2DGeometry):
         if self._bond_vectors_cache is None:
             self._build_neighbors()
         return self._bond_vectors_cache  # type: ignore[return-value]
+
+    @property
+    def nnn_bond_vectors(self) -> NDArray[np.floating]:
+        """Short next-nearest neighbor bond displacement vectors ``r_j - r_i`` for each neighbor pair.
+
+        For periodic bonds the vector points to the nearest periodic image,
+        not across the full system.
+        """
+        if self._nnn_bond_vectors_cache is None:
+            self._build_next_nearest_neighbors()
+        return self._nnn_bond_vectors_cache  # type: ignore[return-value]
 
     @property
     def bravais_site_indices(self) -> B.FCPUArray:
