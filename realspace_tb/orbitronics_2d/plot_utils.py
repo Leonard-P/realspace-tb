@@ -449,10 +449,9 @@ def _honeycomb_plaquette_centers(
         raise NotImplementedError(
             "Vorticity plaquette overlays are only implemented for HoneycombLatticeGeometry."
         )
-    curl_sites = lattice_frame_obs.plaquette_anchor_indices
-    curl_pos = geometry.site_positions[curl_sites.astype(int)]
-    cx = curl_pos[:, 0] + np.sqrt(3) / 2
-    cy = curl_pos[:, 1] + 0.5
+    _, curl_pos, _, _ = lattice_frame_obs.geometry.plaquettes
+    cx = curl_pos[:, 0]
+    cy = curl_pos[:, 1]
     return cx, cy
 
 
