@@ -98,7 +98,8 @@ class RampedACFieldAmplitude(HomogeneousFieldAmplitude):
         raise NotImplementedError(
             "Integration of array time inputs not implemented yet."
         )
-    
+
+
 class RampedConstantFieldAmplitude(HomogeneousFieldAmplitude):
     """
     Initially ramped and, from T_ramp onwards, constant electric field amplitude.
@@ -125,7 +126,7 @@ class RampedConstantFieldAmplitude(HomogeneousFieldAmplitude):
             xp.ones_like(t, dtype=B.FDTYPE),
         )
         return self.E0 * ramp
-    
+
     def integrate_to_time(self, t: "float | B.Array") -> "float | B.Array":
         """Integrate the field amplitude from time 0 to t. Needed for Peierls substitution."""
         xp = B.xp()
@@ -179,7 +180,7 @@ class LinearFieldHamiltonianPeierls(Hamiltonian):
 
     Works for both open and periodic boundary conditions; the geometry is
     responsible for providing the correct short bond vectors via
-    ``geometry.bond_vectors``.
+    ``geometry.nn_bond_vectors``.
     """
 
     def __init__(
@@ -198,7 +199,7 @@ class LinearFieldHamiltonianPeierls(Hamiltonian):
         # for Peierls substitution, we need a phase shift matrix with elements theta_kl = (r_k - r_l) . A(t)
         size = geometry.Lx * geometry.Ly
         nn = geometry.nearest_neighbors
-        bv = geometry.bond_vectors
+        bv = geometry.nn_bond_vectors
         theta_fwd = (bv @ field_amplitude.direction).astype(float)  # (E,)
 
         # to add h.c., append nearest neighbors with indices swapped, and data with sign flipped

@@ -18,7 +18,7 @@ class Lattice2DGeometry(ABC):
         return self._site_positions
 
     @property
-    def bond_vectors(self) -> NDArray[np.floating]:
+    def nn_bond_vectors(self) -> NDArray[np.floating]:
         """Displacement vectors ``r_j - r_i`` for each nearest-neighbor pair ``[i, j]``.
 
         For open-boundary geometries the default implementation derives these
@@ -66,7 +66,7 @@ class Lattice2DGeometry(ABC):
             raise ValueError("currents must have one entry per nearest-neighbor bond")
 
         r_i_2d = np.asarray(self.site_positions[nn[:, 0]], dtype=float)
-        r_k_2d = r_i_2d + np.asarray(self.bond_vectors, dtype=float)
+        r_k_2d = r_i_2d + np.asarray(self.nn_bond_vectors, dtype=float)
 
         mask = np.abs(currents_arr) > current_threshold
         r_i_2d = r_i_2d[mask]

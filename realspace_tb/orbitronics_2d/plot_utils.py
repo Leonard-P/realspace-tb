@@ -381,10 +381,11 @@ def _build_geometry_segments(geometry: Lattice2DGeometry) -> np.ndarray:
     """
     rows = geometry.nearest_neighbors[:, 0]
     pos = geometry.site_positions  # (N, 2)
-    bv = geometry.bond_vectors  # (E, 2)
+    bv = geometry.nn_bond_vectors  # (E, 2)
     segs = np.empty((len(rows), 2, 2), dtype=float)
     segs[:, 0, :] = pos[rows]  # start: r_i
     segs[:, 1, :] = pos[rows] + bv  # end:   r_i + (r_j − r_i)  [short vector]
+    print(segs)
     return segs
 
 
