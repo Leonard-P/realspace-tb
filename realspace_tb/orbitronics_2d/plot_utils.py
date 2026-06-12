@@ -363,9 +363,9 @@ def append_colorbar(
 
 
 def _build_geometry_segments(geometry: Lattice2DGeometry) -> np.ndarray:
-    """Build line segments array for nearest-neighbor bonds using ``bond_vectors``.
+    """Build line segments array for nearest-neighbor bonds using ``nn_bond_vectors``.
 
-    For PBC geometries ``geometry.bond_vectors`` stores the *short* displacement
+    For PBC geometries ``geometry.nn_bond_vectors`` stores the *short* displacement
     vector ``r_j - r_i`` pointing to the nearest periodic image, so wrapped bonds
     are drawn as short stubs rather than lines that cross the entire lattice.
     The second endpoint of each segment is therefore ``r_i + bond_vector``, which
@@ -374,7 +374,7 @@ def _build_geometry_segments(geometry: Lattice2DGeometry) -> np.ndarray:
 
     Parameters:
         geometry: Lattice2DGeometry with nearest_neighbors, site_positions and
-                  bond_vectors defined.
+                  nn_bond_vectors defined.
 
     Returns:
         array of shape (E, 2, 2): [ [ (x_i, y_i), (x_i+dx, y_i+dy) ], ... ].
@@ -385,7 +385,6 @@ def _build_geometry_segments(geometry: Lattice2DGeometry) -> np.ndarray:
     segs = np.empty((len(rows), 2, 2), dtype=float)
     segs[:, 0, :] = pos[rows]  # start: r_i
     segs[:, 1, :] = pos[rows] + bv  # end:   r_i + (r_j − r_i)  [short vector]
-    print(segs)
     return segs
 
 
