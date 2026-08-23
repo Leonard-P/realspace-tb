@@ -9,6 +9,22 @@ import numpy as np
 from collections import deque
 
 
+def compute_A_to_Bz_x(x_values, y_values, bz):
+    """Compute $$\frac{\int x B_{z}(x,y)dxdy}{\int |B_{z}(x,y)|dxdy}$$
+    Parameters:
+        x_values: 1D array of x coordinates corresponding to the bz values.
+        y_values: 1D array of y coordinates corresponding to the bz values.
+        bz: 2D array of Bz values on the grid defined by x_values and y_values."""
+    dx = x_values[1] - x_values[0]
+    dy = y_values[1] - y_values[0]
+    dxdy = dx * dy
+
+    numerator = np.sum(x_values * bz) * dxdy
+    denominator = np.sum(np.abs(bz)) * dxdy
+
+    return numerator / denominator if denominator != 0 else 0
+
+
 class VorticityObservable(Observable):
     r"""Measures the vorticity at each smallest possible plaquette
 
@@ -253,6 +269,7 @@ class VortSourceObservable(VorticityObservable):
 
 class VortPolObservable(VorticityObservable):
     r"""Measures the vortex polarization
+    Boundary pseudo-plaquettes padded with -1 in their strict geometric slots are included
 
     $$\mu^{i}_{\omega}=\sum_{k}\frac{\Omega_{k}}{A_{k}}\sum_{(R,R')\in\partial P_{k}}J_{R\rightarrow R'}(t)
     |R'-R|\hat{n}^{k}_{i}(R^{k}+\alpha^{k}-R^{ref})$$
@@ -284,6 +301,54 @@ class VortPolObservable(VorticityObservable):
         self._plaq_pos = plaquette_positions - origin
         # Total area of plaquettes of the system
         self._A = plaquette_positions.shape[0] * geometry.plaquette_area
+
+    def _compute(self, rho: B.Array, t: float) -> B.Array:
+        # Calculate vorticity in each plaquette
+        vortices = self._c * self._compute_vortices(rho, t)
+        # Multiply vortices with plaquette positions
+        vort_times_r = self._plaq_pos * vortices[:, np.newaxis]
+
+        return B.xp().sum(vort_times_r, axis=0) / self._A
+
+
+class VortPolRestrictedObservable(VortPolObservable):
+    r"""Measures the vortex polarization
+    Boundary pseudo-plaquettes are NOT included
+
+    $$\mu^{i}_{\omega}=\sum_{k}\frac{\Omega_{k}}{A_{k}}\sum_{(R,R')\in\partial P_{k}}J_{R\rightarrow R'}(t)
+    |R'-R|\hat{n}^{k}_{i}(R^{k}+\alpha^{k}-R^{ref})$$
+    \alpha^{k} is chosen such that R^{k}+\alpha^{k} points to the center of the plaquette k.
+    1. WARNING: Currently hard-coded for 2D lattices, whose plaquettes have all their normal
+                vectors pointing along one (z-)direction and all equal surface area.
+    2. WARNING: Observable is well-defined only along the direction of the OBC.!
+    """
+
+    def __init__(
+        self,
+        geometry: HoneycombLatticeGeometry,
+        window: MeasurementWindow | None = None,
+        hamiltonian: Hamiltonian | None = None,
+    ):
+
+        super().__init__(geometry, window, hamiltonian)
+        if not isinstance(geometry, Lattice2DGeometry):
+            raise TypeError(
+                "Currently supports only Lattice2DGeometry with all plaquettespointing in the same direction."
+            )
+        if geometry.pbc_x and geometry.pbc_y:
+            raise ValueError(
+                "Observable is well-defined only along the direction of the OBC. Please ensure that at least one of the directions has OBC."
+            )
+        plaquette_indices, plaquette_positions, _, _ = geometry.plaquettes
+        # Filter out boundary pseudo-plaquettes (marked with -1)
+        mask = np.all(plaquette_indices[0] != -1, axis=1)
+        origin = B.xp().mean(plaquette_positions[mask], axis=0)
+        # Put the origin of CF in the centre of the current vortices
+        self._plaq_pos = plaquette_positions[mask] - origin
+        # Total area of plaquettes of the system
+        self._A = plaquette_positions[mask].shape[0] * geometry.plaquette_area
+        self._rows = plaquette_indices[0][mask]
+        self._cols = plaquette_indices[1][mask]
 
     def _compute(self, rho: B.Array, t: float) -> B.Array:
         # Calculate vorticity in each plaquette
@@ -398,6 +463,55 @@ class VortSourcePolObservable(VortSourceObservable):
         self._plaq_pos = plaquette_positions - origin
         # Total area of plaquettes of the system
         self._A = plaquette_positions.shape[0] * geometry.plaquette_area
+
+    def _compute(self, rho: B.Array, t: float) -> B.Array:
+        # Calculate vortex source in each plaquette
+        F_edges = self._compute_edge_forces(rho, t)
+        vort_sources = self._c * B.xp().sum(F_edges, axis=1)
+        # Multiply vortex sources with plaquette positions
+        vort_sources_times_r = self._plaq_pos * vort_sources[:, np.newaxis]
+
+        return B.xp().sum(vort_sources_times_r, axis=0) / self._A
+
+
+class VortSourcePolRestrictedObservable(VortSourceObservable):
+    r"""Measures the vortex source polarization
+    Boundary pseudo-plaquettes are NOT included
+
+    $$\mu^{i}_{\omega,f}=\sum_{k}\frac{\Omega_{k}}{A_{k}}\sum_{(R,R')\in\partial P_{k}}f_{R\rightarrow R'}(t)
+    |R'-R|\hat{n}^{k}_{i}(R^{k}+\alpha^{k}-R^{ref})$$
+    \alpha^{k} is chosen such that R^{k}+\alpha^{k} points to the center of the plaquette k.
+    1. WARNING: Currently hard-coded for 2D lattices, whose plaquettes have all their normal
+                vectors pointing along one (z-)direction and all equal surface area.
+    2. WARNING: Observable is well-defined only along the direction of the OBC!
+    """
+
+    def __init__(
+        self,
+        geometry: HoneycombLatticeGeometry,
+        window: MeasurementWindow | None = None,
+        hamiltonian: Hamiltonian | None = None,
+    ):
+
+        super().__init__(geometry, window, hamiltonian)
+        if not isinstance(geometry, Lattice2DGeometry):
+            raise TypeError(
+                "Currently supports only Lattice2DGeometry with all plaquettespointing in the same direction."
+            )
+        if geometry.pbc_x and geometry.pbc_y:
+            raise ValueError(
+                "Observable is well-defined only along the direction of the OBC. Please ensure that at least one of the directions has OBC."
+            )
+        plaquette_indices, plaquette_positions, _, _ = geometry.plaquettes
+        # Filter out boundary pseudo-plaquettes (marked with -1)
+        mask = np.all(plaquette_indices[0] != -1, axis=1)
+        origin = B.xp().mean(plaquette_positions[mask], axis=0)
+        # Put the origin of CF in the centre of the current vortices
+        self._plaq_pos = plaquette_positions[mask] - origin
+        # Total area of plaquettes of the system
+        self._A = plaquette_positions[mask].shape[0] * geometry.plaquette_area
+        self._rows = plaquette_indices[0][mask]
+        self._cols = plaquette_indices[1][mask]
 
     def _compute(self, rho: B.Array, t: float) -> B.Array:
         # Calculate vortex source in each plaquette
