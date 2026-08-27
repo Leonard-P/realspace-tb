@@ -1,57 +1,45 @@
 """Unit helpers and default graphene material parameters for ``orbitronics_2d``.
 
-The core solver uses natural units with ``hbar = a_nn = t_hop = e = 1``.
+The core solver uses mixed units, where ``e = hbar = m_e = 4\pi\varepsilon_0 = a_nn = 1``.
+Proper value of t_hop is set in the Hamiltonian. However, the proper value of a_nn must be set when calculating induced fields.
 The helpers in this module convert those dimensionless quantities back to
 graphene-like SI scales for the observable and Biot-Savart utilities.
 """
 
 from __future__ import annotations
+from scipy.constants import e, hbar, h, m_e, value
 
+ELEMENTARY_CHARGE_C = e
+HBAR_J_S = hbar
+PLANCK_J_S = h
+ELECTRON_MASS_KG = m_e
+HARTREE_ENERGY_J = value("Hartree energy")
 
-ELEMENTARY_CHARGE_C = 1.602176634e-19
-HBAR_J_S = 1.054571817e-34
-6.62607015
-ELECTRON_MASS_KG = 9.1093837139e-31
-
-DEFAULT_T_HOP_EV = 2.8
+DEFAULT_T_HOP_AU = 0.1
 DEFAULT_A_NN_M = 0.142e-9
 
 
 def effective_electron_mass(
-    t_hop_ev: float | None = None,
+    t_hop_au: float | None = None,
     a_nn_m: float | None = None,
 ) -> float:
-    r"""Return the dimensionless effective electron mass used by the OAM observables.
-
-    The conversion is
-
-    $$m^* = m_e \frac{a_{NN}^2 t_{hop}}{\hbar^2}$$
-
-    with ``t_hop`` converted from eV to joule.
-    """
-
-    if t_hop_ev is None:
-        t_hop_ev = DEFAULT_T_HOP_EV
+    r"""Return the effective electron mass using t_hop in Hartree atomic units."""
+    if t_hop_au is None:
+        t_hop_au = DEFAULT_T_HOP_AU
     if a_nn_m is None:
         a_nn_m = DEFAULT_A_NN_M
 
-    return ELECTRON_MASS_KG * a_nn_m**2 * (t_hop_ev * ELEMENTARY_CHARGE_C) / (HBAR_J_S**2)
+    # Convert Hartree to Joules, rather than eV to Joules
+    t_hop_j = t_hop_au * HARTREE_ENERGY_J
+
+    return ELECTRON_MASS_KG * a_nn_m**2 * t_hop_j / HBAR_J_S**2
 
 
-def current_unit_amperes(t_hop_ev: float | None = None) -> float:
-    r"""Return the current scale corresponding to one dimensionless bond current.
-
-    The conversion is
-
-    $$I_0 = \frac{e\, t_{hop}}{\hbar}$$
-
-    with ``t_hop`` converted from eV to joule.
+def current_unit_amperes() -> float:
+    r"""Return the SI current corresponding to one Hartree atomic unit of current.
+    Conversion is I_au = e * E_h / hbar.
     """
-
-    if t_hop_ev is None:
-        t_hop_ev = DEFAULT_T_HOP_EV
-
-    return ELEMENTARY_CHARGE_C * (t_hop_ev * ELEMENTARY_CHARGE_C) / HBAR_J_S
+    return ELEMENTARY_CHARGE_C * HARTREE_ENERGY_J / HBAR_J_S
 
 
 DEFAULT_EFFECTIVE_ELECTRON_MASS = effective_electron_mass()

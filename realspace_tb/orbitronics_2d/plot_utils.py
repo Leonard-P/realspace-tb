@@ -198,12 +198,15 @@ class PlotConfig:
     legend_vorticity_source_label: str = "Vorticity Source (+ / -)"
     legend_vorticity_flow_label: str = "Vorticity Flow"
     legend_location: str = "upper left"
+    legend_fontsize: float = 12.0
 
     # --- B-field underlay -------------------------------------------------------
     show_density_colorbar: bool = True
     show_oam_colorbar: bool = True
     show_bfield_colorbar: bool | None = None
     colorbar_bfield_label: str = "$B_z$ [T]"
+    colorbar_bfield_fontsize: float = 16
+    colorbar_bfield_textsize: float = 12
     show_bfield_underlay: bool = False
     bfield_z_height: float = 0.0
     bfield_x_pixels: int = 200
@@ -231,7 +234,11 @@ class PlotConfig:
     legend_site_occupation_label: str = "Site Occupation $\\langle \\hat n_i\\rangle $"
     legend_oam_label: str = "Vorticity"
     colorbar_site_occupation_label: str = "Site Occupation"
+    colorbar_site_occupation_fontsize: float = 16
+    colorbar_site_occupation_textsize: float = 12
     colorbar_oam_label: str = "Vorticity [a.u.]"
+    colorbar_oam_fontsize: float = 16
+    colorbar_oam_textsize: float = 12
     colorbar_layout_direction: str = "horizontal"
     colorbar_width: float | None = None
     colorbar_height: float | None = None
@@ -356,9 +363,9 @@ def append_colorbar(
 
 
 def _build_geometry_segments(geometry: Lattice2DGeometry) -> np.ndarray:
-    """Build line segments array for nearest-neighbor bonds using ``bond_vectors``.
+    """Build line segments array for nearest-neighbor bonds using ``nn_bond_vectors``.
 
-    For PBC geometries ``geometry.bond_vectors`` stores the *short* displacement
+    For PBC geometries ``geometry.nn_bond_vectors`` stores the *short* displacement
     vector ``r_j - r_i`` pointing to the nearest periodic image, so wrapped bonds
     are drawn as short stubs rather than lines that cross the entire lattice.
     The second endpoint of each segment is therefore ``r_i + bond_vector``, which
@@ -367,14 +374,14 @@ def _build_geometry_segments(geometry: Lattice2DGeometry) -> np.ndarray:
 
     Parameters:
         geometry: Lattice2DGeometry with nearest_neighbors, site_positions and
-                  bond_vectors defined.
+                  nn_bond_vectors defined.
 
     Returns:
         array of shape (E, 2, 2): [ [ (x_i, y_i), (x_i+dx, y_i+dy) ], ... ].
     """
     rows = geometry.nearest_neighbors[:, 0]
     pos = geometry.site_positions  # (N, 2)
-    bv = geometry.bond_vectors  # (E, 2)
+    bv = geometry.nn_bond_vectors  # (E, 2)
     segs = np.empty((len(rows), 2, 2), dtype=float)
     segs[:, 0, :] = pos[rows]  # start: r_i
     segs[:, 1, :] = pos[rows] + bv  # end:   r_i + (r_j − r_i)  [short vector]
@@ -419,7 +426,11 @@ def _resolve_bfield_clim(
     vmax: float | None,
 ) -> tuple[float, float]:
     if vmin is None and vmax is None:
-        max_abs = float(np.max(np.abs(bfield_image_data))) if np.size(bfield_image_data) else 0.0
+        max_abs = (
+            float(np.max(np.abs(bfield_image_data)))
+            if np.size(bfield_image_data)
+            else 0.0
+        )
         if max_abs == 0.0:
             max_abs = 1.0
         return -max_abs, max_abs
@@ -438,10 +449,9 @@ def _honeycomb_plaquette_centers(
         raise NotImplementedError(
             "Vorticity plaquette overlays are only implemented for HoneycombLatticeGeometry."
         )
-    curl_sites = lattice_frame_obs.plaquette_anchor_indices
-    curl_pos = geometry.site_positions[curl_sites.astype(int)]
-    cx = curl_pos[:, 0] + np.sqrt(3) / 2
-    cy = curl_pos[:, 1] + 0.5
+    _, curl_pos, _, _ = lattice_frame_obs.geometry.plaquettes
+    cx = curl_pos[:, 0]
+    cy = curl_pos[:, 1]
     return cx, cy
 
 
@@ -701,7 +711,9 @@ def _create_scene(
         y_bottom = min(y_bottom, float(np.min(seg_y)) - _pad)
         y_top = max(y_top, float(np.max(seg_y)) + _pad)
 
-    need_plaquette_centers = show_oam_indicators or show_vorticity_sources or show_vorticity_flow
+    need_plaquette_centers = (
+        show_oam_indicators or show_vorticity_sources or show_vorticity_flow
+    )
     cx = cy = None
     centers = None
     if need_plaquette_centers:
@@ -950,7 +962,9 @@ def _create_scene(
     if show_vorticity_sources and source_all is not None and centers is not None:
         source_vals0 = np.asarray(source_all[0], dtype=float)
         if vorticity_source_max is None:
-            source_max_abs = float(np.max(np.abs(source_all))) if np.size(source_all) else 1.0
+            source_max_abs = (
+                float(np.max(np.abs(source_all))) if np.size(source_all) else 1.0
+            )
             if source_max_abs == 0.0:
                 source_max_abs = 1.0
         else:
@@ -1130,7 +1144,9 @@ def _create_scene(
                 curl_cw_arcs[i].set_visible(show_cw)
                 curl_cw_heads[i].set_visible(show_cw)
                 if oam_arrow_color_mode_norm == "continuous":
-                    rgba = oam_arrow_cmap_obj(0.5 * (float(np.clip(v, -1.0, 1.0)) + 1.0))
+                    rgba = oam_arrow_cmap_obj(
+                        0.5 * (float(np.clip(v, -1.0, 1.0)) + 1.0)
+                    )
                     curl_ccw_arcs[i].set_color(rgba)
                     curl_ccw_heads[i].set_color(rgba)
                     curl_cw_arcs[i].set_color(rgba)
@@ -1145,8 +1161,8 @@ def _create_scene(
     title = ax.text(0.02, 0.98, "", transform=ax.transAxes, va="top", ha="left")
     if frame_texts is not None and len(frame_texts) > 0:
         title.set_text(frame_texts[0])
-    else:
-        title.set_text("frame 1/1")
+    # else:
+    #    title.set_text("frame 1/1")
 
     # Legend and colorbars
     handles: list[mlines.Line2D] = []
@@ -1245,7 +1261,7 @@ def _create_scene(
             loc=config.legend_location,
             bbox_to_anchor=(1.01, 0.7),
             frameon=config.legend_frameon,
-            fontsize="small",
+            fontsize=config.legend_fontsize,
             handletextpad=0.6,
             handlelength=1.8,
             borderpad=0.4,
@@ -1267,7 +1283,7 @@ def _create_scene(
             }
         )
         if include_colorbars:
-            append_colorbar(
+            cb_occ = append_colorbar(
                 fig,
                 ax,
                 occ_sm,
@@ -1276,14 +1292,23 @@ def _create_scene(
                 colorbar_width=config.colorbar_width,
                 colorbar_height=config.colorbar_height,
             )
+            cb_occ.set_label(
+                config.colorbar_site_occupation_label,
+                fontsize=config.colorbar_site_occupation_fontsize,
+            )
+            cb_occ.ax.tick_params(labelsize=config.colorbar_site_occupation_textsize)
 
-    draw_oam_cb = show_oam_indicators and show_oam_colorbar and (
-        curl_sc is not None or oam_arrow_color_mode_norm == "continuous"
+    draw_oam_cb = (
+        show_oam_indicators
+        and show_oam_colorbar
+        and (curl_sc is not None or oam_arrow_color_mode_norm == "continuous")
     )
     if draw_oam_cb:
         oam_norm = Normalize(vmin=-oam_vmax_f, vmax=oam_vmax_f)
         # Use the specific arrow cmap if rendering arrows continuously, else fallback to base oam_cmap
-        cmap_to_use = oam_arrow_cmap_obj if (curl_sc is None) else plt.get_cmap(oam_cmap)
+        cmap_to_use = (
+            oam_arrow_cmap_obj if (curl_sc is None) else plt.get_cmap(oam_cmap)
+        )
         oam_sm = cm.ScalarMappable(norm=oam_norm, cmap=cmap_to_use)
         oam_sm.set_array([])
         colorbar_specs.append(
@@ -1309,11 +1334,17 @@ def _create_scene(
             )
             formatter = ScalarFormatter(useMathText=True)
             formatter.set_powerlimits((-2, 2))
+            cb_oam.set_label(
+                config.colorbar_oam_label, fontsize=config.colorbar_oam_fontsize
+            )
+            cb_oam.ax.tick_params(labelsize=config.colorbar_oam_textsize)
             cb_oam.ax.yaxis.set_major_formatter(formatter)
             cb_oam.update_ticks()
 
     if bfield_image is not None and show_bfield_colorbar:
-        bfield_norm = Normalize(vmin=float(bfield_image.norm.vmin), vmax=float(bfield_image.norm.vmax))
+        bfield_norm = Normalize(
+            vmin=float(bfield_image.norm.vmin), vmax=float(bfield_image.norm.vmax)
+        )
         bfield_sm = cm.ScalarMappable(norm=bfield_norm, cmap=plt.get_cmap(bfield_cmap))
         bfield_sm.set_array([])
         colorbar_specs.append(
@@ -1324,7 +1355,7 @@ def _create_scene(
             }
         )
         if include_colorbars:
-            append_colorbar(
+            cb_bfield = append_colorbar(
                 fig,
                 ax,
                 bfield_sm,
@@ -1333,6 +1364,10 @@ def _create_scene(
                 colorbar_width=config.colorbar_width,
                 colorbar_height=config.colorbar_height,
             )
+            cb_bfield.set_label(
+                config.colorbar_bfield_label, fontsize=config.colorbar_bfield_fontsize
+            )
+            cb_bfield.ax.tick_params(labelsize=config.colorbar_bfield_textsize)
 
     ctx: dict[str, Any] = {
         "F": F,
@@ -1379,6 +1414,7 @@ def _create_scene(
         "colorbar_specs": colorbar_specs,
         "config": config,
     }
+
     return fig, ax, ctx
 
 
@@ -1471,7 +1507,12 @@ def _update_scene(ctx: dict[str, Any], frame: int) -> tuple[plt.Artist, ...]:
                 ctx["curl_cw_arcs"][i].set_color(neg_color)
                 ctx["curl_cw_heads"][i].set_color(neg_color)
 
-    if show_vorticity_sources and source_all is not None and source_pos_sc is not None and source_neg_sc is not None:
+    if (
+        show_vorticity_sources
+        and source_all is not None
+        and source_pos_sc is not None
+        and source_neg_sc is not None
+    ):
         source_vals = np.asarray(source_all[frame], dtype=float)
         _update_vorticity_source_markers(
             source_pos_sc,

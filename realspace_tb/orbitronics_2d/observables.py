@@ -1,10 +1,28 @@
 from ..observable import Observable, MeasurementWindow
+from .lattice_2d_geometry import Lattice2DGeometry
 from .honeycomb_geometry import HoneycombLatticeGeometry
 from ..hamiltonian import Hamiltonian
 from .. import backend as B
 from .units import effective_electron_mass
-from typing import cast
+from typing import cast, Tuple
 import numpy as np
+from collections import deque
+
+
+def compute_A_to_Bz_x(x_values, y_values, bz):
+    """Compute $$\frac{\int x B_{z}(x,y)dxdy}{\int |B_{z}(x,y)|dxdy}$$
+    Parameters:
+        x_values: 1D array of x coordinates corresponding to the bz values.
+        y_values: 1D array of y coordinates corresponding to the bz values.
+        bz: 2D array of Bz values on the grid defined by x_values and y_values."""
+    dx = x_values[1] - x_values[0]
+    dy = y_values[1] - y_values[0]
+    dxdy = dx * dy
+
+    numerator = np.sum(x_values * bz) * dxdy
+    denominator = np.sum(np.abs(bz)) * dxdy
+
+    return numerator / denominator if denominator != 0 else 0
 
 
 class VorticityObservable(Observable):
@@ -29,7 +47,7 @@ class VorticityObservable(Observable):
         self._hamiltonian = hamiltonian
         # changing the prefactor to calculate vorticity instead
         self._c = 1.0  # -electron_mass * geometry.plaquette_area / 3
-        plaquette_indices, _ = geometry.plaquettes
+        plaquette_indices, _, _, _ = geometry.plaquettes
         self._rows = plaquette_indices[0]
         self._cols = plaquette_indices[1]
 
@@ -41,6 +59,7 @@ class VorticityObservable(Observable):
         When no Hamiltonian is stored (`t_{hop} = -1`), this reduces to
         $2\,\mathrm{Im}(\rho_{ij})$.
         """
+        invalid_mask = (self._rows == -1) | (self._cols == -1)
         if self._hamiltonian is not None:
             H_t = self._hamiltonian.at_time(t)
             xp = B.xp()
@@ -49,22 +68,31 @@ class VorticityObservable(Observable):
             # Order reversed due to sign-change from -1.0 to +1.0 in self._c, which flips the current direction convention and thus the order of indices in the current formula. This is a bit subtle and could be made clearer by defining a helper function for the current that takes care of the index ordering and sign convention.
             # h_ij = xp.asarray(H_t[rows_flat, cols_flat]).reshape(self._rows.shape)
             h_ij = xp.asarray(H_t[cols_flat, rows_flat]).reshape(self._cols.shape)
+            rho_values = rho[self._rows, self._cols]
+            rho_values = B.xp().where(invalid_mask, 0.0, rho_values)
             # return 2.0 * xp.imag(h_ij * rho[self._cols, self._rows])
-            return 2.0 * xp.imag(h_ij * rho[self._rows, self._cols])
+            return 2.0 * xp.imag(h_ij * rho_values)
+        rho_values = rho[self._cols, self._rows]
+        rho_values = B.xp().where(invalid_mask, 0.0, rho_values)
         # return 2.0 * xp.imag(h_ij * rho[self._rows, self._cols])
-        return 2.0 * B.xp().imag(rho[self._cols, self._rows])
+        return 2.0 * B.xp().imag(rho_values)
+
+    def _compute_vortices(self, rho: B.Array, t: float) -> B.Array:
+        I_edges = self._compute_edge_currents(rho, t)
+        return B.xp().sum(I_edges, axis=1)  # (n_cells,)
 
     def _compute(self, rho: B.Array, t: float) -> B.Array:
-        I_edges = self._compute_edge_currents(rho, t)
-        return self._c * B.xp().sum(I_edges, axis=1)  # (n_cells,)
+        return self._c * self._compute_vortices(rho, t)
 
 
 class VortFluxObservable(VorticityObservable):
     r"""Measures the unmodified vorticity flux
 
-    $$\hat{\Omega}_{P_{i}\rightarrow P}
-    =\frac{1}{2}\Bigl(\hat{\Lambda}_{P_{i}\rightarrow P}-\hat{\Lambda}_{P\rightarrow P_{i}}\Bigr)$$
-    This observable is already ANTISYMMETRIC
+    $$\hat{\Tilde{j}}^{z}_{\omega,P_{i}\rightarrow P_{j}}
+    =(e_{z}\cross n_{P_{i} -> P})\cdot\sum_{X}\langle\hat{\Pi}^{(b)}_{X}\rangle(t)$$
+    This observable is ANTISYMMETRIC, since n_{P_{i} -> P} = -n_{P -> P_{i}}
+    1. WARNING: Currently hard-coded for 2D lattices, whose plaquettes have all their normal
+                vectors pointing along one (z-)direction.
     """
 
     def __init__(
@@ -74,85 +102,139 @@ class VortFluxObservable(VorticityObservable):
         hamiltonian: Hamiltonian | None = None,
     ):
         super().__init__(geometry, window, hamiltonian)
-        xp = B.xp()
-        self._num_plaquettes, self._num_sites_plaquette = self._rows.shape
+        self._nearest_plaquette_neighbors = geometry.nearest_plaquette_neighbors
+        self._boundary_plaquette_vectors = geometry.boundary_nn_plaquette_vectors
+        self._num_plaquettes, _ = self._rows.shape
 
-        dX = geometry.site_plaquette_count
-        self._x = xp.tile(
-            self._rows, (1, self._num_sites_plaquette * self._num_plaquettes)
-        ).ravel()
-        self._invdX = 1.0 / dX[self._x]
-        self._rows_repeated = xp.tile(
-            xp.repeat(self._rows, self._num_sites_plaquette, axis=1),
-            (self._num_plaquettes, 1),
-        )
-        self._cols_repeated = xp.tile(
-            xp.repeat(self._cols, self._num_sites_plaquette, axis=1),
-            (self._num_plaquettes, 1),
-        )
-
-    def _compute_edge_fluxes_per_site(self, rho: B.Array, t: float) -> B.Array:
-        r"""Measures current flux tensor for each site X
-
-        $$\frac{1}{d_{X}}\sum_{(R,R')\in\partial P_{i}}\Pi^{R \rightarrow R'}_{X}$$
+    def _compute_div_edge_fluxes_per_bond(self, rho: B.Array, t: float) -> B.Array:
+        r"""Measures divergent of the current flux tensor for each bond at
+        the intersection of two neighboring plaquettes $$\sum_{X}\langle\hat{\Pi}^{R->R'}_{X}\rangle(t)$$
         """
-        rows_repeated_flat = self._rows_repeated.ravel()
-        cols_repeated_flat = self._cols_repeated.ravel()
-        xp = B.xp()
-        rho_ki = xp.asarray(rho[self._x, cols_repeated_flat])
-        rho_jk = xp.asarray(rho[rows_repeated_flat, self._x])
+        r_arr = B.xp().array(self._boundary_plaquette_vectors[:, 0], dtype=B.xp().int64)
+        rp_arr = B.xp().array(
+            self._boundary_plaquette_vectors[:, 1], dtype=B.xp().int64
+        )
+        assert len(r_arr) == len(
+            rp_arr
+        ), "Nearest neighbor list should have shape (n_edges, 2)."
         if self._hamiltonian is not None:
+            xp = B.xp()
             H_t = self._hamiltonian.at_time(t)
-            # self._x has been vectorized
-            h_ij = xp.asarray(H_t[cols_repeated_flat, rows_repeated_flat])
-            h_jk = xp.asarray(H_t[rows_repeated_flat, self._x])
-            h_ki = xp.asarray(H_t[self._x, cols_repeated_flat])
-            Pi_sites = 2 * (
-                self._invdX * xp.real(h_ij * (h_jk * rho_ki - rho_jk * h_ki))
-            )
-            return Pi_sites.reshape(
-                (
-                    self._num_plaquettes ** (2),
-                    self._num_sites_plaquette,
-                    self._num_sites_plaquette,
-                )
-            )
-        Pi_sites = 2 * (self._invdX * xp.real(rho_jk - rho_ki))
-        return Pi_sites.reshape(
-            (
-                self._num_plaquettes ** (2),
-                self._num_sites_plaquette,
-                self._num_sites_plaquette,
-            )
+            h_scalars = xp.asarray(H_t[rp_arr, r_arr]).ravel()
+            H_rho = H_t.dot(rho)
+            rho_H = rho @ H_t
+            H_rho_vals = H_rho[r_arr, rp_arr]
+            rho_H_vals = rho_H[r_arr, rp_arr]
+            return 2.0 * xp.real(h_scalars * (H_rho_vals - rho_H_vals))
+        return 2.0 * B.xp().real(rho_H_vals - H_rho_vals)
+
+    def _compute_tilde_j_omega(self, rho: B.Array, t: float) -> B.Array:
+        div_edge_fluxes_per_bond = self._compute_div_edge_fluxes_per_bond(rho, t)
+        tilde_j_omega = B.xp().zeros(
+            (self._num_plaquettes, self._num_plaquettes),
+            dtype=div_edge_fluxes_per_bond.dtype,
+        )
+        i_indices = B.xp().array(
+            self._nearest_plaquette_neighbors[:, 0], dtype=B.xp().int64
+        )
+        j_indices = B.xp().array(
+            self._nearest_plaquette_neighbors[:, 1], dtype=B.xp().int64
         )
 
-    def _compute_edge_fluxes_per_plaquette(self, rho: B.Array, t: float) -> B.Array:
-        Pi_sites = self._compute_edge_fluxes_per_site(rho, t)
-        return B.xp().sum(Pi_sites, axis=2)
-
-    def _compute_vort_fluxes(self, rho: B.Array, t: float) -> B.Array:
-        Pi = self._compute_edge_fluxes_per_plaquette(rho, t)
-        return (
-            self._c
-            * (
-                (B.xp().sum(Pi, axis=1)).reshape(
-                    self._num_plaquettes, self._num_plaquettes
-                )
-            ).T
-        )
+        tilde_j_omega[i_indices, j_indices] = div_edge_fluxes_per_bond
+        tilde_j_omega[j_indices, i_indices] = -div_edge_fluxes_per_bond
+        return tilde_j_omega
 
     def _compute(self, rho: B.Array, t: float) -> B.Array:
-        Lambda = self._compute_vort_fluxes(rho, t)
-        return 0.5 * (Lambda - Lambda.T)
+        return self._compute_tilde_j_omega(rho, t)
 
 
-class VortSourceObservable(VortFluxObservable):
+class VortFluxModObservable(VortFluxObservable):
+    r"""Measures the modified vorticity flux
+
+    $$\hat{j}^{z}_{\omega,P_{i}\rightarrow P_{j}}
+    =(e_{z}\cross n_{P_{i} -> P})\cdot\biggl(\langle\sum_{X}\hat{\Pi}^{(b)}_{X}\rangle(t)
+    -\langle\hat{f}^{(b)}\rangle(t)\biggr)$$
+    This observable is ANTISYMMETRIC, since n_{P_{i} -> P} = -n_{P -> P_{i}}
+    1. WARNING: Currently hard-coded for 2D lattices, whose plaquettes have all their normal
+                vectors pointing along one (z-)direction.
+    """
+
+    def __init__(
+        self,
+        geometry: HoneycombLatticeGeometry,
+        window: MeasurementWindow | None = None,
+        hamiltonian: Hamiltonian | None = None,
+    ):
+        super().__init__(geometry, window, hamiltonian)
+        self._nearest_plaquette_neighbors = geometry.nearest_plaquette_neighbors
+        self._boundary_plaquette_vectors = geometry.boundary_nn_plaquette_vectors
+        self._num_plaquettes, _ = self._rows.shape
+
+    def _compute_edge_forces_per_bond(self, rho: B.Array, t: float) -> B.Array:
+        r"""Measures forces for each bond at the intersection of two neighboring plaquettes
+        $$\sum_{X}\langle\hat{\Pi}^{R->R'}_{X}\rangle(t)$$"""
+        r_arr = B.xp().array(self._boundary_plaquette_vectors[:, 0], dtype=B.xp().int64)
+        rp_arr = B.xp().array(
+            self._boundary_plaquette_vectors[:, 1], dtype=B.xp().int64
+        )
+        assert len(r_arr) == len(
+            rp_arr
+        ), "Nearest neighbor list should have shape (n_edges, 2)."
+        if self._hamiltonian is not None:
+            xp = B.xp()
+            dH_dt = self._hamiltonian.derivative_at_time(t)
+            h_scalars = xp.asarray(dH_dt[rp_arr, r_arr]).ravel()
+            # return 2.0 * xp.real(h_scalars * (H_rho_vals - rho_H_vals))
+            return 2.0 * xp.imag(h_scalars * rho[r_arr, rp_arr])
+        return 2.0 * B.xp().imag(rho[rp_arr, r_arr])
+
+    def _compute_f_j_omega(self, rho: B.Array, t: float) -> B.Array:
+        edge_forces_per_bond = self._compute_edge_forces_per_bond(rho, t)
+        f_j_omega = B.xp().zeros(
+            (self._num_plaquettes, self._num_plaquettes),
+            dtype=edge_forces_per_bond.dtype,
+        )
+        i_indices = B.xp().array(
+            self._nearest_plaquette_neighbors[:, 0], dtype=B.xp().int64
+        )
+        j_indices = B.xp().array(
+            self._nearest_plaquette_neighbors[:, 1], dtype=B.xp().int64
+        )
+
+        f_j_omega[i_indices, j_indices] = edge_forces_per_bond
+        f_j_omega[j_indices, i_indices] = -edge_forces_per_bond
+        return -f_j_omega
+
+    def _compute(self, rho: B.Array, t: float) -> B.Array:
+        return self._compute_tilde_j_omega(rho, t) + self._compute_f_j_omega(rho, t)
+
+
+class VortSourceObservable(VorticityObservable):
     r"""Measures the vorticity source
 
-    $$\hat{\Omega}_{f,P_{i}}=-\frac{1}{2}\sum_{P}\Bigl(\hat{\Lambda}_{P_{i}\rightarrow P}+\hat{\Lambda}_{P\rightarrow P_{i}}\Bigr)
-    +\sum_{(\mathbf{R},\mathbf{R}')\in\partial P_{i}}\hat{f}_{\mathbf{R}\rightarrow\mathbf{R}'}$$
-    This observable already captures the SYMMETRIC part of the old vorticity flux
+    $$\hat{\Omega}_{f,P_{i}}=\sum_{(\mathbf{R},\mathbf{R}')\in\partial P_{i}}\hat{f}_{\mathbf{R}\rightarrow\mathbf{R}'}$$
     """
+
+    def __init__(
+        self,
+        geometry: HoneycombLatticeGeometry,
+        window: MeasurementWindow | None = None,
+        hamiltonian: Hamiltonian | None = None,
+    ):
+        super().__init__(geometry, window, hamiltonian)
+
+        if hamiltonian is None:
+            print(
+                f"No Hamiltonian passed to {self.__class__}. Assuming Onsite-Potential Hamiltonian with t_hop=1."
+            )
+
+        self._hamiltonian = hamiltonian
+        # changing the prefactor to calculate vorticity instead
+        self._c = 1.0  # -electron_mass * geometry.plaquette_area / 3
+        plaquette_indices, _, _, _ = geometry.plaquettes
+        self._rows = plaquette_indices[0]
+        self._cols = plaquette_indices[1]
 
     def _compute_edge_forces(self, rho: B.Array, t: float) -> B.Array:
         r"""Compute bond currents along plaquette edges.
@@ -162,6 +244,7 @@ class VortSourceObservable(VortFluxObservable):
         When no Hamiltonian is stored (`t_{hop} = -1`), this reduces to
         $2\,\mathrm{Im}(0.0*\rho_{ij})$.
         """
+        invalid_mask = (self._rows == -1) | (self._cols == -1)
         if self._hamiltonian is not None:
             dH_dt = self._hamiltonian.derivative_at_time(t)
             xp = B.xp()
@@ -170,99 +253,347 @@ class VortSourceObservable(VortFluxObservable):
             # Order reversed due to sign-change from -1.0 to +1.0 in self._c, which flips the current direction convention and thus the order of indices in the current formula. This is a bit subtle and could be made clearer by defining a helper function for the current that takes care of the index ordering and sign convention.
             # h_ij = xp.asarray(H_t[rows_flat, cols_flat]).reshape(self._rows.shape)
             dh_ij_dt = xp.asarray(dH_dt[cols_flat, rows_flat]).reshape(self._cols.shape)
+            rho_values = rho[self._rows, self._cols]
+            rho_values = B.xp().where(invalid_mask, 0.0, rho_values)
             # return 2.0 * xp.imag(h_ij * rho[self._cols, self._rows])
-            return 2.0 * xp.imag(dh_ij_dt * rho[self._rows, self._cols])
+            return 2.0 * xp.imag(dh_ij_dt * rho_values)
+        rho_values = rho[self._cols, self._rows]
+        rho_values = B.xp().where(invalid_mask, 0.0, rho_values)
         # return 2.0 * xp.imag(h_ij * rho[self._rows, self._cols])
-        return 2.0 * B.xp().imag(0.0 * rho[self._cols, self._rows])
-
-    def _compute(self, rho: B.Array, t: float) -> B.Array:
-        Lambda = self._compute_vort_fluxes(rho, t)
-        F_edges = self._compute_edge_forces(rho, t)
-        return -0.5 * B.xp().sum(Lambda + Lambda.T, axis=1) + self._c * B.xp().sum(
-            F_edges, axis=1
-        )  # (n_cells,)
-
-
-class VortFluxModObservable(VortSourceObservable):
-    r"""Measures the modified vorticity flux
-
-    $$\Omega_{P_{i}\rightarrow P}=\sum_{X\in\partial P}
-    \frac{1}{d_{X}}\sum_{(R,R')\in\partial P_{i}}\hat{\Pi}^{R\rightarrow R'}_{X}
-    -\delta_{P,P_{i}}\Omega_{f,P_{i}}$$
-    This observable is NEITHER symmetric nor antisymmetric.
-    """
+        return 2.0 * B.xp().imag(0.0 * rho_values)
 
     def _compute(self, rho: B.Array, t: float) -> B.Array:
         F_edges = self._compute_edge_forces(rho, t)
-        Pi = self._compute_edge_fluxes_per_plaquette(rho, t)
-        return (
-            self._c
-            * (
-                (B.xp().sum(Pi, axis=1)).reshape(
-                    self._num_plaquettes, self._num_plaquettes
-                )
-            ).T
-        ) - B.xp().diag(self._c * B.xp().sum(F_edges, axis=1))
+        return self._c * B.xp().sum(F_edges, axis=1)
 
 
-class OrbitalPolarizationObservable(VorticityObservable):
-    r"""Measures the orbital polarization using loop currents around cells as
+class VortPolObservable(VorticityObservable):
+    r"""Measures the vortex polarization
+    Boundary pseudo-plaquettes padded with -1 in their strict geometric slots are included
 
-    $$\expval{P_{orb}} = -i\frac{m_e}{A_\mathrm{tot}} \sum_\alpha\sum_{(k,l)\in\circlearrowleft_{\vec R_\alpha}} (\sqrt 3\,\vec R_\alpha +\frac{5}{12}\begin{pmatrix}0&-1\\1&0\end{pmatrix} (\vec r_l - \vec r_k)) \Im \rho_{kl}$$
+    $$\mu^{i}_{\omega}=\sum_{k}\frac{\Omega_{k}}{A_{k}}\sum_{(R,R')\in\partial P_{k}}J_{R\rightarrow R'}(t)
+    |R'-R|\hat{n}^{k}_{i}(R^{k}+\alpha^{k}-R^{ref})$$
+    \alpha^{k} is chosen such that R^{k}+\alpha^{k} points to the center of the plaquette k.
+    1. WARNING: Currently hard-coded for 2D lattices, whose plaquettes have all their normal
+                vectors pointing along one (z-)direction and all equal surface area.
+    2. WARNING: Observable is well-defined only along the direction of the OBC.!
     """
 
     def __init__(
         self,
         geometry: HoneycombLatticeGeometry,
-        electron_mass: float | None = None,
         window: MeasurementWindow | None = None,
         hamiltonian: Hamiltonian | None = None,
     ):
-        if electron_mass is None:
-            electron_mass = effective_electron_mass()
 
         super().__init__(geometry, window, hamiltonian)
-
-        self._origin = B.xp().array(geometry.origin)
-        self._m = electron_mass
-        self._c1 = -self._m * (B.xp().sqrt(3.0) / 2.0)
-        self._c2 = -self._m * (5.0 / 24.0)
-        _, plaquette_positions = geometry.plaquettes
+        if not isinstance(geometry, Lattice2DGeometry):
+            raise TypeError(
+                "Currently supports only Lattice2DGeometry with all plaquettespointing in the same direction."
+            )
+        if geometry.pbc_x and geometry.pbc_y:
+            raise ValueError(
+                "Observable is well-defined only along the direction of the OBC. Please ensure that at least one of the directions has OBC."
+            )
+        _, plaquette_positions, _, _ = geometry.plaquettes
+        origin = B.xp().mean(plaquette_positions, axis=0)
+        # Put the origin of CF in the centre of the current vortices
+        self._plaq_pos = plaquette_positions - origin
+        # Total area of plaquettes of the system
         self._A = plaquette_positions.shape[0] * geometry.plaquette_area
 
-        site_positions = B.xp().array(
-            [geometry.index_to_position(i) for i in range(geometry.Lx * geometry.Ly)],
-            dtype=B.FDTYPE,
-        )
+    def _compute(self, rho: B.Array, t: float) -> B.Array:
+        # Calculate vorticity in each plaquette
+        vortices = self._c * self._compute_vortices(rho, t)
+        # Multiply vortices with plaquette positions
+        vort_times_r = self._plaq_pos * vortices[:, np.newaxis]
 
-        # Edge vectors r_l - r_k per (cell, edge)
-        self._edge_vecs = (
-            site_positions[self._cols] - site_positions[self._rows]
-        )  # (n_cells, L, 2)
-        # Their 90° rotation R @ (r_l - r_k) with R @ v = [-v_y, v_x]
-        self._rot_edge_vecs = B.xp().stack(
-            (-self._edge_vecs[..., 1], self._edge_vecs[..., 0]), axis=-1
-        )  # (n_cells, L, 2)
+        return B.xp().sum(vort_times_r, axis=0) / self._A
 
-        # per-plaquette positions
-        self._plaquette_positions = plaquette_positions
+
+class VortPolRestrictedObservable(VortPolObservable):
+    r"""Measures the vortex polarization
+    Boundary pseudo-plaquettes are NOT included
+
+    $$\mu^{i}_{\omega}=\sum_{k}\frac{\Omega_{k}}{A_{k}}\sum_{(R,R')\in\partial P_{k}}J_{R\rightarrow R'}(t)
+    |R'-R|\hat{n}^{k}_{i}(R^{k}+\alpha^{k}-R^{ref})$$
+    \alpha^{k} is chosen such that R^{k}+\alpha^{k} points to the center of the plaquette k.
+    1. WARNING: Currently hard-coded for 2D lattices, whose plaquettes have all their normal
+                vectors pointing along one (z-)direction and all equal surface area.
+    2. WARNING: Observable is well-defined only along the direction of the OBC.!
+    """
+
+    def __init__(
+        self,
+        geometry: HoneycombLatticeGeometry,
+        window: MeasurementWindow | None = None,
+        hamiltonian: Hamiltonian | None = None,
+    ):
+
+        super().__init__(geometry, window, hamiltonian)
+        if not isinstance(geometry, Lattice2DGeometry):
+            raise TypeError(
+                "Currently supports only Lattice2DGeometry with all plaquettespointing in the same direction."
+            )
+        if geometry.pbc_x and geometry.pbc_y:
+            raise ValueError(
+                "Observable is well-defined only along the direction of the OBC. Please ensure that at least one of the directions has OBC."
+            )
+        plaquette_indices, plaquette_positions, _, _ = geometry.plaquettes
+        # Filter out boundary pseudo-plaquettes (marked with -1)
+        mask = np.all(plaquette_indices[0] != -1, axis=1)
+        origin = B.xp().mean(plaquette_positions[mask], axis=0)
+        # Put the origin of CF in the centre of the current vortices
+        self._plaq_pos = plaquette_positions[mask] - origin
+        # Total area of plaquettes of the system
+        self._A = plaquette_positions[mask].shape[0] * geometry.plaquette_area
+        self._rows = plaquette_indices[0][mask]
+        self._cols = plaquette_indices[1][mask]
 
     def _compute(self, rho: B.Array, t: float) -> B.Array:
-        # Bond currents along the oriented loop edges for each cell
-        I_edges = self._compute_edge_currents(rho, t)
+        # Calculate vorticity in each plaquette
+        vortices = self._c * self._compute_vortices(rho, t)
+        # Multiply vortices with plaquette positions
+        vort_times_r = self._plaq_pos * vortices[:, np.newaxis]
 
-        # R_alpha * sum_edges I_edge per cell
-        curl_per_cell = B.xp().sum(I_edges, axis=1)  # (n_cells,)
-        centered = self._plaquette_positions - self._origin  # (n_cells, 2)
-        term1_vec = centered.T @ curl_per_cell  # (2,)
+        return B.xp().sum(vort_times_r, axis=0) / self._A
 
-        # Term 2: sum_edges [ R @ (r_l - r_k) * I_edge ] over cells
-        weighted_rot_edges = (I_edges[..., None] * self._rot_edge_vecs).sum(
-            axis=1
-        )  # (n_cells, 2)
-        term2_vec = B.xp().sum(weighted_rot_edges, axis=0)  # (2,)
 
-        return (self._c1 * term1_vec + self._c2 * term2_vec) / self._A
+class VectorVortFluxObservable(VortFluxObservable):
+    r"""Measures the vector-valued unmodified vortex flow
+
+    $$\Tilde{\mathbf{j}}^{z}_{\omega,P_{i}\rightarrow P_{j}}
+    =1/2\sum_{i,j}\Bigl(\hat{\Tilde{j}}^{z}_{\omega,P_{i}\rightarrow P_{j}}(R_{j}-R_{i})\Bigr)$$
+    WARNING: Currently hard-coded for 2D lattices, whose plaquettes have all their normal
+             vectors pointing along one (z-)direction and all equal surface area.
+    """
+
+    def __init__(
+        self,
+        geometry: HoneycombLatticeGeometry,
+        window: MeasurementWindow | None = None,
+        hamiltonian: Hamiltonian | None = None,
+    ):
+
+        super().__init__(geometry, window, hamiltonian)
+        assert isinstance(
+            geometry, Lattice2DGeometry
+        ), "Currently supports only Lattice2DGeometry with all plaquettes pointing in the same direction."
+        # Take the position of each plaquette, difference in x & y between two nearest neighboring plaquettes
+        _, plaquette_positions, plaq_xstep, plaq_ystep = geometry.plaquettes
+        # Extract the length of the plaquette-system along the x-direction
+        self._plaq_Lx = (
+            B.xp().max(plaquette_positions[:, 0])
+            - B.xp().min(plaquette_positions[:, 0])
+            + plaq_xstep
+        )
+        # Extract the length of the plaquette-system along the y-direction
+        self._plaq_Ly = (
+            B.xp().max(plaquette_positions[:, 1])
+            - B.xp().min(plaquette_positions[:, 1])
+            + plaq_ystep
+        )
+        # Total area of plaquettes of the system
+        self._A = plaquette_positions.shape[0] * geometry.plaquette_area
+        # Construct x/y-distance and y-distance matrix
+        x_coords = plaquette_positions[:, 0].reshape(-1, 1)
+        y_coords = plaquette_positions[:, 1].reshape(-1, 1)
+        # Subtract the x/y-coordinates as a (1, n_sites) row vector
+        # array[i, j] = x/y_coords_row[j] - x/y_coords_col[i]
+        self._x_dist_matrix = x_coords.T - x_coords
+        self._y_dist_matrix = y_coords.T - y_coords
+        if geometry.pbc_x:
+            self._x_dist_matrix -= self._plaq_Lx * np.round(
+                self._x_dist_matrix / self._plaq_Lx
+            )
+        if geometry.pbc_y:
+            self._y_dist_matrix -= self._plaq_Ly * np.round(
+                self._y_dist_matrix / self._plaq_Ly
+            )
+
+    def _compute_vector_vort_flux_tensor(
+        self, rho: B.Array, t: float
+    ) -> Tuple[B.Array, B.Array]:
+        tilde_j_omega = self._compute_tilde_j_omega(rho, t)
+        # Omega = 0.5 * (Lambda - Lambda.T)
+        tilde_j_omega_x = 0.5 * tilde_j_omega * self._x_dist_matrix
+        tilde_j_omega_y = 0.5 * tilde_j_omega * self._y_dist_matrix
+        return tilde_j_omega_x, tilde_j_omega_y
+
+    def _compute(self, rho: B.Array, t: float) -> B.Array:
+        tilde_j_omega_x, tilde_j_omega_y = self._compute_vector_vort_flux_tensor(rho, t)
+        tilde_j_omega_x, tilde_j_omega_y = (
+            tilde_j_omega_x.ravel(),
+            tilde_j_omega_y.ravel(),
+        )
+        vec_tilde_j_omega = B.xp().column_stack((tilde_j_omega_x, tilde_j_omega_y))
+        return B.xp().sum(vec_tilde_j_omega, axis=0) / self._A
+
+
+class VortSourcePolObservable(VortSourceObservable):
+    r"""Measures the vortex source polarization
+
+    $$\mu^{i}_{\omega,f}=\sum_{k}\frac{\Omega_{k}}{A_{k}}\sum_{(R,R')\in\partial P_{k}}f_{R\rightarrow R'}(t)
+    |R'-R|\hat{n}^{k}_{i}(R^{k}+\alpha^{k}-R^{ref})$$
+    \alpha^{k} is chosen such that R^{k}+\alpha^{k} points to the center of the plaquette k.
+    1. WARNING: Currently hard-coded for 2D lattices, whose plaquettes have all their normal
+                vectors pointing along one (z-)direction and all equal surface area.
+    2. WARNING: Observable is well-defined only along the direction of the OBC!
+    """
+
+    def __init__(
+        self,
+        geometry: HoneycombLatticeGeometry,
+        window: MeasurementWindow | None = None,
+        hamiltonian: Hamiltonian | None = None,
+    ):
+
+        super().__init__(geometry, window, hamiltonian)
+        if not isinstance(geometry, Lattice2DGeometry):
+            raise TypeError(
+                "Currently supports only Lattice2DGeometry with all plaquettespointing in the same direction."
+            )
+        if geometry.pbc_x and geometry.pbc_y:
+            raise ValueError(
+                "Observable is well-defined only along the direction of the OBC. Please ensure that at least one of the directions has OBC."
+            )
+        _, plaquette_positions, _, _ = geometry.plaquettes
+        origin = B.xp().mean(plaquette_positions, axis=0)
+        # Put the origin of CF in the centre of the current vortices
+        self._plaq_pos = plaquette_positions - origin
+        # Total area of plaquettes of the system
+        self._A = plaquette_positions.shape[0] * geometry.plaquette_area
+
+    def _compute(self, rho: B.Array, t: float) -> B.Array:
+        # Calculate vortex source in each plaquette
+        F_edges = self._compute_edge_forces(rho, t)
+        vort_sources = self._c * B.xp().sum(F_edges, axis=1)
+        # Multiply vortex sources with plaquette positions
+        vort_sources_times_r = self._plaq_pos * vort_sources[:, np.newaxis]
+
+        return B.xp().sum(vort_sources_times_r, axis=0) / self._A
+
+
+class VortSourcePolRestrictedObservable(VortSourceObservable):
+    r"""Measures the vortex source polarization
+    Boundary pseudo-plaquettes are NOT included
+
+    $$\mu^{i}_{\omega,f}=\sum_{k}\frac{\Omega_{k}}{A_{k}}\sum_{(R,R')\in\partial P_{k}}f_{R\rightarrow R'}(t)
+    |R'-R|\hat{n}^{k}_{i}(R^{k}+\alpha^{k}-R^{ref})$$
+    \alpha^{k} is chosen such that R^{k}+\alpha^{k} points to the center of the plaquette k.
+    1. WARNING: Currently hard-coded for 2D lattices, whose plaquettes have all their normal
+                vectors pointing along one (z-)direction and all equal surface area.
+    2. WARNING: Observable is well-defined only along the direction of the OBC!
+    """
+
+    def __init__(
+        self,
+        geometry: HoneycombLatticeGeometry,
+        window: MeasurementWindow | None = None,
+        hamiltonian: Hamiltonian | None = None,
+    ):
+
+        super().__init__(geometry, window, hamiltonian)
+        if not isinstance(geometry, Lattice2DGeometry):
+            raise TypeError(
+                "Currently supports only Lattice2DGeometry with all plaquettespointing in the same direction."
+            )
+        if geometry.pbc_x and geometry.pbc_y:
+            raise ValueError(
+                "Observable is well-defined only along the direction of the OBC. Please ensure that at least one of the directions has OBC."
+            )
+        plaquette_indices, plaquette_positions, _, _ = geometry.plaquettes
+        # Filter out boundary pseudo-plaquettes (marked with -1)
+        mask = np.all(plaquette_indices[0] != -1, axis=1)
+        origin = B.xp().mean(plaquette_positions[mask], axis=0)
+        # Put the origin of CF in the centre of the current vortices
+        self._plaq_pos = plaquette_positions[mask] - origin
+        # Total area of plaquettes of the system
+        self._A = plaquette_positions[mask].shape[0] * geometry.plaquette_area
+        self._rows = plaquette_indices[0][mask]
+        self._cols = plaquette_indices[1][mask]
+
+    def _compute(self, rho: B.Array, t: float) -> B.Array:
+        # Calculate vortex source in each plaquette
+        F_edges = self._compute_edge_forces(rho, t)
+        vort_sources = self._c * B.xp().sum(F_edges, axis=1)
+        # Multiply vortex sources with plaquette positions
+        vort_sources_times_r = self._plaq_pos * vort_sources[:, np.newaxis]
+
+        return B.xp().sum(vort_sources_times_r, axis=0) / self._A
+
+
+class VectorVortFluxModObservable(VortFluxModObservable):
+    r"""Measures the vector-valued modified vortex flow
+
+    $$\mathbf{j}^{z}_{\omega,P_{i}\rightarrow P_{j}}
+    =1/2\sum_{i,j}\Bigl(\hat{j}^{z}_{\omega,P_{i}\rightarrow P_{j}}(R_{j}-R_{i})\Bigr)$$
+    WARNING: Currently hard-coded for 2D lattices, whose plaquettes have all their normal
+             vectors pointing along one (z-)direction and all equal surface area.
+    """
+
+    def __init__(
+        self,
+        geometry: HoneycombLatticeGeometry,
+        window: MeasurementWindow | None = None,
+        hamiltonian: Hamiltonian | None = None,
+    ):
+
+        super().__init__(geometry, window, hamiltonian)
+        assert isinstance(
+            geometry, Lattice2DGeometry
+        ), "Currently supports only Lattice2DGeometry with all plaquettes pointing in the same direction."
+        # Take the position of each plaquette, difference in x & y between two nearest neighboring plaquettes
+        _, plaquette_positions, plaq_xstep, plaq_ystep = geometry.plaquettes
+        # Extract the length of the plaquette-system along the x-direction
+        self._plaq_Lx = (
+            B.xp().max(plaquette_positions[:, 0])
+            - B.xp().min(plaquette_positions[:, 0])
+            + plaq_xstep
+        )
+        # Extract the length of the plaquette-system along the y-direction
+        self._plaq_Ly = (
+            B.xp().max(plaquette_positions[:, 1])
+            - B.xp().min(plaquette_positions[:, 1])
+            + plaq_ystep
+        )
+        # Total area of plaquettes of the system
+        self._A = plaquette_positions.shape[0] * geometry.plaquette_area
+        # Construct x/y-distance and y-distance matrix
+        x_coords = plaquette_positions[:, 0].reshape(-1, 1)
+        y_coords = plaquette_positions[:, 1].reshape(-1, 1)
+        # Subtract the x/y-coordinates as a (1, n_sites) row vector
+        # array[i, j] = x/y_coords_row[j] - x/y_coords_col[i]
+        self._x_dist_matrix = x_coords.T - x_coords
+        self._y_dist_matrix = y_coords.T - y_coords
+        if geometry.pbc_x:
+            self._x_dist_matrix -= self._plaq_Lx * np.round(
+                self._x_dist_matrix / self._plaq_Lx
+            )
+        if geometry.pbc_y:
+            self._y_dist_matrix -= self._plaq_Ly * np.round(
+                self._y_dist_matrix / self._plaq_Ly
+            )
+
+    def _compute_vector_vort_flux_tensor(
+        self, rho: B.Array, t: float
+    ) -> Tuple[B.Array, B.Array]:
+        tilde_j_omega = self._compute_tilde_j_omega(rho, t)
+        f_j_omega = self._compute_f_j_omega(rho, t)
+        j_omega = tilde_j_omega + f_j_omega
+        # Omega = 0.5 * (Lambda - Lambda.T)
+        j_omega_x = 0.5 * j_omega * self._x_dist_matrix
+        j_omega_y = 0.5 * j_omega * self._y_dist_matrix
+        return j_omega_x, j_omega_y
+
+    def _compute(self, rho: B.Array, t: float) -> B.Array:
+        j_omega_x, j_omega_y = self._compute_vector_vort_flux_tensor(rho, t)
+        j_omega_x, j_omega_y = (
+            j_omega_x.ravel(),
+            j_omega_y.ravel(),
+        )
+        vec_j_omega = B.xp().column_stack((j_omega_x, j_omega_y))
+        return B.xp().sum(vec_j_omega, axis=0) / self._A
 
 
 class SiteDensityObservable(Observable):
@@ -369,7 +700,7 @@ class BondCurrentFluxObservable(BondCurrentObservable):
                 rho[self._X, self._nn_rows_repeated] * h_ij * h_jk
                 - h_ki * h_ij * rho[self._nn_cols_repeated, self._X]
             )  # (E*V,)
-        return 2.0 * xp.real(
+        return 2.0 * B.xp().real(
             rho[self._nn_cols_repeated, self._X] - rho[self._X, self._nn_rows_repeated]
         )  # (E*V,)
 
@@ -392,7 +723,7 @@ class LatticeFrameObservable(Observable):
         self.current_obs = BondCurrentObservable(geometry, window, hamiltonian)
         self.current_vort_obs = VorticityObservable(geometry, window, hamiltonian)
 
-        self.plaquette_anchor_indices = geometry.plaquette_anchors
+        # plaquette_anchors no longer needed, since HoneycombLatticeGeometry is equipped with plaquette_positions
 
     def _compute(self, rho: B.Array, t: float) -> B.Array:
         # compute handled by sub-observables via measure()
