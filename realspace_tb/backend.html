@@ -111,12 +111,12 @@ Key functions:
 
                         <label class="view-source-button" for="mod-backend-view-source"><span>View Source</span></label>
 
-                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="sd">&quot;&quot;&quot;</span>
+                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="sd">"""</span>
 </span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a><span class="sd">Goal of this file is to provide the correct backend (numpy or, for GPU, cupy) and data types (single, double) so that the rest of the code can be written simultaneously for both backends.</span>
 </span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a><span class="sd">Key functions:</span>
 </span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a><span class="sd">    xp() returns either numpy or cupy module.</span>
 </span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a><span class="sd">    set_backend() allows switching between CPU and GPU backends as well as single and double precision.</span>
-</span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a><span class="sd">"""</span>
 </span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a>
 </span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NDArray</span>
 </span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -140,46 +140,46 @@ Key functions:
 </span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a><span class="n">USE_GPU</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 </span><span id="L-28"><a href="#L-28"><span class="linenos">28</span></a>
 </span><span id="L-29"><a href="#L-29"><span class="linenos">29</span></a><span class="k">def</span><span class="w"> </span><span class="nf">xp</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">types</span><span class="o">.</span><span class="n">ModuleType</span><span class="p">:</span>
-</span><span id="L-30"><a href="#L-30"><span class="linenos">30</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the active array module (NumPy or CuPy).&quot;&quot;&quot;</span>
+</span><span id="L-30"><a href="#L-30"><span class="linenos">30</span></a><span class="w">    </span><span class="sd">"""Return the active array module (NumPy or CuPy)."""</span>
 </span><span id="L-31"><a href="#L-31"><span class="linenos">31</span></a>    <span class="k">return</span> <span class="n">cp</span> <span class="k">if</span> <span class="n">USE_GPU</span> <span class="k">else</span> <span class="n">np</span>
 </span><span id="L-32"><a href="#L-32"><span class="linenos">32</span></a>
 </span><span id="L-33"><a href="#L-33"><span class="linenos">33</span></a><span class="k">def</span><span class="w"> </span><span class="nf">xp_sparse</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">types</span><span class="o">.</span><span class="n">ModuleType</span><span class="p">:</span>
-</span><span id="L-34"><a href="#L-34"><span class="linenos">34</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the active sparse array module (scipy sparse or cupy sparse).&quot;&quot;&quot;</span>
+</span><span id="L-34"><a href="#L-34"><span class="linenos">34</span></a><span class="w">    </span><span class="sd">"""Return the active sparse array module (scipy sparse or cupy sparse)."""</span>
 </span><span id="L-35"><a href="#L-35"><span class="linenos">35</span></a>    <span class="k">return</span> <span class="n">cpsp</span> <span class="k">if</span> <span class="n">USE_GPU</span> <span class="k">else</span> <span class="n">sparse</span>
 </span><span id="L-36"><a href="#L-36"><span class="linenos">36</span></a>
 </span><span id="L-37"><a href="#L-37"><span class="linenos">37</span></a><span class="n">DTYPE</span><span class="p">:</span> <span class="nb">type</span> <span class="o">=</span> <span class="n">xp</span><span class="p">()</span><span class="o">.</span><span class="n">complex128</span>
 </span><span id="L-38"><a href="#L-38"><span class="linenos">38</span></a><span class="n">FDTYPE</span><span class="p">:</span> <span class="nb">type</span> <span class="o">=</span> <span class="n">xp</span><span class="p">()</span><span class="o">.</span><span class="n">float64</span>
 </span><span id="L-39"><a href="#L-39"><span class="linenos">39</span></a><span class="n">FCPUDTYPE</span><span class="p">:</span> <span class="nb">type</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span>
 </span><span id="L-40"><a href="#L-40"><span class="linenos">40</span></a>
-</span><span id="L-41"><a href="#L-41"><span class="linenos">41</span></a><span class="n">Array</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="s2">&quot;NDArray[np.complex128] | NDArray[np.complex64] | NDArray[np.float64] | NDArray[np.float32] | cp.ndarray&quot;</span>
-</span><span id="L-42"><a href="#L-42"><span class="linenos">42</span></a><span class="n">SparseArray</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="s2">&quot;csr_matrix | cpsp.spmatrix&quot;</span>
+</span><span id="L-41"><a href="#L-41"><span class="linenos">41</span></a><span class="n">Array</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="s2">"NDArray[np.complex128] | NDArray[np.complex64] | NDArray[np.float64] | NDArray[np.float32] | cp.ndarray"</span>
+</span><span id="L-42"><a href="#L-42"><span class="linenos">42</span></a><span class="n">SparseArray</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="s2">"csr_matrix | cpsp.spmatrix"</span>
 </span><span id="L-43"><a href="#L-43"><span class="linenos">43</span></a><span class="n">CPUArray</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">]</span> <span class="o">|</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">complex64</span><span class="p">]</span> <span class="o">|</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">|</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">]</span>
 </span><span id="L-44"><a href="#L-44"><span class="linenos">44</span></a><span class="n">FCPUArray</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">|</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">]</span>
 </span><span id="L-45"><a href="#L-45"><span class="linenos">45</span></a>
-</span><span id="L-46"><a href="#L-46"><span class="linenos">46</span></a><span class="k">def</span><span class="w"> </span><span class="nf">set_backend</span><span class="p">(</span><span class="n">use_gpu</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">precision</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;double&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="L-47"><a href="#L-47"><span class="linenos">47</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-46"><a href="#L-46"><span class="linenos">46</span></a><span class="k">def</span><span class="w"> </span><span class="nf">set_backend</span><span class="p">(</span><span class="n">use_gpu</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">precision</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"double"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="L-47"><a href="#L-47"><span class="linenos">47</span></a><span class="w">    </span><span class="sd">"""</span>
 </span><span id="L-48"><a href="#L-48"><span class="linenos">48</span></a><span class="sd">    Select computation backend and precision.</span>
 </span><span id="L-49"><a href="#L-49"><span class="linenos">49</span></a>
 </span><span id="L-50"><a href="#L-50"><span class="linenos">50</span></a><span class="sd">    Args:</span>
 </span><span id="L-51"><a href="#L-51"><span class="linenos">51</span></a><span class="sd">        use_gpu: whether to use CuPy (GPU) or NumPy (CPU)</span>
-</span><span id="L-52"><a href="#L-52"><span class="linenos">52</span></a><span class="sd">        precision: &#39;single&#39; or &#39;double&#39;</span>
-</span><span id="L-53"><a href="#L-53"><span class="linenos">53</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="L-52"><a href="#L-52"><span class="linenos">52</span></a><span class="sd">        precision: 'single' or 'double'</span>
+</span><span id="L-53"><a href="#L-53"><span class="linenos">53</span></a><span class="sd">    """</span>
 </span><span id="L-54"><a href="#L-54"><span class="linenos">54</span></a>    <span class="k">global</span> <span class="n">USE_GPU</span><span class="p">,</span> <span class="n">DTYPE</span><span class="p">,</span> <span class="n">FDTYPE</span><span class="p">,</span> <span class="n">FCPUDTYPE</span>
 </span><span id="L-55"><a href="#L-55"><span class="linenos">55</span></a>    <span class="n">USE_GPU</span> <span class="o">=</span> <span class="n">use_gpu</span>
 </span><span id="L-56"><a href="#L-56"><span class="linenos">56</span></a>
 </span><span id="L-57"><a href="#L-57"><span class="linenos">57</span></a>    <span class="k">if</span> <span class="n">use_gpu</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">_cupy_available</span><span class="p">:</span>
-</span><span id="L-58"><a href="#L-58"><span class="linenos">58</span></a>        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;CuPy not available on this system.&quot;</span><span class="p">)</span>
+</span><span id="L-58"><a href="#L-58"><span class="linenos">58</span></a>        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">"CuPy not available on this system."</span><span class="p">)</span>
 </span><span id="L-59"><a href="#L-59"><span class="linenos">59</span></a>
-</span><span id="L-60"><a href="#L-60"><span class="linenos">60</span></a>    <span class="k">if</span> <span class="n">precision</span> <span class="o">==</span> <span class="s2">&quot;single&quot;</span><span class="p">:</span>
+</span><span id="L-60"><a href="#L-60"><span class="linenos">60</span></a>    <span class="k">if</span> <span class="n">precision</span> <span class="o">==</span> <span class="s2">"single"</span><span class="p">:</span>
 </span><span id="L-61"><a href="#L-61"><span class="linenos">61</span></a>        <span class="n">DTYPE</span> <span class="o">=</span> <span class="n">xp</span><span class="p">()</span><span class="o">.</span><span class="n">complex64</span>
 </span><span id="L-62"><a href="#L-62"><span class="linenos">62</span></a>        <span class="n">FDTYPE</span> <span class="o">=</span> <span class="n">xp</span><span class="p">()</span><span class="o">.</span><span class="n">float32</span>
 </span><span id="L-63"><a href="#L-63"><span class="linenos">63</span></a>        <span class="n">FCPUDTYPE</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span>
-</span><span id="L-64"><a href="#L-64"><span class="linenos">64</span></a>    <span class="k">elif</span> <span class="n">precision</span> <span class="o">==</span> <span class="s2">&quot;double&quot;</span><span class="p">:</span>
+</span><span id="L-64"><a href="#L-64"><span class="linenos">64</span></a>    <span class="k">elif</span> <span class="n">precision</span> <span class="o">==</span> <span class="s2">"double"</span><span class="p">:</span>
 </span><span id="L-65"><a href="#L-65"><span class="linenos">65</span></a>        <span class="n">DTYPE</span> <span class="o">=</span> <span class="n">xp</span><span class="p">()</span><span class="o">.</span><span class="n">complex128</span>
 </span><span id="L-66"><a href="#L-66"><span class="linenos">66</span></a>        <span class="n">FDTYPE</span> <span class="o">=</span> <span class="n">xp</span><span class="p">()</span><span class="o">.</span><span class="n">float64</span>
 </span><span id="L-67"><a href="#L-67"><span class="linenos">67</span></a>        <span class="n">FCPUDTYPE</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span>
 </span><span id="L-68"><a href="#L-68"><span class="linenos">68</span></a>    <span class="k">else</span><span class="p">:</span>
-</span><span id="L-69"><a href="#L-69"><span class="linenos">69</span></a>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Precision must be &#39;single&#39; or &#39;double&#39;.&quot;</span><span class="p">)</span>
+</span><span id="L-69"><a href="#L-69"><span class="linenos">69</span></a>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Precision must be 'single' or 'double'."</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -208,7 +208,7 @@ Key functions:
     </div>
     <a class="headerlink" href="#xp"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="xp-30"><a href="#xp-30"><span class="linenos">30</span></a><span class="k">def</span><span class="w"> </span><span class="nf">xp</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">types</span><span class="o">.</span><span class="n">ModuleType</span><span class="p">:</span>
-</span><span id="xp-31"><a href="#xp-31"><span class="linenos">31</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the active array module (NumPy or CuPy).&quot;&quot;&quot;</span>
+</span><span id="xp-31"><a href="#xp-31"><span class="linenos">31</span></a><span class="w">    </span><span class="sd">"""Return the active array module (NumPy or CuPy)."""</span>
 </span><span id="xp-32"><a href="#xp-32"><span class="linenos">32</span></a>    <span class="k">return</span> <span class="n">cp</span> <span class="k">if</span> <span class="n">USE_GPU</span> <span class="k">else</span> <span class="n">np</span>
 </span></pre></div>
 
@@ -230,7 +230,7 @@ Key functions:
     </div>
     <a class="headerlink" href="#xp_sparse"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="xp_sparse-34"><a href="#xp_sparse-34"><span class="linenos">34</span></a><span class="k">def</span><span class="w"> </span><span class="nf">xp_sparse</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">types</span><span class="o">.</span><span class="n">ModuleType</span><span class="p">:</span>
-</span><span id="xp_sparse-35"><a href="#xp_sparse-35"><span class="linenos">35</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the active sparse array module (scipy sparse or cupy sparse).&quot;&quot;&quot;</span>
+</span><span id="xp_sparse-35"><a href="#xp_sparse-35"><span class="linenos">35</span></a><span class="w">    </span><span class="sd">"""Return the active sparse array module (scipy sparse or cupy sparse)."""</span>
 </span><span id="xp_sparse-36"><a href="#xp_sparse-36"><span class="linenos">36</span></a>    <span class="k">return</span> <span class="n">cpsp</span> <span class="k">if</span> <span class="n">USE_GPU</span> <span class="k">else</span> <span class="n">sparse</span>
 </span></pre></div>
 
@@ -305,7 +305,7 @@ Key functions:
                     <div class="attr variable">
             <span class="name">CPUArray</span><span class="annotation">: TypeAlias</span>        =
 <input id="CPUArray-view-value" class="view-value-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-            <label class="view-value-button pdoc-button" for="CPUArray-view-value"></label><span class="default_value">numpy.ndarray[tuple[typing.Any, ...], numpy.dtype[numpy.complex128]] | numpy.ndarray[tuple[typing.Any, ...], numpy.dtype[numpy.complex64]] | numpy.ndarray[tuple[typing.Any, ...], numpy.dtype[numpy.float64]] | numpy.ndarray[tuple[typing.Any, ...], numpy.dtype[numpy.float32]]</span>
+            <label class="view-value-button pdoc-button" for="CPUArray-view-value"></label><span class="default_value">NDArray[numpy.complex128] | NDArray[numpy.complex64] | NDArray[numpy.float64] | NDArray[numpy.float32]</span>
 
         
     </div>
@@ -317,8 +317,7 @@ Key functions:
                 <section id="FCPUArray">
                     <div class="attr variable">
             <span class="name">FCPUArray</span><span class="annotation">: TypeAlias</span>        =
-<input id="FCPUArray-view-value" class="view-value-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-            <label class="view-value-button pdoc-button" for="FCPUArray-view-value"></label><span class="default_value">numpy.ndarray[tuple[typing.Any, ...], numpy.dtype[numpy.float64]] | numpy.ndarray[tuple[typing.Any, ...], numpy.dtype[numpy.float32]]</span>
+<span class="default_value">NDArray[numpy.float64] | NDArray[numpy.float32]</span>
 
         
     </div>
@@ -332,36 +331,36 @@ Key functions:
 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">set_backend</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">use_gpu</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>, </span><span class="param"><span class="n">precision</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;double&#39;</span></span><span class="return-annotation">) -> <span class="kc">None</span>:</span></span>
+        <span class="name">set_backend</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">use_gpu</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>, </span><span class="param"><span class="n">precision</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'double'</span></span><span class="return-annotation">) -> <span class="kc">None</span>:</span></span>
 
                 <label class="view-source-button" for="set_backend-view-source"><span>View Source</span></label>
 
     </div>
     <a class="headerlink" href="#set_backend"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="set_backend-47"><a href="#set_backend-47"><span class="linenos">47</span></a><span class="k">def</span><span class="w"> </span><span class="nf">set_backend</span><span class="p">(</span><span class="n">use_gpu</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">precision</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;double&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="set_backend-48"><a href="#set_backend-48"><span class="linenos">48</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="set_backend-47"><a href="#set_backend-47"><span class="linenos">47</span></a><span class="k">def</span><span class="w"> </span><span class="nf">set_backend</span><span class="p">(</span><span class="n">use_gpu</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">precision</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"double"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="set_backend-48"><a href="#set_backend-48"><span class="linenos">48</span></a><span class="w">    </span><span class="sd">"""</span>
 </span><span id="set_backend-49"><a href="#set_backend-49"><span class="linenos">49</span></a><span class="sd">    Select computation backend and precision.</span>
 </span><span id="set_backend-50"><a href="#set_backend-50"><span class="linenos">50</span></a>
 </span><span id="set_backend-51"><a href="#set_backend-51"><span class="linenos">51</span></a><span class="sd">    Args:</span>
 </span><span id="set_backend-52"><a href="#set_backend-52"><span class="linenos">52</span></a><span class="sd">        use_gpu: whether to use CuPy (GPU) or NumPy (CPU)</span>
-</span><span id="set_backend-53"><a href="#set_backend-53"><span class="linenos">53</span></a><span class="sd">        precision: &#39;single&#39; or &#39;double&#39;</span>
-</span><span id="set_backend-54"><a href="#set_backend-54"><span class="linenos">54</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="set_backend-53"><a href="#set_backend-53"><span class="linenos">53</span></a><span class="sd">        precision: 'single' or 'double'</span>
+</span><span id="set_backend-54"><a href="#set_backend-54"><span class="linenos">54</span></a><span class="sd">    """</span>
 </span><span id="set_backend-55"><a href="#set_backend-55"><span class="linenos">55</span></a>    <span class="k">global</span> <span class="n">USE_GPU</span><span class="p">,</span> <span class="n">DTYPE</span><span class="p">,</span> <span class="n">FDTYPE</span><span class="p">,</span> <span class="n">FCPUDTYPE</span>
 </span><span id="set_backend-56"><a href="#set_backend-56"><span class="linenos">56</span></a>    <span class="n">USE_GPU</span> <span class="o">=</span> <span class="n">use_gpu</span>
 </span><span id="set_backend-57"><a href="#set_backend-57"><span class="linenos">57</span></a>
 </span><span id="set_backend-58"><a href="#set_backend-58"><span class="linenos">58</span></a>    <span class="k">if</span> <span class="n">use_gpu</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">_cupy_available</span><span class="p">:</span>
-</span><span id="set_backend-59"><a href="#set_backend-59"><span class="linenos">59</span></a>        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;CuPy not available on this system.&quot;</span><span class="p">)</span>
+</span><span id="set_backend-59"><a href="#set_backend-59"><span class="linenos">59</span></a>        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">"CuPy not available on this system."</span><span class="p">)</span>
 </span><span id="set_backend-60"><a href="#set_backend-60"><span class="linenos">60</span></a>
-</span><span id="set_backend-61"><a href="#set_backend-61"><span class="linenos">61</span></a>    <span class="k">if</span> <span class="n">precision</span> <span class="o">==</span> <span class="s2">&quot;single&quot;</span><span class="p">:</span>
+</span><span id="set_backend-61"><a href="#set_backend-61"><span class="linenos">61</span></a>    <span class="k">if</span> <span class="n">precision</span> <span class="o">==</span> <span class="s2">"single"</span><span class="p">:</span>
 </span><span id="set_backend-62"><a href="#set_backend-62"><span class="linenos">62</span></a>        <span class="n">DTYPE</span> <span class="o">=</span> <span class="n">xp</span><span class="p">()</span><span class="o">.</span><span class="n">complex64</span>
 </span><span id="set_backend-63"><a href="#set_backend-63"><span class="linenos">63</span></a>        <span class="n">FDTYPE</span> <span class="o">=</span> <span class="n">xp</span><span class="p">()</span><span class="o">.</span><span class="n">float32</span>
 </span><span id="set_backend-64"><a href="#set_backend-64"><span class="linenos">64</span></a>        <span class="n">FCPUDTYPE</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span>
-</span><span id="set_backend-65"><a href="#set_backend-65"><span class="linenos">65</span></a>    <span class="k">elif</span> <span class="n">precision</span> <span class="o">==</span> <span class="s2">&quot;double&quot;</span><span class="p">:</span>
+</span><span id="set_backend-65"><a href="#set_backend-65"><span class="linenos">65</span></a>    <span class="k">elif</span> <span class="n">precision</span> <span class="o">==</span> <span class="s2">"double"</span><span class="p">:</span>
 </span><span id="set_backend-66"><a href="#set_backend-66"><span class="linenos">66</span></a>        <span class="n">DTYPE</span> <span class="o">=</span> <span class="n">xp</span><span class="p">()</span><span class="o">.</span><span class="n">complex128</span>
 </span><span id="set_backend-67"><a href="#set_backend-67"><span class="linenos">67</span></a>        <span class="n">FDTYPE</span> <span class="o">=</span> <span class="n">xp</span><span class="p">()</span><span class="o">.</span><span class="n">float64</span>
 </span><span id="set_backend-68"><a href="#set_backend-68"><span class="linenos">68</span></a>        <span class="n">FCPUDTYPE</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span>
 </span><span id="set_backend-69"><a href="#set_backend-69"><span class="linenos">69</span></a>    <span class="k">else</span><span class="p">:</span>
-</span><span id="set_backend-70"><a href="#set_backend-70"><span class="linenos">70</span></a>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Precision must be &#39;single&#39; or &#39;double&#39;.&quot;</span><span class="p">)</span>
+</span><span id="set_backend-70"><a href="#set_backend-70"><span class="linenos">70</span></a>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Precision must be 'single' or 'double'."</span><span class="p">)</span>
 </span></pre></div>
 
 
