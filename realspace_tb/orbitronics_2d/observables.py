@@ -39,10 +39,8 @@ class VorticityObservable(Observable):
     ):
         super().__init__(window)
 
-        if hamiltonian is None:
-            print(
-                f"No Hamiltonian passed to {self.__class__}. Assuming Onsite-Potential Hamiltonian with t_hop=1."
-            )
+        # Now hamiltonian has to be DEFINED
+        assert hamiltonian is not None, f"No Hamiltonian passed to {self.__class__}"
 
         self._hamiltonian = hamiltonian
         # changing the prefactor to calculate vorticity instead
@@ -56,26 +54,26 @@ class VorticityObservable(Observable):
 
         Uses the gauge-invariant formula
         $I_{i<-j}(t) = 2\,\mathrm{Im}(H_{ij}(t)\,\rho_{ji}(t))$.
-        When no Hamiltonian is stored (`t_{hop} = -1`), this reduces to
-        $2\,\mathrm{Im}(\rho_{ij})$.
         """
         invalid_mask = (self._rows == -1) | (self._cols == -1)
-        if self._hamiltonian is not None:
-            H_t = self._hamiltonian.at_time(t)
-            xp = B.xp()
-            rows_flat = self._rows.ravel()
-            cols_flat = self._cols.ravel()
-            # Order reversed due to sign-change from -1.0 to +1.0 in self._c, which flips the current direction convention and thus the order of indices in the current formula. This is a bit subtle and could be made clearer by defining a helper function for the current that takes care of the index ordering and sign convention.
-            # h_ij = xp.asarray(H_t[rows_flat, cols_flat]).reshape(self._rows.shape)
-            h_ij = xp.asarray(H_t[cols_flat, rows_flat]).reshape(self._cols.shape)
-            rho_values = rho[self._rows, self._cols]
-            rho_values = B.xp().where(invalid_mask, 0.0, rho_values)
-            # return 2.0 * xp.imag(h_ij * rho[self._cols, self._rows])
-            return 2.0 * xp.imag(h_ij * rho_values)
-        rho_values = rho[self._cols, self._rows]
+        # DEPRECATED: Hamiltonian has to be defined
+        # if self._hamiltonian is not None:
+        H_t = self._hamiltonian.at_time(t)
+        xp = B.xp()
+        rows_flat = self._rows.ravel()
+        cols_flat = self._cols.ravel()
+        # Order reversed due to sign-change from -1.0 to +1.0 in self._c, which flips the current direction convention and thus the order of indices in the current formula. This is a bit subtle and could be made clearer by defining a helper function for the current that takes care of the index ordering and sign convention.
+        # h_ij = xp.asarray(H_t[rows_flat, cols_flat]).reshape(self._rows.shape)
+        h_ij = xp.asarray(H_t[cols_flat, rows_flat]).reshape(self._cols.shape)
+        rho_values = rho[self._rows, self._cols]
         rho_values = B.xp().where(invalid_mask, 0.0, rho_values)
-        # return 2.0 * xp.imag(h_ij * rho[self._rows, self._cols])
-        return 2.0 * B.xp().imag(rho_values)
+        # return 2.0 * xp.imag(h_ij * rho[self._cols, self._rows])
+        return 2.0 * xp.imag(h_ij * rho_values)
+        # DEPRECATED: Hamiltonian has to be defined
+        # rho_values = rho[self._cols, self._rows]
+        # rho_values = B.xp().where(invalid_mask, 0.0, rho_values)
+        # # return 2.0 * xp.imag(h_ij * rho[self._rows, self._cols])
+        # return 2.0 * B.xp().imag(rho_values)
 
     def _compute_vortices(self, rho: B.Array, t: float) -> B.Array:
         I_edges = self._compute_edge_currents(rho, t)
@@ -117,16 +115,18 @@ class VortFluxObservable(VorticityObservable):
         assert len(r_arr) == len(
             rp_arr
         ), "Nearest neighbor list should have shape (n_edges, 2)."
-        if self._hamiltonian is not None:
-            xp = B.xp()
-            H_t = self._hamiltonian.at_time(t)
-            h_scalars = xp.asarray(H_t[rp_arr, r_arr]).ravel()
-            H_rho = H_t.dot(rho)
-            rho_H = rho @ H_t
-            H_rho_vals = H_rho[r_arr, rp_arr]
-            rho_H_vals = rho_H[r_arr, rp_arr]
-            return 2.0 * xp.real(h_scalars * (H_rho_vals - rho_H_vals))
-        return 2.0 * B.xp().real(rho_H_vals - H_rho_vals)
+        # DEPRECATED: Hamiltonian has to be defined
+        # if self._hamiltonian is not None:
+        xp = B.xp()
+        H_t = self._hamiltonian.at_time(t)
+        h_scalars = xp.asarray(H_t[rp_arr, r_arr]).ravel()
+        H_rho = H_t.dot(rho)
+        rho_H = rho @ H_t
+        H_rho_vals = H_rho[r_arr, rp_arr]
+        rho_H_vals = rho_H[r_arr, rp_arr]
+        return 2.0 * xp.real(h_scalars * (H_rho_vals - rho_H_vals))
+        # DEPRECATED: Hamiltonian has to be defined
+        # return 2.0 * B.xp().real(rho_H_vals - H_rho_vals)
 
     def _compute_tilde_j_omega(self, rho: B.Array, t: float) -> B.Array:
         div_edge_fluxes_per_bond = self._compute_div_edge_fluxes_per_bond(rho, t)
@@ -181,13 +181,15 @@ class VortFluxModObservable(VortFluxObservable):
         assert len(r_arr) == len(
             rp_arr
         ), "Nearest neighbor list should have shape (n_edges, 2)."
-        if self._hamiltonian is not None:
-            xp = B.xp()
-            dH_dt = self._hamiltonian.derivative_at_time(t)
-            h_scalars = xp.asarray(dH_dt[rp_arr, r_arr]).ravel()
-            # return 2.0 * xp.real(h_scalars * (H_rho_vals - rho_H_vals))
-            return 2.0 * xp.imag(h_scalars * rho[r_arr, rp_arr])
-        return 2.0 * B.xp().imag(rho[rp_arr, r_arr])
+        # DEPRECATED: Hamiltonian has to be defined
+        # if self._hamiltonian is not None:
+        xp = B.xp()
+        dH_dt = self._hamiltonian.derivative_at_time(t)
+        h_scalars = xp.asarray(dH_dt[rp_arr, r_arr]).ravel()
+        # return 2.0 * xp.real(h_scalars * (H_rho_vals - rho_H_vals))
+        return 2.0 * xp.imag(h_scalars * rho[r_arr, rp_arr])
+        # DEPRECATED: Hamiltonian has to be defined
+        # return 2.0 * B.xp().imag(rho[rp_arr, r_arr])
 
     def _compute_f_j_omega(self, rho: B.Array, t: float) -> B.Array:
         edge_forces_per_bond = self._compute_edge_forces_per_bond(rho, t)
@@ -224,10 +226,8 @@ class VortSourceObservable(VorticityObservable):
     ):
         super().__init__(geometry, window, hamiltonian)
 
-        if hamiltonian is None:
-            print(
-                f"No Hamiltonian passed to {self.__class__}. Assuming Onsite-Potential Hamiltonian with t_hop=1."
-            )
+        # Now hamiltonian has to be DEFINED
+        assert hamiltonian is not None, f"No Hamiltonian passed to {self.__class__}"
 
         self._hamiltonian = hamiltonian
         # changing the prefactor to calculate vorticity instead
@@ -241,26 +241,25 @@ class VortSourceObservable(VorticityObservable):
 
         Uses the gauge-invariant formula
         $f_{i<-j}(t) = 2\,\mathrm{Im}(dH_{ij}(t)_dt\,\rho_{ji}(t))$.
-        When no Hamiltonian is stored (`t_{hop} = -1`), this reduces to
-        $2\,\mathrm{Im}(0.0*\rho_{ij})$.
         """
         invalid_mask = (self._rows == -1) | (self._cols == -1)
-        if self._hamiltonian is not None:
-            dH_dt = self._hamiltonian.derivative_at_time(t)
-            xp = B.xp()
-            rows_flat = self._rows.ravel()
-            cols_flat = self._cols.ravel()
-            # Order reversed due to sign-change from -1.0 to +1.0 in self._c, which flips the current direction convention and thus the order of indices in the current formula. This is a bit subtle and could be made clearer by defining a helper function for the current that takes care of the index ordering and sign convention.
-            # h_ij = xp.asarray(H_t[rows_flat, cols_flat]).reshape(self._rows.shape)
-            dh_ij_dt = xp.asarray(dH_dt[cols_flat, rows_flat]).reshape(self._cols.shape)
-            rho_values = rho[self._rows, self._cols]
-            rho_values = B.xp().where(invalid_mask, 0.0, rho_values)
-            # return 2.0 * xp.imag(h_ij * rho[self._cols, self._rows])
-            return 2.0 * xp.imag(dh_ij_dt * rho_values)
-        rho_values = rho[self._cols, self._rows]
+        # DEPRECATED: Hamiltonian has to be defined
+        # if self._hamiltonian is not None:
+        dH_dt = self._hamiltonian.derivative_at_time(t)
+        xp = B.xp()
+        rows_flat = self._rows.ravel()
+        cols_flat = self._cols.ravel()
+        # Order reversed due to sign-change from -1.0 to +1.0 in self._c, which flips the current direction convention and thus the order of indices in the current formula. This is a bit subtle and could be made clearer by defining a helper function for the current that takes care of the index ordering and sign convention.
+        # h_ij = xp.asarray(H_t[rows_flat, cols_flat]).reshape(self._rows.shape)
+        dh_ij_dt = xp.asarray(dH_dt[cols_flat, rows_flat]).reshape(self._cols.shape)
+        rho_values = rho[self._rows, self._cols]
         rho_values = B.xp().where(invalid_mask, 0.0, rho_values)
-        # return 2.0 * xp.imag(h_ij * rho[self._rows, self._cols])
-        return 2.0 * B.xp().imag(0.0 * rho_values)
+        # return 2.0 * xp.imag(h_ij * rho[self._cols, self._rows])
+        return 2.0 * xp.imag(dh_ij_dt * rho_values)
+        # rho_values = rho[self._cols, self._rows]
+        # rho_values = B.xp().where(invalid_mask, 0.0, rho_values)
+        # # return 2.0 * xp.imag(h_ij * rho[self._rows, self._cols])
+        # return 2.0 * B.xp().imag(0.0 * rho_values)
 
     def _compute(self, rho: B.Array, t: float) -> B.Array:
         F_edges = self._compute_edge_forces(rho, t)
@@ -604,12 +603,7 @@ class SiteDensityObservable(Observable):
 
 
 class BondCurrentObservable(Observable):
-    r"""Measures the bond currents $I_{i<-j}(t) = 2\,\mathrm{Im}(H_{ij}(t)\,\rho_{ji}(t))$.
-
-    When no *hamiltonian* is provided the hopping is assumed real with
-    $t_{\text{hop}} = -1$, reducing the expression to
-    $2\,\mathrm{Im}(\rho_{ij})$.
-    """
+    r"""Measures the bond currents $I_{i<-j}(t) = 2\,\mathrm{Im}(H_{ij}(t)\,\rho_{ji}(t))$"""
 
     def __init__(
         self,
@@ -619,10 +613,8 @@ class BondCurrentObservable(Observable):
     ):
         super().__init__(window)
 
-        if hamiltonian is None:
-            print(
-                f"No Hamiltonian passed to {self.__class__}. Assuming Onsite-Potential Hamiltonian with t_hop=1."
-            )
+        # Now hamiltonian has to be DEFINED
+        assert hamiltonian is not None, f"No Hamiltonian passed to {self.__class__}"
 
         self._hamiltonian = hamiltonian
 
@@ -634,20 +626,17 @@ class BondCurrentObservable(Observable):
         ), "Nearest neighbor list should have shape (n_edges, 2)."
 
     def _compute(self, rho: B.Array, t: float) -> B.Array:
-        if self._hamiltonian is not None:
-            xp = B.xp()
-            H_t = self._hamiltonian.at_time(t)
-            h_ij = xp.asarray(H_t[self._nn_rows, self._nn_cols]).ravel()
-            return 2.0 * xp.imag(h_ij * rho[self._nn_cols, self._nn_rows])  # (E,)
-        return 2.0 * B.xp().imag(rho[self._nn_rows, self._nn_cols])  # (E,)
+        # DEPRECATED: Hamiltonian has to be defined
+        # if self._hamiltonian is not None:
+        xp = B.xp()
+        H_t = self._hamiltonian.at_time(t)
+        h_ij = xp.asarray(H_t[self._nn_rows, self._nn_cols]).ravel()
+        return 2.0 * xp.imag(h_ij * rho[self._nn_cols, self._nn_rows])  # (E,)
+        # return 2.0 * B.xp().imag(rho[self._nn_rows, self._nn_cols])  # (E,)
 
 
 class BondCurrentForceObservable(BondCurrentObservable):
-    r"""Measures the bond force $f_{i<-j}(t) = 2\,\mathrm{Im}(dH_{ij}_dt\,\rho_{ji}(t))$.
-
-    When no *hamiltonian* is provided the hopping is assumed real and time-independent
-    $t_{\text{hop}} = -1$, reducing the expression to $0.0$.
-    """
+    r"""Measures the bond force $f_{i<-j}(t) = 2\,\mathrm{Im}(dH_{ij}_dt\,\rho_{ji}(t))$."""
 
     def __init__(
         self,
@@ -658,21 +647,18 @@ class BondCurrentForceObservable(BondCurrentObservable):
         super().__init__(geometry, window, hamiltonian)
 
     def _compute(self, rho: B.Array, t: float) -> B.Array:
-        if self._hamiltonian is not None:
-            xp = B.xp()
-            dH_dt = self._hamiltonian.derivative_at_time(t)
-            dh_ij_dt = xp.asarray(dH_dt[self._nn_rows, self._nn_cols]).ravel()
-            return 2.0 * xp.imag(dh_ij_dt * rho[self._nn_cols, self._nn_rows])  # (E,)
-        return 2.0 * B.xp().imag(0.0 * rho[self._nn_rows, self._nn_cols])  # (E,)
+        # DEPRECATED: Hamiltonian has to be defined
+        # if self._hamiltonian is not None:
+        xp = B.xp()
+        dH_dt = self._hamiltonian.derivative_at_time(t)
+        dh_ij_dt = xp.asarray(dH_dt[self._nn_rows, self._nn_cols]).ravel()
+        return 2.0 * xp.imag(dh_ij_dt * rho[self._nn_cols, self._nn_rows])  # (E,)
+        # return 2.0 * B.xp().imag(0.0 * rho[self._nn_rows, self._nn_cols])  # (E,)
 
 
 class BondCurrentFluxObservable(BondCurrentObservable):
     r"""Measures the bond current flux
     $\Pi^{i<-j}_{k} = 2\,\mathrm{Re}(H_{ij}H_{jk}\,\rho_{ki}-H_{ij}H_{ki}\,\rho_{jk})$.
-
-    When no *hamiltonian* is provided the hopping is assumed real with
-    $t_{\text{hop}} = -1$, reducing the expression to
-    $2\,\mathrm{Re}(\rho_{ki}-\rho_{jk})$.
     """
 
     def __init__(
@@ -688,26 +674,25 @@ class BondCurrentFluxObservable(BondCurrentObservable):
         self._X = B.xp().array(list(range(size)) * len_rows, dtype=B.xp().int64)
 
     def _compute(self, rho: B.Array, t: float) -> B.Array:
-        if self._hamiltonian is not None:
-            xp = B.xp()
-            H_t = self._hamiltonian.at_time(t)
-            h_ij = xp.asarray(
-                H_t[self._nn_rows_repeated, self._nn_cols_repeated]
-            ).ravel()
-            h_jk = xp.asarray(H_t[self._nn_cols_repeated, self._X]).ravel()
-            h_ki = xp.asarray(H_t[self._X, self._nn_rows_repeated]).ravel()
-            return 2.0 * xp.real(
-                rho[self._X, self._nn_rows_repeated] * h_ij * h_jk
-                - h_ki * h_ij * rho[self._nn_cols_repeated, self._X]
-            )  # (E*V,)
-        return 2.0 * B.xp().real(
-            rho[self._nn_cols_repeated, self._X] - rho[self._X, self._nn_rows_repeated]
+        # DEPRECATED: Hamiltonian has to be defined
+        # if self._hamiltonian is not None:
+        xp = B.xp()
+        H_t = self._hamiltonian.at_time(t)
+        h_ij = xp.asarray(H_t[self._nn_rows_repeated, self._nn_cols_repeated]).ravel()
+        h_jk = xp.asarray(H_t[self._nn_cols_repeated, self._X]).ravel()
+        h_ki = xp.asarray(H_t[self._X, self._nn_rows_repeated]).ravel()
+        return 2.0 * xp.real(
+            rho[self._X, self._nn_rows_repeated] * h_ij * h_jk
+            - h_ki * h_ij * rho[self._nn_cols_repeated, self._X]
         )  # (E*V,)
+        # return 2.0 * B.xp().real(
+        #    rho[self._nn_cols_repeated, self._X] - rho[self._X, self._nn_rows_repeated]
+        # )  # (E*V,)
 
 
 class LatticeFrameObservable(Observable):
     """Composite observable that records site densities, bond currents, and
-    curret vortices at each measurement step."""
+    current vortices at each measurement step."""
 
     def __init__(
         self,
