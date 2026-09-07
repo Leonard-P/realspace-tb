@@ -14,6 +14,7 @@ HBAR_J_S = hbar
 PLANCK_J_S = h
 ELECTRON_MASS_KG = m_e
 HARTREE_ENERGY_J = value("Hartree energy")
+BOHR_RADIUS_M = value("Bohr radius")
 
 DEFAULT_T_HOP_AU = 0.1
 DEFAULT_A_NN_M = 0.142e-9

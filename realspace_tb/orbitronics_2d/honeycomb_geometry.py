@@ -25,11 +25,19 @@ def get_valid_adjacent_pairs(lst):
 
 
 class HoneycombLatticeGeometry(Lattice2DGeometry):
-    def __init__(self, Lx: int, Ly: int, pbc_x: bool = False, pbc_y: bool = False):
+    def __init__(
+        self,
+        Lx: int,
+        Ly: int,
+        a_nn: float = 2.683412166,
+        pbc_x: bool = False,
+        pbc_y: bool = False,
+    ):
         super().__init__()
 
         self.Lx = Lx
         self.Ly = Ly
+        self.a_nn = a_nn
         self.pbc_x = pbc_x
         self.pbc_y = pbc_y
 
@@ -37,10 +45,10 @@ class HoneycombLatticeGeometry(Lattice2DGeometry):
             [(0, 1), (1, 2), (2, Lx + 2), (Lx + 2, Lx + 1), (Lx + 1, Lx), (Lx, 0)]
         )
 
-        self._row_height = 1.5
-        self._col_width = np.sqrt(3) / 2
+        self._row_height = self.a_nn * 1.5
+        self._col_width = self.a_nn * np.sqrt(3) / 2
 
-        self.plaquette_area = np.sqrt(3) * 3 / 2
+        self.plaquette_area = self.a_nn**2 * np.sqrt(3) * 3 / 2
 
         self._origin = (
             np.array(
@@ -66,7 +74,7 @@ class HoneycombLatticeGeometry(Lattice2DGeometry):
         self._plaq_ystep: np.floating | None = None
 
         assert np.allclose(
-            np.linalg.norm(self.nn_bond_vectors, axis=1), 1.0
+            np.linalg.norm(self.nn_bond_vectors, axis=1), self.a_nn
         )  # ensure that Lx, Ly are chosen for a correct supercell
 
     def _build_nearest_neighbors(self) -> None:
@@ -421,7 +429,7 @@ class HoneycombLatticeGeometry(Lattice2DGeometry):
         row = index // self.Lx
         col = index % self.Lx
 
-        y_offset = 0.25 * (-1) ** ((col + row) % 2)
+        y_offset = 0.25 * self.a_nn * (-1) ** ((col + row) % 2)
 
         x = self._col_width * (index % self.Lx)
         y = self._row_height * row + y_offset

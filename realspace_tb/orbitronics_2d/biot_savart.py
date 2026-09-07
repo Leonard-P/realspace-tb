@@ -1,6 +1,6 @@
 import numpy as np
 
-from .units import DEFAULT_A_NN_M, current_unit_amperes
+from .units import BOHR_RADIUS_M, current_unit_amperes
 from .observables import BondCurrentObservable
 from .lattice_2d_geometry import Lattice2DGeometry
 
@@ -33,7 +33,7 @@ def calculate_biot_savart_vectorized(
     geometry,
     *,
     n_images: int = 2,
-    a_nn_m: float | None = None,
+    bohr_radius_m: float | None = None,
 ):
     """
     Vectorized calculation of B field.
@@ -44,7 +44,7 @@ def calculate_biot_savart_vectorized(
         geometry: Lattice2DGeometry instance defining the lattice structure.
         n_images: image range for periodic replication. Uses shifts from
             -n_images to +n_images along periodic axes.
-        a_nn_m: nearest-neighbor distance in meters. Used to convert geometry units.
+        bohr_radius_m: Bohr radius in meters. Used to convert geometry units.
     Returns:
         B_field: np.ndarray of shape (3,) representing the magnetic field vector at r_obs.
     """
@@ -53,7 +53,7 @@ def calculate_biot_savart_vectorized(
         currents,
         geometry,
         n_images=n_images,
-        a_nn_m=a_nn_m,
+        bohr_radius_m=bohr_radius_m,
     )[0]
 
 
@@ -64,7 +64,7 @@ def calculate_biot_savart_batch(
     block_size=256,
     *,
     n_images: int = 2,
-    a_nn_m: float | None = None,
+    bohr_radius_m: float | None = None,
 ):
     """Compute the magnetic field for many observation points at once.
 
@@ -80,10 +80,10 @@ def calculate_biot_savart_batch(
         np.ndarray of shape (N_obs, 3) in Tesla.
 
     Unit trace:
-        ``r = a_NN * r_hat`` and ``J = I_0 * J_hat`` with
+        ``r = a_0 * r_hat`` and ``J = I_0 * J_hat`` with
         ``I_au = e * E_h / hbar``.
         The Biot-Savart kernel is evaluated on the dimensionless positions
-        ``r_hat`` and then rescaled by ``mu_0 / (4 pi) * I_au / a_NN``.
+        ``r_hat`` and then rescaled by ``mu_0 / (4 pi) * I_au / a_0``.
         The final field is therefore returned in Tesla.
     """
     r_obs_array = np.asarray(r_obs_array, dtype=float)
@@ -105,11 +105,11 @@ def calculate_biot_savart_batch(
     mu0_4pi = 1e-7
     I_au = current_unit_amperes()
 
-    if a_nn_m is None:
-        a_nn_m = DEFAULT_A_NN_M
+    if bohr_radius_m is None:
+        bohr_radius_m = BOHR_RADIUS_M
 
     # Dimensionless spatial components require 1 / a_nn correction
-    prefactor = mu0_4pi * I_au / a_nn_m
+    prefactor = mu0_4pi * I_au / bohr_radius_m
 
     B_total = np.zeros((n_obs, 3), dtype=float)
 
@@ -153,7 +153,7 @@ def biot_savart_on_plane(
     block_size=256,
     *,
     n_images: int = 2,
-    a_nn_m: float | None = None,
+    bohr_radius_m: float | None = None,
 ):
     """Evaluate B on a rectangular plane parallel to the ribbon.
 
@@ -167,7 +167,7 @@ def biot_savart_on_plane(
         geometry,
         n_images=n_images,
         block_size=block_size,
-        a_nn_m=a_nn_m,
+        bohr_radius_m=bohr_radius_m,
     )
     B_grid = B_flat.reshape(X.shape + (3,))
     return X, Y, B_grid
