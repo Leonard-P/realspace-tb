@@ -91,6 +91,9 @@ class VortFluxObservable(VorticityObservable):
     This observable is ANTISYMMETRIC, since n_{P_{i} -> P} = -n_{P -> P_{i}}
     1. WARNING: Currently hard-coded for 2D lattices, whose plaquettes have all their normal
                 vectors pointing along one (z-)direction.
+    2. WARNING: Currently hard-coded for nearest-neighbor plaquettes. This observable still
+                misses the contribution of next-nearest-neighbor plaquettes,
+                if the distance between neighboring plaquettes is not the same.
     """
 
     def __init__(
@@ -158,6 +161,9 @@ class VortFluxModObservable(VortFluxObservable):
     This observable is ANTISYMMETRIC, since n_{P_{i} -> P} = -n_{P -> P_{i}}
     1. WARNING: Currently hard-coded for 2D lattices, whose plaquettes have all their normal
                 vectors pointing along one (z-)direction.
+    2. WARNING: Currently hard-coded for nearest-neighbor plaquettes. This observable still
+                misses the contribution of next-nearest-neighbor plaquettes,
+                if the distance between neighboring plaquettes is not the same.
     """
 
     def __init__(
@@ -361,7 +367,7 @@ class VortPolRestrictedObservable(VortPolObservable):
 class VectorVortFluxObservable(VortFluxObservable):
     r"""Measures the vector-valued unmodified vortex flow
 
-    $$\Tilde{\mathbf{j}}^{z}_{\omega,P_{i}\rightarrow P_{j}}
+    $$\Tilde{\mathbf{j}}^{z}_{\omega}
     =1/2\sum_{i,j}\Bigl(\hat{\Tilde{j}}^{z}_{\omega,P_{i}\rightarrow P_{j}}(R_{j}-R_{i})\Bigr)$$
     WARNING: Currently hard-coded for 2D lattices, whose plaquettes have all their normal
              vectors pointing along one (z-)direction and all equal surface area.
@@ -525,7 +531,7 @@ class VortSourcePolRestrictedObservable(VortSourceObservable):
 class VectorVortFluxModObservable(VortFluxModObservable):
     r"""Measures the vector-valued modified vortex flow
 
-    $$\mathbf{j}^{z}_{\omega,P_{i}\rightarrow P_{j}}
+    $$\mathbf{j}^{z}_{\omega}
     =1/2\sum_{i,j}\Bigl(\hat{j}^{z}_{\omega,P_{i}\rightarrow P_{j}}(R_{j}-R_{i})\Bigr)$$
     WARNING: Currently hard-coded for 2D lattices, whose plaquettes have all their normal
              vectors pointing along one (z-)direction and all equal surface area.
@@ -603,7 +609,9 @@ class SiteDensityObservable(Observable):
 
 
 class BondCurrentObservable(Observable):
-    r"""Measures the bond currents $I_{i<-j}(t) = 2\,\mathrm{Im}(H_{ij}(t)\,\rho_{ji}(t))$"""
+    r"""Measures the bond currents $I_{i<-j}(t) = 2\,\mathrm{Im}(H_{ij}(t)\,\rho_{ji}(t))$
+    WARNING: If the Hamiltonian involves hopping to next-nearest neighbors, this observable
+    will only measure the currents along nearest-neighbor bonds."""
 
     def __init__(
         self,
@@ -626,6 +634,7 @@ class BondCurrentObservable(Observable):
         ), "Nearest neighbor list should have shape (n_edges, 2)."
 
     def _compute(self, rho: B.Array, t: float) -> B.Array:
+        """Compute the bond currents in 1D-array form"""
         # DEPRECATED: Hamiltonian has to be defined
         # if self._hamiltonian is not None:
         xp = B.xp()
@@ -633,6 +642,69 @@ class BondCurrentObservable(Observable):
         h_ij = xp.asarray(H_t[self._nn_rows, self._nn_cols]).ravel()
         return 2.0 * xp.imag(h_ij * rho[self._nn_cols, self._nn_rows])  # (E,)
         # return 2.0 * B.xp().imag(rho[self._nn_rows, self._nn_cols])  # (E,)
+
+    def _compute_in_matrix_form(self, rho: B.Array, t: float) -> B.Array:
+        """Compute the bond currents in matrix form,
+        where the (i,j)-th entry corresponds to the current from site i to site j."""
+        # DEPRECATED: Hamiltonian has to be defined
+        # if self._hamiltonian is not None:
+        xp = B.xp()
+        H_t = self._hamiltonian.at_time(t)
+        h_ij = xp.asarray(H_t[self._nn_rows, self._nn_cols]).ravel()
+        bond_currents = 2.0 * xp.imag(h_ij * rho[self._nn_cols, self._nn_rows])
+        current_matrix = xp.zeros_like(rho)
+        current_matrix[self._nn_rows, self._nn_cols] = bond_currents
+        current_matrix[self._nn_cols, self._nn_rows] = -bond_currents
+        return current_matrix
+
+
+class VectorBondCurrentObservable(BondCurrentObservable):
+    r"""Measures the vector-valued current
+    (Volume integral of bond currents -- see BondCurrentObservable)
+    $$\mathbf{J}
+    =1/2\sum_{i,k}\Bigl(\hat{j}_{i\rightarrow k}}(R_{k}-R_{i})\Bigr)$$
+    WARNING: If the Hamiltonian involves hopping to next-nearest neighbors, this observable
+    will only measure the currents along nearest-neighbor bonds.
+    """
+
+    def __init__(
+        self,
+        geometry: HoneycombLatticeGeometry,
+        window: MeasurementWindow | None = None,
+        hamiltonian: Hamiltonian | None = None,
+    ):
+        super().__init__(geometry, window, hamiltonian)
+
+        nn = geometry.nearest_neighbors
+        nn_bond_vectors = geometry.nn_bond_vectors
+        num_sites = nn.max() + 1
+        # Construct x- and y-distance matrices for nearest-neighbor-bonds
+        # Initiate the distance matrices with zeros
+        self._x_dist_matrix = np.full((num_sites, num_sites), 0.0)
+        self._y_dist_matrix = np.full((num_sites, num_sites), 0.0)
+        # Take the indices of the nearest-neighbor pairs
+        i_indices = nn[:, 0]
+        j_indices = nn[:, 1]
+        # Fill the distance matrices with the x- and y-components of the bond vectors
+        self._x_dist_matrix[i_indices, j_indices] = nn_bond_vectors[:, 0]
+        self._x_dist_matrix[j_indices, i_indices] = -nn_bond_vectors[:, 0]
+        self._y_dist_matrix[i_indices, j_indices] = nn_bond_vectors[:, 1]
+        self._y_dist_matrix[j_indices, i_indices] = -nn_bond_vectors[:, 1]
+
+    def _compute_vector_bond_curr_tensor(
+        self, rho: B.Array, t: float
+    ) -> Tuple[B.Array, B.Array]:
+        """Compute the vector-valued current in 1D-array form"""
+        current_matrix = self._compute_in_matrix_form(rho, t)
+        j_x = 0.5 * current_matrix * self._x_dist_matrix
+        j_y = 0.5 * current_matrix * self._y_dist_matrix
+        return j_x, j_y
+
+    def _compute(self, rho: B.Array, t: float) -> B.Array:
+        j_x, j_y = self._compute_vector_bond_curr_tensor(rho, t)
+        j_x, j_y = j_x.ravel(), j_y.ravel()
+        vec_j = B.xp().column_stack((j_x, j_y))
+        return B.xp().sum(vec_j, axis=0)
 
 
 class BondCurrentForceObservable(BondCurrentObservable):
