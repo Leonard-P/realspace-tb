@@ -25,11 +25,13 @@ def get_valid_adjacent_pairs(lst):
 
 
 class HoneycombLatticeGeometry(Lattice2DGeometry):
+    """Graphene honeycomb lattice (default, a_nn = 1.0, a_nn = 2.6834 for a graphene)"""
+
     def __init__(
         self,
         Lx: int,
         Ly: int,
-        a_nn: float = 2.683412166,
+        a_nn: float = 1.0,
         pbc_x: bool = False,
         pbc_y: bool = False,
     ):
