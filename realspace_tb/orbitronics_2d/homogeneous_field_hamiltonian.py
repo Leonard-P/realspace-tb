@@ -189,23 +189,38 @@ class LightPulseComponent(HomogeneousFieldAmplitude):
         pi = xp.pi
         sqrt = xp.sqrt
         exp = xp.exp
+        # wofz instead of exp(-z^2)*erf(z) to avoid numerical overflow
         if xp.__name__ == "cupy":
-            erf = csp.erf
+            wofz = csp.wofz
         if xp.__name__ == "numpy":
-            erf = sp.erf
-        return (
-            self.E0
-            * sqrt(pi / 2)
-            * s
-            * exp(-((s * w) ** (2)) / 2)
-            * xp.real(
-                exp(-1j * d)
-                * (
-                    erf((1j * s ** (2) * w + tc - t) / (sqrt(2) * s))
-                    - erf((1j * s ** (2) * w + tc) / (sqrt(2) * s))
-                )
-            )
-        )
+            wofz = sp.wofz
+
+        b = s * w / sqrt(2)
+
+        def f(a):
+            return exp(-(a**2) - 2j * a * b) * wofz(-b + 1j * a)
+
+        a1 = (tc - t) / (sqrt(2) * s)  # replaces erf(z(t))
+        a2 = tc / (sqrt(2) * s)  # replaces erf(z(0))
+
+        return self.E0 * sqrt(pi / 2) * s * xp.real(exp(-1j * d) * (f(a2) - f(a1)))
+        # if xp.__name__ == "cupy":
+        #    erf = csp.erf
+        # if xp.__name__ == "numpy":
+        #    erf = sp.erf
+        # return (
+        #    self.E0
+        #    * sqrt(pi / 2)
+        #    * s
+        #    * exp(-((s * w) ** (2)) / 2)
+        #    * xp.real(
+        #        exp(-1j * d)
+        #        * (
+        #            erf((1j * s ** (2) * w + tc - t) / (sqrt(2) * s))
+        #            - erf((1j * s ** (2) * w + tc) / (sqrt(2) * s))
+        #        )
+        #    )
+        # )
 
 
 class EllipticalPulseFactory:
@@ -236,7 +251,7 @@ class EllipticalPulseFactory:
         sigma: float,
         varepsilon: float,
         omega: float,
-        varphi_0: float,
+        phase_shift: float,
         vartheta: float,
         varphi: float,
     ) -> list[LightPulseComponent]:
@@ -255,7 +270,7 @@ class EllipticalPulseFactory:
             t_c=t_c,
             sigma=sigma,
             omega=omega,
-            phase_shift=varphi_0,
+            phase_shift=phase_shift,
             direction=e1_direction,
         )
 
@@ -267,7 +282,7 @@ class EllipticalPulseFactory:
             t_c=t_c,
             sigma=sigma,
             omega=omega,
-            phase_shift=varphi_0 - (np.pi / 2),
+            phase_shift=phase_shift - (np.pi / 2),
             direction=e2_direction,
         )
 
@@ -424,6 +439,7 @@ class LinearFieldHamiltonianPeierls(Hamiltonian):
 
         self.geometry = geometry
         self.field_amplitudes = field_amplitudes
+        ### CHECK the implementation again for B != 0.0. It is likely still incorrect ###
         self.B0 = B.FDTYPE(B0)
         if (self.B0 != 0.0) and (self.geometry.pbc_x) and (self.geometry.pbc_y):
             raise ValueError(

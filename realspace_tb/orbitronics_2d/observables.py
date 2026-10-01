@@ -674,7 +674,9 @@ class VectorBondCurrentObservable(BondCurrentObservable):
         hamiltonian: Hamiltonian | None = None,
     ):
         super().__init__(geometry, window, hamiltonian)
-
+        # Total area of plaquettes of the system
+        _, plaquette_positions, _, _ = geometry.plaquettes
+        self._A = plaquette_positions.shape[0] * geometry.plaquette_area
         nn = geometry.nearest_neighbors
         nn_bond_vectors = geometry.nn_bond_vectors
         num_sites = nn.max() + 1
@@ -704,7 +706,7 @@ class VectorBondCurrentObservable(BondCurrentObservable):
         j_x, j_y = self._compute_vector_bond_curr_tensor(rho, t)
         j_x, j_y = j_x.ravel(), j_y.ravel()
         vec_j = B.xp().column_stack((j_x, j_y))
-        return B.xp().sum(vec_j, axis=0)
+        return B.xp().sum(vec_j, axis=0) / self._A
 
 
 class BondCurrentForceObservable(BondCurrentObservable):
