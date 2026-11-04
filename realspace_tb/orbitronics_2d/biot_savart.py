@@ -39,7 +39,7 @@ def calculate_biot_savart_vectorized(
     Vectorized calculation of B field.
 
     Args:
-        r_obs: [x, y, z] in units of a_NN.
+        r_obs: [x, y, z] in units of bohr radius.
         currents: array-like of shape (N_bonds,) in units of one bond-current quantum.
         geometry: Lattice2DGeometry instance defining the lattice structure.
         n_images: image range for periodic replication. Uses shifts from
@@ -69,13 +69,13 @@ def calculate_biot_savart_batch(
     """Compute the magnetic field for many observation points at once.
 
     Args:
-        r_obs_array: array-like of shape (N_obs, 3), points in units of a_NN.
+        r_obs_array: array-like of shape (N_obs, 3), points in units of Bohr radius.
         currents: array-like of shape (N_bonds,) in units of one bond-current quantum.
         geometry: Lattice2DGeometry instance defining the lattice structure.
+        block_size: number of observation points processed per chunk.
         n_images: image range for periodic replication. Uses shifts from
             -n_images to +n_images along periodic axes.
-        block_size: number of observation points processed per chunk.
-        a_nn_m: nearest-neighbor distance in meters. Used to convert geometry units.
+        bohr_radius_m: Bohr radius in meters. Used to convert geometry units.
     Returns:
         np.ndarray of shape (N_obs, 3) in Tesla.
 
@@ -108,7 +108,6 @@ def calculate_biot_savart_batch(
     if bohr_radius_m is None:
         bohr_radius_m = BOHR_RADIUS_M
 
-    # Dimensionless spatial components require 1 / a_nn correction
     prefactor = mu0_4pi * I_au / bohr_radius_m
 
     B_total = np.zeros((n_obs, 3), dtype=float)

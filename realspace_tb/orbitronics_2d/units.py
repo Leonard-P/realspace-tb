@@ -1,8 +1,8 @@
 """Unit helpers and default graphene material parameters for ``orbitronics_2d``.
 
-The core solver uses mixed units, where ``e = hbar = m_e = 4\pi\varepsilon_0 = a_nn = 1``.
-Proper value of t_hop is set in the Hamiltonian. However, the proper value of a_nn must be set when calculating induced fields.
-The helpers in this module convert those dimensionless quantities back to
+The core solver uses Hartree atomic units, ``(e = hbar = m_e = 4\pi\varepsilon_0 = 1)``, hence ``a_0 = 1``.
+Proper value of t_hop and atomic distance are already set in the Hamiltonian.
+The helpers in this module convert Hartree atomic units back to
 graphene-like SI scales for the observable and Biot-Savart utilities.
 """
 
