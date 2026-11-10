@@ -31,6 +31,10 @@ class VorticityObservable(Observable):
     $$\sum_{(R,R')\in\partial P} \hat{J}_{R\rightarrow R'}$$
     """
 
+    # k-space: only on-site/bond-local elements of rho are used -> evaluate once with
+    # the k-averaged matrix (BlochHamiltonian.k_averaged_density_matrix).
+    bloch_pairwise = True
+
     def __init__(
         self,
         geometry: HoneycombLatticeGeometry,
@@ -95,6 +99,9 @@ class VortFluxObservable(VorticityObservable):
                 misses the contribution of next-nearest-neighbor plaquettes,
                 if the distance between neighboring plaquettes is not the same.
     """
+
+    # k-space: uses products such as H @ rho -> must be evaluated k-point by k-point.
+    bloch_pairwise = False
 
     def __init__(
         self,
@@ -604,6 +611,10 @@ class VectorVortFluxModObservable(VortFluxModObservable):
 class SiteDensityObservable(Observable):
     """Measures the site-resolved electron density $n_i = \\rho_{ii}$."""
 
+    # k-space: only on-site/bond-local elements of rho are used -> evaluate once with
+    # the k-averaged matrix (BlochHamiltonian.k_averaged_density_matrix).
+    bloch_pairwise = True
+
     def _compute(self, rho: B.Array, t: float) -> B.Array:
         return B.xp().real(B.xp().diag(rho))
 
@@ -612,6 +623,10 @@ class BondCurrentObservable(Observable):
     r"""Measures the bond currents $I_{i<-j}(t) = 2\,\mathrm{Im}(H_{ij}(t)\,\rho_{ji}(t))$
     WARNING: If the Hamiltonian involves hopping to next-nearest neighbors, this observable
     will only measure the currents along nearest-neighbor bonds."""
+
+    # k-space: only on-site/bond-local elements of rho are used -> evaluate once with
+    # the k-averaged matrix (BlochHamiltonian.k_averaged_density_matrix).
+    bloch_pairwise = True
 
     def __init__(
         self,
@@ -734,6 +749,9 @@ class BondCurrentFluxObservable(BondCurrentObservable):
     r"""Measures the bond current flux
     $\Pi^{i<-j}_{k} = 2\,\mathrm{Re}(H_{ij}H_{jk}\,\rho_{ki}-H_{ij}H_{ki}\,\rho_{jk})$.
     """
+
+    # k-space: uses products such as H @ rho -> must be evaluated k-point by k-point.
+    bloch_pairwise = False
 
     def __init__(
         self,

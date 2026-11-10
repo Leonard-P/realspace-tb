@@ -434,7 +434,15 @@ class LinearFieldHamiltonianPeierls(Hamiltonian):
         t_hop: int | float,
         field_amplitudes: list[HomogeneousFieldAmplitude],
         B0: float = 0.0,
+        gauge_origin: "str | B.FCPUArray | None" = None,
     ):
+        """
+        gauge_origin: origin r_0 of the Landau gauge, A = B (x - x_0) e_y (pbc_y) or
+            A = -B (y - y_0) e_x (otherwise). None or "zero" -> r_0 = 0 (previous behaviour),
+            "center" -> mean site position, or an explicit 2D point.
+            For an open flake this is a pure gauge choice. For a ring (pbc_y) it threads an
+            Aharonov-Bohm flux; that dependence disappears with k-sampling (BlochHamiltonian).
+        """
         super().__init__()
 
         self.geometry = geometry
@@ -452,7 +460,16 @@ class LinearFieldHamiltonianPeierls(Hamiltonian):
         size = geometry.Lx * geometry.Ly
         nn = geometry.nearest_neighbors
         bv = geometry.nn_bond_vectors
-        spnn = geometry.site_positions[geometry.nearest_neighbors]
+        if gauge_origin is None or (
+            isinstance(gauge_origin, str) and gauge_origin == "zero"
+        ):
+            origin = np.zeros(2)
+        elif isinstance(gauge_origin, str) and gauge_origin == "center":
+            origin = np.mean(geometry.site_positions, axis=0)
+        else:
+            origin = np.asarray(gauge_origin, dtype=float).reshape(2)
+        self.gauge_origin = origin
+        spnn = (geometry.site_positions - origin)[geometry.nearest_neighbors]
         rows = np.concatenate([nn[:, 0], nn[:, 1]])
         cols = np.concatenate([nn[:, 1], nn[:, 0]])
         # Create independent theta matrices for each E-field component

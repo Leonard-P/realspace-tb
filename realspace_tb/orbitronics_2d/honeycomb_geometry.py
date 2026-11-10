@@ -427,6 +427,14 @@ class HoneycombLatticeGeometry(Lattice2DGeometry):
         """Origin of the lattice as real space vector."""
         return self._origin
 
+    def replicated(self, n_x: int = 1, n_y: int = 1) -> "HoneycombLatticeGeometry":
+        """Same lattice with the supercell repeated n_x times along x and n_y times along y
+        (boundary conditions and bond length unchanged). Used to build the real-space ring
+        that is equivalent to a k-mesh."""
+        return HoneycombLatticeGeometry(
+            Lx=self.Lx * n_x, Ly=self.Ly * n_y, a_nn=self.a_nn, pbc_x=self.pbc_x, pbc_y=self.pbc_y
+        )
+
     def index_to_position(self, index: int) -> B.FCPUArray:
         row = index // self.Lx
         col = index % self.Lx
