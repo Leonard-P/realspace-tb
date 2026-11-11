@@ -88,7 +88,7 @@ class Lattice2DGeometry(ABC):
 
         Returns:
             Real-space length of the system along ``direction`` in units of
-            ``a_NN``.
+            ``a_0`` (Bohr radius).
         """
         n = np.asarray(direction, dtype=float).reshape(-1)
         if n.size != 2:

@@ -16,6 +16,9 @@ from .homogeneous_field_hamiltonian import (
     LinearFieldHamiltonianPeierls,
     HomogeneousFieldAmplitude,
     RampedConstantFieldAmplitude,
+    DeltaKickFieldAmplitude,
+    LightPulseComponent,
+    EllipticalPulseFactory,
 )
 
 from . import observables as observables
@@ -26,10 +29,14 @@ from .biot_savart import (
     calculate_biot_savart_batch,
     biot_savart_on_plane,
 )
-from .plot_utils import show_simulation_frame, save_simulation_animation, PlotConfig, append_colorbar
+from .plot_utils import (
+    show_simulation_frame,
+    save_simulation_animation,
+    PlotConfig,
+    append_colorbar,
+)
 
 from .ohc import ohc, fourier_at_omega
-
 
 __all__ = [
     # modules
@@ -43,6 +50,9 @@ __all__ = [
     "Lattice2DGeometry",
     "HomogeneousFieldAmplitude",
     "RampedConstantFieldAmplitude",
+    "DeltaKickFieldAmplitude",
+    "LightPulseComponent",
+    "EllipticalPulseFactory",
     # functions
     "net_current_vectors",
     "calculate_biot_savart_vectorized",
