@@ -247,7 +247,7 @@ def test_explicit_mesh_has_no_ring():
 def test_half_shifted_mesh_is_not_the_ring():
     cell, ring = ORIENTATIONS["armchair"]
     H_r = peierls(ring, (1.0, 0.0))
-    H_k = tb.BlochHamiltonian(peierls(cell, (1.0, 0.0)), tb.KMesh(5))  # shift = 0.5
+    H_k = tb.BlochHamiltonian(peierls(cell, (1.0, 0.0)), tb.KMesh(5, shift=0.5))  # half-shifted mesh
     assert not np.allclose(np.sort(H_k.eigenvalues.ravel()), np.sort(H_r.eigenvalues), atol=1e-6)
 
 

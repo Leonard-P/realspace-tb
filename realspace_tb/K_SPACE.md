@@ -18,7 +18,7 @@ tb.BlochRK4NeumannSolver().evolve(rho, H, dt, total_time, observables=[obs], n_w
 
 | Object | Purpose |
 |---|---|
-| `KMesh(n_k, shift=0.5)` | twist angles θ = kL and weights. `shift=0`: Γ-centred, identical to a ring of `n_k` cells. |
+| `KMesh(n_k, shift=0.0)` | twist angles θ = kL and weights. Default `shift=0`: Γ-centred, identical to a ring of `n_k` cells; `shift=0.5`: half-shifted. |
 | `BlochHamiltonian(base, kmesh)` | wraps any real-space Hamiltonian of a cell periodic along y; hoppings across the boundary get `e^{±iθ}`. |
 | `BlochRK4NeumannSolver` | RK4 for all k at once (batched sparse products); `n_workers` processes on CPU. |
 | `evaluate_observable(obs, rho, H, t)` | k-averaged value of one observable without time evolution. |
@@ -50,7 +50,7 @@ built from the mesh; there is no separate geometry to pass in (and none to get w
 | `H_k.site_map()` | ring index -> (site in cell, cell index) |
 
 With `shift=0` (Γ-centred) the ring is the ordinary periodic ring, so e.g. `Ly=2` + `KMesh(5, shift=0)`
-reproduces your own `Ly=10` real-space ring element by element. The default `KMesh(5)` (shift 0.5) is
+reproduces your own `Ly=10` real-space ring element by element. The half-shifted `KMesh(5, shift=0.5)` is
 the same ring with half a flux quantum threaded through it. A mesh given as explicit `thetas/weights`
 has no finite ring; the methods above then raise an error. `correlator`, `hopping` and
 `bond_current` give infinite-system elements for sites labelled `(alpha, cell)`.
