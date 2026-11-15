@@ -5,7 +5,10 @@ from abc import ABC, abstractmethod
 from typing import Tuple
 import numpy as np
 import scipy.special as sp
-import cupyx.scipy.special as csp
+try:
+    import cupyx.scipy.special as csp  # only needed for GPU runs
+except ImportError:
+    csp = None
 
 
 def _build_hopping_csr(
@@ -125,7 +128,7 @@ class RampedACFieldAmplitude(HomogeneousFieldAmplitude):
 
 
 class LightPulseComponent(HomogeneousFieldAmplitude):
-    """
+    r"""
     A single linearly polarized COMPONENT of an ultrashort light pulse.
     E(t) = E0 * exp(-(t-t_c)^2 / (2*sigma^2)) * cos(omega*(t-t_c) - phase_shift)
 
@@ -224,7 +227,7 @@ class LightPulseComponent(HomogeneousFieldAmplitude):
 
 
 class EllipticalPulseFactory:
-    """Factory to generate the orthogonal field components for an elliptical pulse.
+    r"""Factory to generate the orthogonal field components for an elliptical pulse.
 
     Parameters
     ----------
@@ -290,7 +293,7 @@ class EllipticalPulseFactory:
 
 
 class DeltaKickFieldAmplitude(HomogeneousFieldAmplitude):
-    """Delta-kick E(t) = E0 * \delta(t)"""
+    r"""Delta-kick E(t) = E0 * \delta(t)"""
 
     def __init__(
         self,
@@ -319,7 +322,7 @@ class DeltaKickFieldAmplitude(HomogeneousFieldAmplitude):
         return self.E0 * vals
 
     def integrate_to_time(self, t: "float | B.Array") -> "float | B.Array":
-        """Integrate the field amplitude from time -\infty to t. Needed for Peierls substitution."""
+        r"""Integrate the field amplitude from time -\infty to t. Needed for Peierls substitution."""
         xp = B.xp()
         if xp.isscalar(t):
             integral = 0.0

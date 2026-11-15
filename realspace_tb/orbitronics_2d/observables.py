@@ -10,7 +10,7 @@ from collections import deque
 
 
 def compute_A_to_Bz_x(x_values, y_values, bz):
-    """Compute $$\frac{\int x B_{z}(x,y)dxdy}{\int |B_{z}(x,y)|dxdy}$$
+    r"""Compute $$\frac{\int x B_{z}(x,y)dxdy}{\int |B_{z}(x,y)|dxdy}$$
     Parameters:
         x_values: 1D array of x coordinates corresponding to the bz values.
         y_values: 1D array of y coordinates corresponding to the bz values.

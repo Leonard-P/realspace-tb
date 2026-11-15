@@ -1,4 +1,4 @@
-"""Unit helpers and default graphene material parameters for ``orbitronics_2d``.
+r"""Unit helpers and default graphene material parameters for ``orbitronics_2d``.
 
 The core solver uses Hartree atomic units, ``(e = hbar = m_e = 4\pi\varepsilon_0 = 1)``, hence ``a_0 = 1``.
 Proper value of t_hop and atomic distance are already set in the Hamiltonian.

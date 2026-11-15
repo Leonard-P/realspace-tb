@@ -13,6 +13,7 @@ Parallelism
 from __future__ import annotations
 
 import copy
+import multiprocessing as mp
 from concurrent.futures import ProcessPoolExecutor
 from typing import Any
 
@@ -220,7 +221,10 @@ class BlochRK4NeumannSolver:
             jobs.append((self, rho_c, H_c, dt, total_time, rho0_c, tau, obs_c))
             weights.append(w_c)
 
-        with ProcessPoolExecutor(max_workers=len(jobs)) as pool:
+        # 'forkserver' (Linux) / 'spawn': forking a multi-threaded process can deadlock
+        methods = mp.get_all_start_methods()
+        ctx = mp.get_context("forkserver" if "forkserver" in methods else "spawn")
+        with ProcessPoolExecutor(max_workers=len(jobs), mp_context=ctx) as pool:
             futures = [pool.submit(_evolve_chunk, job) for job in jobs]
             outputs = [f.result() for f in tqdm(futures, disable=not progress, desc="k-chunks")]
 
