@@ -274,3 +274,22 @@ def test_zigzag_cell_too_short_is_rejected():
     geo = orb.HoneycombLatticeGeometry(Lx=2, Ly=10, a_nn=A_NN, pbc_x=True)
     with pytest.raises(ValueError, match="longer supercell"):
         tb.BlochHamiltonian(orb.LinearFieldHamiltonianPeierls(geo, T_HOP, [], B0=B0), 8)
+
+
+def test_single_precision_reaches_parallel_workers():
+    """Workers start with a fresh import (default: double); the solver must pass the precision on."""
+    dt, T = 0.05 / SCALE, 5 / SCALE
+    tb.backend.set_backend(precision="single")
+    try:
+        Hb = tb.BlochHamiltonian(model(2), tb.KMesh(8))
+        rho1 = Hb.thermal_state_density_matrix(0.0, np.inf)
+        rho2 = rho1.copy()
+        o1 = orb.observables.BondCurrentObservable(Hb.geometry, hamiltonian=Hb)
+        o2 = orb.observables.BondCurrentObservable(Hb.geometry, hamiltonian=Hb)
+        tb.BlochRK4NeumannSolver().evolve(rho1, Hb, dt, T, observables=[o1], progress=False)
+        tb.BlochRK4NeumannSolver().evolve(rho2, Hb, dt, T, observables=[o2], progress=False, n_workers=2)
+        assert rho1.dtype == rho2.dtype == np.complex64
+        assert np.asarray(o2.values).dtype == np.float32      # computed in single inside the workers
+        assert np.allclose(o1.values, o2.values, atol=1e-6)
+    finally:
+        tb.backend.set_backend(precision="double")

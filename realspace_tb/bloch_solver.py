@@ -115,7 +115,10 @@ def _merge(obs: Observable, results: list[dict], weights: list[float]) -> None:
 
 # ----------------------------------------------------------------------------- worker
 def _evolve_chunk(args: tuple) -> tuple[list[dict], np.ndarray]:
-    solver, rho, H, dt, total_time, rho_0, tau, observables = args
+    solver, rho, H, dt, total_time, rho_0, tau, observables, precision = args
+    # worker processes start with a fresh import of the package, i.e. with the default
+    # backend (CPU, double): restore the precision chosen in the main process
+    B.set_backend(use_gpu=False, precision=precision)
     try:  # avoid oversubscription: one BLAS thread per worker process
         from threadpoolctl import threadpool_limits
 
@@ -210,6 +213,7 @@ class BlochRK4NeumannSolver:
         if B.USE_GPU:
             raise ValueError("n_workers > 1 is for the CPU backend; on GPU all k run in one batch.")
 
+        precision = "single" if np.dtype(B.DTYPE) == np.complex64 else "double"
         chunks = [c for c in np.array_split(np.arange(H.n_k), n_workers) if c.size]
         jobs, weights = [], []
         for idx in chunks:
@@ -218,7 +222,7 @@ class BlochRK4NeumannSolver:
             obs_c = copy.deepcopy(observables, memo={id(H): H_c, id(H.base): H.base})
             rho_c = np.ascontiguousarray(rho[:, idx, :])
             rho0_c = None if rho_0 is None else np.ascontiguousarray(rho_0[:, idx, :])
-            jobs.append((self, rho_c, H_c, dt, total_time, rho0_c, tau, obs_c))
+            jobs.append((self, rho_c, H_c, dt, total_time, rho0_c, tau, obs_c, precision))
             weights.append(w_c)
 
         # 'forkserver' (Linux) / 'spawn': forking a multi-threaded process can deadlock
