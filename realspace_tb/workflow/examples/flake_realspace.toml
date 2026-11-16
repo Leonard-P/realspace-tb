@@ -1,0 +1,35 @@
+# Real-space simulation of a finite flake (open in both directions), with and without B.
+# All numbers in Hartree atomic units.
+name = "flake_realspace"
+output_dir = "/scratch/hpc-prf-metdyn/metdyn09_Aristo/gnr/results"
+
+[system]
+Lx = 17
+Ly = 10
+pbc_x = false
+pbc_y = false
+B0 = -0.0496
+
+[method]
+mode = "realspace"
+
+[time]
+total_time = 2419.0              # 58.5 fs
+
+[[fields]]
+type = "ramped_ac"
+E0 = 9.92e-6
+omega = 0.1101
+T_ramp = 806.5
+direction = "x"
+
+[[observables]]
+name = "lattice_frame"
+stride = 5
+start = 806.5                    # after the ramp
+[[observables]]
+name = "vorticity"
+stride = 5
+
+[sweep.product]
+"system.B0" = [0.0, -0.0496]

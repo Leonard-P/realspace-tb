@@ -1,0 +1,53 @@
+# Superimposed fields: an elliptically polarized pump, a delayed linear probe across the ribbon,
+# and a weak static field along the ribbon -- with a sweep over the probe delay.
+# All numbers in Hartree atomic units.
+name = "superposition_delay_scan"
+output_dir = "/scratch/hpc-prf-metdyn/metdyn09_Aristo/gnr/results"
+
+[system]
+ribbon = "zigzag"
+width = 10
+B0 = -0.0496
+
+[method]
+n_k = 256
+
+[state]
+beta = 2000.0                    # 1/k_B T: T = 5e-4 Ha = 158 K (faster k-convergence than T = 0)
+
+[time]
+total_time = 3024.0              # 73 fs
+
+[[fields]]                       # fields.0: pump, elliptical
+type = "elliptical_pulse"
+E0 = 9.92e-6
+t_c = 604.8
+sigma = 100.8
+omega = 0.1101
+ellipticity = 0.5
+varphi = 0.0
+
+[[fields]]                       # fields.1: probe, across the ribbon
+type = "pulse"
+E0 = 4.96e-6
+t_c = 1210.0
+sigma = 50.4
+omega = 0.0794                   # 2.16 eV
+direction = "transverse"
+
+[[fields]]                       # fields.2: weak DC bias along the ribbon
+type = "ramped_dc"
+E0 = 9.92e-8
+T_ramp = 302.4
+direction = "periodic"
+
+[[observables]]
+name = "vorticity"
+stride = 20
+[[observables]]
+name = "vort_flux"
+stride = 20
+start = 403.2                    # only after the pump has started
+
+[sweep.product]
+"fields.1.t_c" = [1008.0, 1210.0, 1411.0, 1613.0]

@@ -1,0 +1,29 @@
+# Convergence check: the same run for several k-meshes and threaded fluxes (k_shift).
+# The spread over k_shift at fixed n_k bounds the finite-size error for any gauge origin.
+# All numbers in Hartree atomic units.
+name = "convergence_nk"
+output_dir = "/scratch/hpc-prf-metdyn/metdyn09_Aristo/gnr/results"
+
+[system]
+ribbon = "armchair"
+width = 17
+B0 = -0.0496
+gauge_origin = "zero"
+
+[time]
+total_time = 1210.0
+
+[[fields]]
+type = "pulse"
+E0 = 9.92e-6
+t_c = 604.8
+sigma = 100.8
+omega = 0.1101
+
+[[observables]]
+name = "vorticity"
+stride = 10
+
+[sweep.product]
+"method.n_k" = [64, 128, 256, 512]
+"method.k_shift" = [0.0, 0.25, 0.5, 0.75]

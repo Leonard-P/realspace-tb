@@ -1,0 +1,50 @@
+# The +-E / +-B sweep for both ribbon types (the 8 runs of job_array.slurm), as one configuration.
+# All numbers in Hartree atomic units.
+name = "ribbons_pm_sweep"
+output_dir = "/scratch/hpc-prf-metdyn/metdyn09_Aristo/gnr/results"
+
+[system]
+ribbon = "armchair"
+width = 17
+t_hop = -0.0992                 # -2.7 eV
+B0 = -0.0496
+
+[method]
+mode = "kspace"
+n_k = 320
+
+[time]
+dt = 0.1008                     # 2.4 as
+total_time = 1613.0             # 39 fs
+
+[[fields]]                      # pulse along the ribbon
+type = "pulse"
+E0 = 9.92e-6                    # 5.1 MV/m
+t_c = 604.8                     # 14.6 fs
+sigma = 100.8                   # 2.4 fs
+omega = 0.1101                  # 3.0 eV
+direction = "periodic"
+
+[[observables]]
+name = "vorticity"
+stride = 10
+[[observables]]
+name = "vort_flux"
+stride = 10
+[[observables]]
+name = "vort_source"
+stride = 10
+[[observables]]
+name = "bond_current"
+stride = 10
+[[observables]]
+name = "site_density"
+stride = 10
+
+[sweep.product]                 # every combination of these lists
+"system.B0" = [-0.0496, 0.0496]
+"fields.0.E0" = [9.92e-6, -9.92e-6]
+
+[sweep.zip]                     # these vary together: (armchair, 17) and (zigzag, 10)
+"system.ribbon" = ["armchair", "zigzag"]
+"system.width" = [17, 10]

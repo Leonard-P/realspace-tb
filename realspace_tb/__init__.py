@@ -6,6 +6,7 @@ Core API:
 - RK4NeumannSolver: time integrator (real space)
 - BlochHamiltonian, KMesh, BlochRK4NeumannSolver: k-space (Bloch) simulation of systems
   periodic along one axis, using the translation symmetry (see bloch.py)
+- workflow: configuration files (TOML/JSON), parameter sweeps, Slurm job arrays (import realspace_tb.workflow)
 - orbitronics_2d: graphene-specific Hamiltonians, observables for plaquette-wise intersite current OAM (submodule)
 """
 
