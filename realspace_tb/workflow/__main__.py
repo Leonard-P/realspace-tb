@@ -4,7 +4,9 @@ Command line:  python -m realspace_tb.workflow <command> CONFIG [options]
     count  CONFIG                      number of runs in the sweep
     list   CONFIG                      index, run id, swept parameters, done or not
     run    CONFIG [--index I | --all]  run one (default: $SLURM_ARRAY_TASK_ID) or all runs
-    slurm  CONFIG --account A [...]    write a Slurm array script for the sweep (and submit it)
+    estimate CONFIG --cpus N           memory and time per run (for --mem / -t); run it on a compute node
+    slurm  CONFIG --account A [...]    write a Slurm array script for the sweep (and submit it);
+                                       --mem auto / --time auto use the estimate
 """
 
 from __future__ import annotations
@@ -70,10 +72,48 @@ def cmd_run(args) -> None:
         run_simulation(r, force=args.force, progress=args.progress)
 
 
+def _estimates(runs: list[dict], cpus: int, quiet: bool = False) -> list[dict]:
+    from .estimate import estimate
+    out = []
+    for r in runs:
+        r["method"]["n_workers"] = cpus
+        e = estimate(r)
+        out.append(e)
+        if not quiet:
+            print(f"{r['_index']:4d}  {e['run_id']}  N_s={e['n_sites']:<5d} N_k={e['n_k']:<5d} "
+                  f"workers={e['n_workers']:<3d} steps={e['n_steps']:<7d} | state {e['state_MB']:8.1f} MB, "
+                  f"measurements {e['measurement_series_MB']:8.1f} MB, total {e['memory_total_MB']:9.1f} MB "
+                  f"-> --mem={e['recommended_mem_GB']}G | {e['time_per_step_s'] * 1e3:7.2f} ms/step, "
+                  f"loop {e['time_loop_s']:9.1f} s -> -t {e['recommended_time']}", flush=True)
+    return out
+
+
+def cmd_estimate(args) -> None:
+    runs = _runs(args.config)
+    if args.index is not None:
+        runs = [runs[args.index]]
+    est = _estimates(runs, args.cpus)
+    if args.details:
+        for e in est:
+            print(f"\n{e['run_id']}: per observable")
+            for name, o in e["observables"].items():
+                print(f"    {name:28s} {o['bytes_per_measurement']:>10d} B x {o['measurements']:>6d} "
+                      f"= {o['series_MB']:9.1f} MB per worker")
+    print(f"\nfor all runs: --mem={max(e['recommended_mem_GB'] for e in est)}G "
+          f"-t {max(est, key=lambda e: e['time_loop_s'])['recommended_time']}  (with --cpus {args.cpus})")
+
+
 def cmd_slurm(args) -> None:
     config = str(Path(args.config).resolve())
     runs = _runs(config)
     todo = [r["_index"] for r in runs if not is_done(r)]
+    if args.mem == "auto" or args.time == "auto":
+        est = _estimates(runs, args.cpus, quiet=True)
+        if args.mem == "auto":
+            args.mem = f"{max(e['recommended_mem_GB'] for e in est)}G"
+        if args.time == "auto":
+            args.time = max(est, key=lambda e: e["time_loop_s"])["recommended_time"]
+        print(f"estimated: --mem={args.mem}, -t {args.time} (largest run; timing measured on {os.uname().nodename})")
     name = runs[0]["name"]
     env_file = str(Path(args.env).resolve())
     log_dir = str(Path(args.log_dir).resolve())
@@ -121,14 +161,21 @@ def main(argv: list[str] | None = None) -> None:
     sp.add_argument("--progress", action="store_true")
     sp.set_defaults(func=cmd_run)
 
+    sp = sub.add_parser("estimate")
+    sp.add_argument("config")
+    sp.add_argument("--cpus", type=int, required=True, help="cores per run you plan to request (= workers)")
+    sp.add_argument("--index", type=int, default=None, help="only this run")
+    sp.add_argument("--details", action="store_true", help="memory per observable")
+    sp.set_defaults(func=cmd_estimate)
+
     sp = sub.add_parser("slurm")
     sp.add_argument("config")
     sp.add_argument("--account", required=True)
     sp.add_argument("--partition", default="normal")
     sp.add_argument("--qos", default=None)
     sp.add_argument("--cpus", type=int, default=16)
-    sp.add_argument("--mem", default="16G")
-    sp.add_argument("--time", default="04:00:00")
+    sp.add_argument("--mem", default="16G", help='e.g. 16G, or "auto" (from the estimate)')
+    sp.add_argument("--time", default="04:00:00", help='e.g. 04:00:00, or "auto" (from the estimate)')
     sp.add_argument("--max-parallel", type=int, default=None, help="at most this many tasks at once")
     sp.add_argument("--env", default="cluster_env.sh", help="environment file sourced by each task")
     sp.add_argument("--log-dir", default="logs")
