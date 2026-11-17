@@ -10,6 +10,11 @@ width = 17
 B0 = -0.0496
 gauge_origin = "zero"
 
+[state]                         # initial state: grand-canonical equilibrium f(H(t=0))
+fermi_level = 0.0               # chemical potential mu (Hartree)
+beta = inf                      # inverse temperature 1/(k_B T) in 1/Hartree; inf = T -> 0
+# tol = 1e-12                   # T = 0 only: states with |E - mu| <= tol get occupation 1/2
+
 [time]
 total_time = 1210.0
 

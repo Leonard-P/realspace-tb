@@ -13,6 +13,11 @@ B0 = -0.0496
 mode = "kspace"
 n_k = 320
 
+[state]                         # initial state: grand-canonical equilibrium f(H(t=0))
+fermi_level = 0.0               # chemical potential mu (Hartree)
+beta = inf                      # inverse temperature 1/(k_B T) in 1/Hartree; inf = T -> 0
+# tol = 1e-12                   # T = 0 only: states with |E - mu| <= tol get occupation 1/2
+
 [time]
 dt = 0.1008                     # 2.4 as
 total_time = 1613.0             # 39 fs
