@@ -8,7 +8,8 @@ configuration drives local runs, notebooks and Slurm job arrays.
 python -m realspace_tb.workflow list  sweep.toml          # runs, swept values, done/todo
 python -m realspace_tb.workflow run   sweep.toml --index 3 # one run (Slurm: index from the array task)
 python -m realspace_tb.workflow run   sweep.toml --all     # all runs, one after the other
-python -m realspace_tb.workflow slurm sweep.toml --account hpc-prf-metdyn --cpus 16 --submit
+python -m realspace_tb.workflow estimate sweep.toml --cpus 16   # memory and time per run
+python -m realspace_tb.workflow slurm sweep.toml --account hpc-prf-metdyn --cpus 16 --mem auto --time auto --submit
 ```
 
 ```python
@@ -89,3 +90,15 @@ so a sweep can be resubmitted after failures; `slurm --submit` only submits unfi
 New field type: add its parameter units to `config.FIELD_TYPES` and a builder with
 `build.register_field("name", lambda run, f: [MyFieldAmplitude(...)])`. New observables in
 `orbitronics_2d/observables.py` are available by their snake_case name automatically.
+
+## Estimating memory and time
+
+`estimate CONFIG --cpus N` builds every run, evaluates each observable once (exact size of one
+measurement), counts the measurements, and benchmarks a few RK4 steps on one worker's share of
+the k-points. It prints per run the state size, the stored measurement series, the total memory
+of all processes (main + forkserver + N workers, each with its own copy of the series) and the
+expected time loop, with recommended `--mem` / `-t` (30 % margin; time + 2 min for start-up).
+`--details` lists the memory per observable. In tests the memory estimate was 20-40 % above the
+measured peak. Timing depends on the machine: run `estimate` on a compute node
+(`srun -A ... -p normal -c N -t 00:30:00 --pty bash`) for numbers that match the jobs.
+`slurm ... --mem auto --time auto` uses the largest estimate of the sweep.

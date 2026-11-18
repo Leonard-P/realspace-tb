@@ -157,6 +157,10 @@ def _with_defaults(raw: dict) -> dict:
             cfg["sweep"] = _normalize_sweep(value)
         else:
             cfg[key] = copy.deepcopy(value)
+    for key in ("fields", "observables"):
+        if not isinstance(cfg[key], list):
+            raise ConfigError(f"'{key}' must be a list: in TOML write [[{key}]] (double brackets), "
+                              f"one block per entry; [{key}] (single brackets) defines a single table")
     cfg["fields"] = [_field_with_defaults(f, i) for i, f in enumerate(cfg["fields"])]
     cfg["observables"] = [_observable_with_defaults(o, i) for i, o in enumerate(cfg["observables"])]
     return cfg
@@ -238,6 +242,7 @@ def expand(cfg: dict) -> list[dict]:
                 set_by_path(run, path, value)
                 swept[path] = value
         run["fields"] = [_field_with_defaults(f, i) for i, f in enumerate(run["fields"])]
+        _normalize_infinities(run)
         validate(run)
         run["_swept"] = swept
         runs.append(run)
@@ -255,10 +260,65 @@ def config_hash(run: dict) -> str:
     return hashlib.sha1(blob.encode()).hexdigest()[:8]
 
 
+_INF_STRINGS = {"inf", "+inf", "infinity", "+infinity"}
+_INF_KEYS = [("state", "beta"), ("time", "tau")]
+
+
+def _normalize_infinities(run: dict) -> None:
+    """Accept "inf" (quoted, e.g. inside sweep lists) wherever infinity is meaningful."""
+    for section, key in _INF_KEYS:
+        v = run[section][key]
+        if isinstance(v, str) and v.strip().lower() in _INF_STRINGS:
+            run[section][key] = INF
+    for obs in run["observables"]:
+        if isinstance(obs["end"], str) and obs["end"].strip().lower() in _INF_STRINGS:
+            obs["end"] = INF
+
+
+def _check_type(value, kinds, where: str) -> None:
+    ok = any((k is float and isinstance(value, (int, float)) and not isinstance(value, bool))
+             or (k is int and isinstance(value, int) and not isinstance(value, bool))
+             or (k is bool and isinstance(value, bool))
+             or (k is str and isinstance(value, str))
+             or (k is None and value is None)
+             or (k is list and isinstance(value, list)) for k in kinds)
+    if not ok:
+        names = " or ".join("none" if k is None else k.__name__ for k in kinds)
+        hint = ""
+        if bool in kinds and isinstance(value, str):
+            hint = " (TOML booleans are written true/false without quotes)"
+        raise ConfigError(f"{where} must be {names}, got {value!r}{hint}")
+
+
+_TYPES = {
+    ("system", "width"): (int, None), ("system", "cells"): (int,), ("system", "periodic"): (bool,),
+    ("system", "Lx"): (int, None), ("system", "Ly"): (int, None),
+    ("system", "pbc_x"): (bool, None), ("system", "pbc_y"): (bool, None),
+    ("system", "a_nn"): (float,), ("system", "t_hop"): (float,), ("system", "B0"): (float,),
+    ("system", "gauge_origin"): (str, list),
+    ("method", "n_k"): (int,), ("method", "k_shift"): (float,), ("method", "gpu"): (bool,),
+    ("method", "n_workers"): (int, str),
+    ("state", "fermi_level"): (float,), ("state", "beta"): (float,), ("state", "tol"): (float, None),
+    ("time", "dt"): (float,), ("time", "total_time"): (float,), ("time", "tau"): (float,),
+    ("output", "save_equilibrium"): (bool,), ("output", "save_final_state"): (bool,),
+    ("output", "skip_existing"): (bool,),
+}
+
+
 # ------------------------------------------------------------------------------ validation
 def validate(run: dict) -> None:
     """Check one (expanded) run for consistency; raises ConfigError with a clear message."""
     s, m, t = run["system"], run["method"], run["time"]
+    if t["total_time"] is None:
+        raise ConfigError("time.total_time is required")
+    for (section, key), kinds in _TYPES.items():
+        _check_type(run[section][key], kinds, f"{section}.{key}")
+    if m["n_workers"] != "auto" and not isinstance(m["n_workers"], int):
+        raise ConfigError("method.n_workers must be an integer or \"auto\"")
+    if m["n_k"] < 1 or not 0.0 <= m["k_shift"] < 1.0:
+        raise ConfigError("method.n_k must be >= 1 and method.k_shift in [0, 1)")
+    if t["dt"] <= 0 or t["total_time"] <= 0 or t["tau"] <= 0 or run["state"]["beta"] <= 0:
+        raise ConfigError("time.dt, time.total_time, time.tau and state.beta must be positive")
     if t["total_time"] is None:
         raise ConfigError("time.total_time is required")
     if m["mode"] not in ("kspace", "realspace"):
@@ -286,6 +346,14 @@ def validate(run: dict) -> None:
             raise ConfigError("gauge = 'length' does not support a magnetic field; use 'velocity'")
     elif s["gauge"] != "velocity":
         raise ConfigError("system.gauge must be 'velocity' or 'length'")
+    from .build import observable_registry   # local import: build imports this module
+    known = observable_registry()
+    names = [o["name"] for o in run["observables"]]
+    for name in names:
+        if name not in known:
+            raise ConfigError(f"unknown observable {name!r}; available: {sorted(known)}")
+    if len(set(names)) != len(names):
+        raise ConfigError(f"an observable is listed twice: {names}")
     for i, f in enumerate(run["fields"]):
         missing = [p for p in FIELD_TYPES[f["type"]]["required"] if p not in f]
         if missing:

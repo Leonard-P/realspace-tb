@@ -53,14 +53,16 @@ def test_sweep_product_and_zip():
     ({"sweep": {"product": {"system.nonsense": [1]}}}, "not a valid key"),
     ({"observables": [{"name": "vortcity"}]}, "unknown observable"),
     ({"units": "scale"}, "atomic units"),
+    ({"method": {"gpu": "False"}}, "true/false without quotes"),
+    ({"time": {"dt": "0.1", "total_time": 4.0}}, "time.dt must be float"),
+    ({"method": {"k_shift": 1.0}}, "k_shift"),
+    ({"fields": {"type": "pulse", "E0": 1e-5, "t_c": 1.0, "sigma": 1.0, "omega": 0.1}}, "double brackets"),
 ])
 def test_invalid_configs_are_rejected(tmp_path, bad, match):
     cfg = small_config(tmp_path)
     cfg.update(bad)
     with pytest.raises(ConfigError, match=match):
-        runs = expand(load_config(cfg))
-        from realspace_tb.workflow import build
-        build.build_observables(runs[0], build.build_geometry(runs[0]), None)
+        expand(load_config(cfg))          # everything is checked before anything runs
 
 
 def test_workflow_equals_manual_construction(tmp_path):
@@ -120,3 +122,50 @@ def test_command_line(tmp_path, capsys):
     text = script.read_text()
     assert "#SBATCH --array=0-2%2" in text and "#SBATCH -A hpc-prf-metdyn" in text
     assert 'srun "$PYTHON" -m realspace_tb.workflow run' in text
+
+
+def test_estimate_counts_and_sizes(tmp_path, capsys):
+    """The estimate predicts exactly the number and size of the stored measurements."""
+    from realspace_tb.workflow.estimate import estimate
+    cfg = small_config(tmp_path)
+    cfg["observables"] = [{"name": "vorticity", "stride": 3, "start": 10.0}, {"name": "vort_flux", "stride": 2}]
+    cfg["method"]["n_workers"] = 2
+    run = expand(load_config(cfg))[0]
+    est = estimate(dict(run))
+    out = run_simulation(expand(load_config(cfg))[0])
+    data = np.load(out / "observables.npz")
+    for name in ("vorticity", "vort_flux"):
+        assert est["observables"][name]["measurements"] == len(data[name + "__times"])
+        assert est["observables"][name]["bytes_per_measurement"] == data[name][0].nbytes
+    assert est["recommended_mem_GB"] >= 1 and est["time_loop_s"] > 0
+    cli(["estimate", str(tmp_path / "c.json") if False else _write(tmp_path, cfg), "--cpus", "2"])
+    assert "for all runs: --mem=" in capsys.readouterr().out
+
+
+def _write(tmp_path, cfg):
+    p = tmp_path / "e.json"
+    p.write_text(json.dumps(cfg))
+    return str(p)
+
+
+def test_quoted_inf_is_accepted(tmp_path):
+    runs = expand(load_config(small_config(tmp_path, sweep={"state.beta": ["inf", 2000.0]})))
+    assert runs[0]["state"]["beta"] == float("inf") and runs[1]["state"]["beta"] == 2000.0
+
+
+def test_every_observable_in_parallel_workers(tmp_path):
+    """Every registered observable must work inside worker processes and agree with a serial run."""
+    from realspace_tb.workflow import observable_registry
+    names = sorted(observable_registry())
+    results = {}
+    for n_workers in (1, 2):
+        cfg = small_config(tmp_path, name=f"all_{n_workers}",
+                           observables=[{"name": n, "stride": 5} for n in names])
+        cfg["method"]["n_workers"] = n_workers
+        cfg["time"]["total_time"] = 10.0
+        out = run_simulation(expand(load_config(cfg))[0])
+        with np.load(out / "observables.npz") as d:
+            results[n_workers] = {k: d[k] for k in d.files}
+    assert set(results[1]) == set(results[2])
+    for key in results[1]:
+        assert np.allclose(results[1][key], results[2][key], atol=1e-12), key

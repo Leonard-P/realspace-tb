@@ -13,6 +13,7 @@ Parallelism
 from __future__ import annotations
 
 import copy
+import time
 import multiprocessing as mp
 from concurrent.futures import ProcessPoolExecutor
 from typing import Any
@@ -114,20 +115,61 @@ def _merge(obs: Observable, results: list[dict], weights: list[float]) -> None:
 
 
 # ----------------------------------------------------------------------------- worker
-def _evolve_chunk(args: tuple) -> tuple[list[dict], np.ndarray]:
+
+def _own_arrays(obj, _seen: set | None = None):
+    """Give every numpy array reachable from `obj` its own memory.
+
+    Arrays received by a worker process are unpickled as views of an immutable `bytes` buffer.
+    Some operations (e.g. scipy sparse fancy indexing, which re-broadcasts index arrays) fail on
+    such views with "cannot set WRITEABLE flag to True of this array". Copying them avoids that.
+    """
+    _seen = set() if _seen is None else _seen
+    if id(obj) in _seen:
+        return obj
+    _seen.add(id(obj))
+    if isinstance(obj, np.ndarray):
+        return obj.copy() if isinstance(obj.base, (bytes, memoryview)) or not obj.flags.writeable else obj
+    if isinstance(obj, list):
+        for i, v in enumerate(obj):
+            obj[i] = _own_arrays(v, _seen)
+        return obj
+    if isinstance(obj, tuple):
+        return type(obj)(_own_arrays(v, _seen) for v in obj) if not hasattr(obj, "_fields") else obj
+    if isinstance(obj, dict):
+        for k in list(obj):
+            obj[k] = _own_arrays(obj[k], _seen)
+        return obj
+    attrs = getattr(obj, "__dict__", None)
+    if isinstance(attrs, dict) and not isinstance(obj, type):
+        for k, v in list(attrs.items()):
+            new = _own_arrays(v, _seen)
+            if new is not v:
+                try:
+                    setattr(obj, k, new)
+                except AttributeError:
+                    attrs[k] = new
+    return obj
+
+
+def _evolve_chunk(args: tuple) -> tuple[list[dict], np.ndarray, dict]:
+    t_begin = time.time()   # the worker has started and imported everything
     solver, rho, H, dt, total_time, rho_0, tau, observables, precision = args
     # worker processes start with a fresh import of the package, i.e. with the default
     # backend (CPU, double): restore the precision chosen in the main process
     B.set_backend(use_gpu=False, precision=precision)
+    rho, H, rho_0, observables = _own_arrays([rho, H, rho_0, observables])
     try:  # avoid oversubscription: one BLAS thread per worker process
         from threadpoolctl import threadpool_limits
 
         limiter = threadpool_limits(1)
     except ImportError:
         limiter = None
+    t_loop = time.time()
     solver._evolve_serial(rho, H, dt, total_time, rho_0, tau, observables, progress=False)
+    t_end = time.time()
     del limiter
-    return [_collect(o) for o in observables], rho
+    timing = {"begin": t_begin, "loop_s": t_end - t_loop, "end": t_end, "n_k": H.n_k}
+    return [_collect(o) for o in observables], rho, timing
 
 
 # ----------------------------------------------------------------------------- solver
@@ -208,7 +250,10 @@ class BlochRK4NeumannSolver:
         observables = list(observables or [])
         n_workers = max(1, min(int(n_workers), H.n_k))
         if n_workers == 1:
+            t0 = time.time()
             self._evolve_serial(rho, H, dt, total_time, rho_0, tau, observables, progress)
+            self.last_timing = {"n_workers": 1, "worker_start_s": [0.0],
+                                "worker_loop_s": [time.time() - t0], "parallel_phase_s": time.time() - t0}
             return
         if B.USE_GPU:
             raise ValueError("n_workers > 1 is for the CPU backend; on GPU all k run in one batch.")
@@ -229,10 +274,20 @@ class BlochRK4NeumannSolver:
         methods = mp.get_all_start_methods()
         ctx = mp.get_context("forkserver" if "forkserver" in methods else "spawn")
         with ProcessPoolExecutor(max_workers=len(jobs), mp_context=ctx) as pool:
+            t_submit = time.time()
             futures = [pool.submit(_evolve_chunk, job) for job in jobs]
             outputs = [f.result() for f in tqdm(futures, disable=not progress, desc="k-chunks")]
+            t_done = time.time()
 
-        for idx, (_, rho_c) in zip(chunks, outputs):
+        # timing of the parallel phase, e.g. to diagnose slow nodes (see last_timing)
+        loops = [tm["loop_s"] for _, _, tm in outputs]
+        self.last_timing = {
+            "n_workers": len(jobs),
+            "worker_start_s": [tm["begin"] - t_submit for _, _, tm in outputs],  # process start + imports
+            "worker_loop_s": loops,                                              # RK4 steps + measurements
+            "parallel_phase_s": t_done - t_submit,
+        }
+        for idx, (_, rho_c, _) in zip(chunks, outputs):
             rho[:, idx, :] = rho_c  # final state of every chunk back into rho
         for i, obs in enumerate(observables):
-            _merge(obs, [res[i] for res, _ in outputs], weights)
+            _merge(obs, [res[i] for res, _, _ in outputs], weights)

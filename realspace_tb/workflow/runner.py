@@ -127,10 +127,13 @@ def run_simulation(run_cfg: dict, force: bool = False, progress: bool = False) -
           f"{H_real.geometry.Lx}x{H_real.geometry.Ly} sites, {n_steps} steps", flush=True)
 
     t0 = time.time()
+    timing: dict = {}
     kwargs = dict(dt=tm["dt"], total_time=total_time, tau=tm["tau"],
                   observables=list(observables.values()), progress=progress)
     if isinstance(H, BlochHamiltonian):
-        BlochRK4NeumannSolver().evolve(rho, H, n_workers=build.n_workers(run_cfg), **kwargs)
+        solver = BlochRK4NeumannSolver()
+        solver.evolve(rho, H, n_workers=build.n_workers(run_cfg), **kwargs)
+        timing = getattr(solver, "last_timing", {})
     else:
         RK4NeumannSolver().evolve(rho, H, **kwargs)
     wall = time.time() - t0
@@ -153,7 +156,7 @@ def run_simulation(run_cfg: dict, force: bool = False, progress: bool = False) -
     only_pulses = all(f["type"] in ("pulse", "elliptical_pulse") for f in run_cfg["fields"])
     meta = {
         "run_id": run_cfg["_run_id"], "index": run_cfg["_index"], "swept": run_cfg["_swept"],
-        "wall_time_s": wall, "n_steps": n_steps, "total_time_au": n_steps * tm["dt"], "dt_au": tm["dt"],
+        "wall_time_s": wall, "timing": timing, "n_steps": n_steps, "total_time_au": n_steps * tm["dt"], "dt_au": tm["dt"],
         "n_sites_cell": int(H_real.geometry.Lx * H_real.geometry.Ly),
         "n_workers": build.n_workers(run_cfg) if isinstance(H, BlochHamiltonian) else 1,
         "integral_E_dt_final_au": a_final.tolist(),
@@ -167,6 +170,10 @@ def run_simulation(run_cfg: dict, force: bool = False, progress: bool = False) -
     (out_dir / "metadata.json").write_text(json.dumps(meta, indent=2))
     # written last: its presence (with observables.npz) marks the run as complete
     (out_dir / "config.json").write_text(json.dumps(public_config(run_cfg), indent=2))
+    if timing:
+        print(f"[{run_cfg['_run_id']}] {timing['n_workers']} workers: start "
+              f"{min(timing['worker_start_s']):.1f}-{max(timing['worker_start_s']):.1f} s, time loop "
+              f"{min(timing['worker_loop_s']):.1f}-{max(timing['worker_loop_s']):.1f} s", flush=True)
     print(f"[{run_cfg['_run_id']}] done in {wall:.1f} s -> {out_dir}; "
           f"integral of E dt at the end: {np.round(a_final, 12).tolist()} a.u.", flush=True)
     if only_pulses and pulse_area > 0 and np.linalg.norm(a_final) > 1e-6 * pulse_area:
