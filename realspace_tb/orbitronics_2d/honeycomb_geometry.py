@@ -369,6 +369,7 @@ class HoneycombLatticeGeometry(Lattice2DGeometry):
 
         For periodic bonds the vector points to the nearest periodic image,
         not across the full system.
+        nn_bond_vectors = r_j - r_i corresponds to nearest_neighbor = [i j]
         """
         if self._nn_bond_vectors_cache is None:
             self._build_nearest_neighbors()
@@ -432,7 +433,11 @@ class HoneycombLatticeGeometry(Lattice2DGeometry):
         (boundary conditions and bond length unchanged). Used to build the real-space ring
         that is equivalent to a k-mesh."""
         return HoneycombLatticeGeometry(
-            Lx=self.Lx * n_x, Ly=self.Ly * n_y, a_nn=self.a_nn, pbc_x=self.pbc_x, pbc_y=self.pbc_y
+            Lx=self.Lx * n_x,
+            Ly=self.Ly * n_y,
+            a_nn=self.a_nn,
+            pbc_x=self.pbc_x,
+            pbc_y=self.pbc_y,
         )
 
     def index_to_position(self, index: int) -> B.FCPUArray:

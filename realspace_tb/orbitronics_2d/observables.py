@@ -91,7 +91,7 @@ class VortFluxObservable(VorticityObservable):
     r"""Measures the unmodified vorticity flux
 
     $$\hat{\Tilde{j}}^{z}_{\omega,P_{i}\rightarrow P_{j}}
-    =(e_{z}\cross n_{P_{i} -> P})\cdot\sum_{X}\langle\hat{\Pi}^{(b)}_{X}\rangle(t)$$
+    =(e_{z}\cross n_{P_{i} -> P_{j}})\cdot\sum_{X}\langle\hat{\Pi}^{(b)}_{X}\rangle(t)$$
     This observable is ANTISYMMETRIC, since n_{P_{i} -> P} = -n_{P -> P_{i}}
     1. WARNING: Currently hard-coded for 2D lattices, whose plaquettes have all their normal
                 vectors pointing along one (z-)direction.
@@ -649,7 +649,9 @@ class BondCurrentObservable(Observable):
         ), "Nearest neighbor list should have shape (n_edges, 2)."
 
     def _compute(self, rho: B.Array, t: float) -> B.Array:
-        """Compute the bond currents in 1D-array form"""
+        """Compute the bond currents in 1D-array form.
+        Elements of output array give I_{i<-j} with [i,j] from the corresponding
+        geometry.nearest_neighbor. Example: [17 0] corresponds to I_{17<-0}"""
         # DEPRECATED: Hamiltonian has to be defined
         # if self._hamiltonian is not None:
         xp = B.xp()
@@ -668,8 +670,8 @@ class BondCurrentObservable(Observable):
         h_ij = xp.asarray(H_t[self._nn_rows, self._nn_cols]).ravel()
         bond_currents = 2.0 * xp.imag(h_ij * rho[self._nn_cols, self._nn_rows])
         current_matrix = xp.zeros_like(rho)
-        current_matrix[self._nn_rows, self._nn_cols] = bond_currents
-        current_matrix[self._nn_cols, self._nn_rows] = -bond_currents
+        current_matrix[self._nn_rows, self._nn_cols] = -bond_currents
+        current_matrix[self._nn_cols, self._nn_rows] = bond_currents
         return current_matrix
 
 
@@ -703,8 +705,10 @@ class VectorBondCurrentObservable(BondCurrentObservable):
         i_indices = nn[:, 0]
         j_indices = nn[:, 1]
         # Fill the distance matrices with the x- and y-components of the bond vectors
+        # x_dist_matrix[i,j] = x_j - x_i
         self._x_dist_matrix[i_indices, j_indices] = nn_bond_vectors[:, 0]
         self._x_dist_matrix[j_indices, i_indices] = -nn_bond_vectors[:, 0]
+        # y_dist_matrix[i,j] = y_j - x_i
         self._y_dist_matrix[i_indices, j_indices] = nn_bond_vectors[:, 1]
         self._y_dist_matrix[j_indices, i_indices] = -nn_bond_vectors[:, 1]
 
@@ -725,7 +729,10 @@ class VectorBondCurrentObservable(BondCurrentObservable):
 
 
 class BondCurrentForceObservable(BondCurrentObservable):
-    r"""Measures the bond force $f_{i<-j}(t) = 2\,\mathrm{Im}(dH_{ij}_dt\,\rho_{ji}(t))$."""
+    r"""Measures the bond force $f_{i<-j}(t) = 2\,\mathrm{Im}(dH_{ij}_dt\,\rho_{ji}(t))$.
+    WARNING: If the Hamiltonian involves hopping to next-nearest neighbors, this observable
+    will only measure the bond current force along nearest-neighbor bonds.
+    """
 
     def __init__(
         self,
@@ -736,6 +743,9 @@ class BondCurrentForceObservable(BondCurrentObservable):
         super().__init__(geometry, window, hamiltonian)
 
     def _compute(self, rho: B.Array, t: float) -> B.Array:
+        """Compute the bond current forces in 1D-array form.
+        Elements of output array give I_{i<-j} with [i,j] from the corresponding
+        geometry.nearest_neighbor. Example: [17 0] corresponds to f_{17<-0}"""
         # DEPRECATED: Hamiltonian has to be defined
         # if self._hamiltonian is not None:
         xp = B.xp()
@@ -744,10 +754,28 @@ class BondCurrentForceObservable(BondCurrentObservable):
         return 2.0 * xp.imag(dh_ij_dt * rho[self._nn_cols, self._nn_rows])  # (E,)
         # return 2.0 * B.xp().imag(0.0 * rho[self._nn_rows, self._nn_cols])  # (E,)
 
+    def _compute_in_matrix_form(self, rho: B.Array, t: float) -> B.Array:
+        """Compute the bond current forces in matrix form,
+        where the (i,j)-th entry corresponds to the force from site i to site j."""
+        # DEPRECATED: Hamiltonian has to be defined
+        # if self._hamiltonian is not None:
+        xp = B.xp()
+        dH_dt = self._hamiltonian.at_time(t)
+        dh_ij_dt = xp.asarray(dH_dt[self._nn_rows, self._nn_cols]).ravel()
+        bond_current_forces = 2.0 * xp.imag(
+            dh_ij_dt * rho[self._nn_cols, self._nn_rows]
+        )
+        force_matrix = xp.zeros_like(rho)
+        force_matrix[self._nn_rows, self._nn_cols] = -bond_current_forces
+        force_matrix[self._nn_cols, self._nn_rows] = bond_current_forces
+        return force_matrix
+
 
 class BondCurrentFluxObservable(BondCurrentObservable):
     r"""Measures the bond current flux
     $\Pi^{i<-j}_{k} = 2\,\mathrm{Re}(H_{ij}H_{jk}\,\rho_{ki}-H_{ij}H_{ki}\,\rho_{jk})$.
+    WARNING: If the Hamiltonian involves hopping to next-nearest neighbors, this observable
+    will only measure the bond current flux along nearest-neighbor bonds.
     """
 
     # k-space: uses products such as H @ rho -> must be evaluated k-point by k-point.
@@ -766,6 +794,10 @@ class BondCurrentFluxObservable(BondCurrentObservable):
         self._X = B.xp().array(list(range(size)) * len_rows, dtype=B.xp().int64)
 
     def _compute(self, rho: B.Array, t: float) -> B.Array:
+        """Compute the bond current flux in 1D-array form. The shape is
+        (nr_bond*nr_sites,) and can be reshaped into (nr_bond,nr_site)
+        Elements of output array give Pi^{i<-j} with [i,j] from the corresponding
+        geometry.nearest_neighbor. Example: [17 0] corresponds to Pi^{i<-j}"""
         # DEPRECATED: Hamiltonian has to be defined
         # if self._hamiltonian is not None:
         xp = B.xp()
