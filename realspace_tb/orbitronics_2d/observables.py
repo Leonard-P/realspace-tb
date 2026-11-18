@@ -760,7 +760,7 @@ class BondCurrentForceObservable(BondCurrentObservable):
         # DEPRECATED: Hamiltonian has to be defined
         # if self._hamiltonian is not None:
         xp = B.xp()
-        dH_dt = self._hamiltonian.at_time(t)
+        dH_dt = self._hamiltonian.derivative_at_time(t)
         dh_ij_dt = xp.asarray(dH_dt[self._nn_rows, self._nn_cols]).ravel()
         bond_current_forces = 2.0 * xp.imag(
             dh_ij_dt * rho[self._nn_cols, self._nn_rows]
